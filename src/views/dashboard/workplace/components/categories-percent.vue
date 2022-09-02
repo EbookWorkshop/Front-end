@@ -8,6 +8,7 @@
       }"
     >
       <template #title>
+        <!-- 内容占比  -->
         {{ $t('workplace.categoriesPercent') }}
       </template>
       <Chart height="310px" :option="chartOption" />

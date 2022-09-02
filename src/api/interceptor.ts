@@ -4,6 +4,7 @@ import { Message, Modal } from '@arco-design/web-vue';
 import { useUserStore } from '@/store';
 import { getToken } from '@/utils/auth';
 
+// 全局的接口返回格式
 export interface HttpResponse<T = unknown> {
   status: number;
   msg: string;
@@ -42,10 +43,12 @@ axios.interceptors.response.use(
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 20000) {
       Message.error({
-        content: res.msg || 'Error',
+        content: res.msg || '未知错误',
         duration: 5 * 1000,
       });
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+      // 50008: Illegal token;
+      // 50012: Other clients logged in;
+      // 50014: Token expired;
       if (
         [50008, 50012, 50014].includes(res.code) &&
         response.config.url !== '/api/user/info'
@@ -53,7 +56,7 @@ axios.interceptors.response.use(
         Modal.error({
           title: 'Confirm logout',
           content:
-            'You have been logged out, you can cancel to stay on this page, or log in again',
+            '您已退出登陆，您可以取消操作并停留在本页，或者重新登陆后再试。',
           okText: 'Re-Login',
           async onOk() {
             const userStore = useUserStore();
@@ -69,7 +72,7 @@ axios.interceptors.response.use(
   },
   (error) => {
     Message.error({
-      content: error.msg || 'Request Error',
+      content: error.msg || '请求错误',
       duration: 5 * 1000,
     });
     return Promise.reject(error);

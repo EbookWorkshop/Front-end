@@ -3,6 +3,7 @@ import localeLogin from '@/views/login/locale/en-US';
 
 import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 
+import localeLibrary from '@/views/library/list/locale/en-US';
 import localeSettings from './en-US/settings';
 
 export default {
@@ -21,8 +22,12 @@ export default {
   'menu.faq': 'FAQ',
   'navbar.docs': 'Docs',
   'navbar.action.locale': 'Switch to English',
+
+  'menu.library': 'Library',
+
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
   ...localeWorkplace,
+  ...localeLibrary,
 };

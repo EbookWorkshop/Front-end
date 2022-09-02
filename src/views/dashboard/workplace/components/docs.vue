@@ -5,7 +5,7 @@
     :header-style="{ paddingBottom: 0 }"
     :body-style="{ paddingTop: 0 }"
     style="height: 166px"
-  >
+    ><!-- 帮助文档 -->
     <template #extra>
       <a-link>{{ $t('workplace.viewMore') }}</a-link>
     </template>
