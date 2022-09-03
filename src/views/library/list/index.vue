@@ -17,6 +17,7 @@
                 :lg="3"
                 :xl="3"
                 :xxl="3"
+                @click="goto(item.BookId)"
               >
                 <BookWrap
                   v-if="item.CoverImg !== null"
@@ -54,6 +55,7 @@
 <script lang="ts" setup>
   import { queryBookList, Book } from '@/api/library';
   import useRequest from '@/hooks/request';
+  import { useRouter, useRoute } from 'vue-router';
   import BookWrap from './components/book-wrap.vue';
   import BookClassical from './components/book-classical.vue';
 
@@ -62,6 +64,11 @@
     queryBookList,
     defaultValue
   );
+  const router = useRouter();
+
+  const goto = (bookid: number) => {
+    router.push({ path: `/book/${bookid}` });
+  };
 </script>
 
 <style scoped lang="less">
