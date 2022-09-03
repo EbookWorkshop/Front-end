@@ -6,11 +6,9 @@ const LIBRARY: AppRouteRecordRaw = {
   name: 'library',
   component: DEFAULT_LAYOUT,
   meta: {
-    locale: 'menu.library',
     requiresAuth: true,
-    // hideChildrenInMenu: true,
     icon: 'icon-bookmark',
-    order: 2,
+    hideInMenu: true,
   },
   children: [
     {
@@ -18,9 +16,8 @@ const LIBRARY: AppRouteRecordRaw = {
       name: 'List',
       component: () => import('@/views/library/list/index.vue'),
       meta: {
-        locale: 'menu.library.list',
         requiresAuth: true,
-        icon: 'icon-book',
+        hideInMenu: true,
         roles: ['*'],
       },
     },

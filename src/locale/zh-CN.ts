@@ -4,6 +4,7 @@ import localeLogin from '@/views/login/locale/zh-CN';
 import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
 
 import localeLibrary from '@/views/library/list/locale/zh-CN';
+import localeWorkshop from '@/views/workshop/locale/zh-CN';
 import localeSettings from './zh-CN/settings';
 
 export default {
@@ -24,10 +25,12 @@ export default {
   'navbar.action.locale': '切换为中文',
 
   'menu.library': '图书馆',
+  'menu.workshop': '图书工坊',
 
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
   ...localeWorkplace,
   ...localeLibrary,
+  ...localeWorkshop,
 };

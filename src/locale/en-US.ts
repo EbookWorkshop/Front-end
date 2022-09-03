@@ -4,6 +4,7 @@ import localeLogin from '@/views/login/locale/en-US';
 import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 
 import localeLibrary from '@/views/library/list/locale/en-US';
+import localeWorkshop from '@/views/workshop/locale/en-US';
 import localeSettings from './en-US/settings';
 
 export default {
@@ -24,10 +25,12 @@ export default {
   'navbar.action.locale': 'Switch to English',
 
   'menu.library': 'Library',
+  'menu.workshop': 'Workshop',
 
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
   ...localeWorkplace,
   ...localeLibrary,
+  ...localeWorkshop,
 };
