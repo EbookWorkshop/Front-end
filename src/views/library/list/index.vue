@@ -56,16 +56,19 @@
   import { queryBookList, Book } from '@/api/library';
   import useRequest from '@/hooks/request';
   import { useRouter, useRoute } from 'vue-router';
-  import BookWrap from './components/book-wrap.vue';
-  import BookClassical from './components/book-classical.vue';
+  import BookWrap from '@/views/book/components/book-wrap.vue'; // 带封面图书
+  import BookClassical from '@/views/book/components/book-classical.vue'; // 古典线装书风格封面
 
   const defaultValue: Book[] = new Array(4).fill({});
+  /**
+   * renderData --实际的数据
+   */
   const { loading, response: renderData } = useRequest<Book[]>(
     queryBookList,
     defaultValue
   );
-  const router = useRouter();
 
+  const router = useRouter();
   const goto = (bookid: number) => {
     router.push({ path: `/book/${bookid}` });
   };

@@ -2,8 +2,8 @@ import { DEFAULT_LAYOUT } from '../base';
 import { AppRouteRecordRaw } from '../types';
 
 const LIBRARY: AppRouteRecordRaw = {
-  path: '/library',
-  name: 'library',
+  path: '/book',
+  name: 'book',
   component: DEFAULT_LAYOUT,
   meta: {
     requiresAuth: true,
@@ -12,9 +12,19 @@ const LIBRARY: AppRouteRecordRaw = {
   },
   children: [
     {
-      path: 'list',
-      name: 'List',
-      component: () => import('@/views/library/list/index.vue'),
+      path: '/book/:id(\\d+)',
+      name: 'BookIndex',
+      component: () => import('@/views/book/index.vue'),
+      meta: {
+        requiresAuth: true,
+        hideInMenu: true,
+        roles: ['*'],
+      },
+    },
+    {
+      path: '/book/:id(\\d+)/chapter/:cid(\\d+)',
+      name: 'Chapter',
+      component: () => import('@/views/chapter/index.vue'),
       meta: {
         requiresAuth: true,
         hideInMenu: true,
