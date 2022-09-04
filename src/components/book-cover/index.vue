@@ -1,9 +1,9 @@
 <template>
   <BookWrap
-    v-if="CoverImg"
+    v-if="coverImg"
     :loading="loading"
-    :title="BookName"
-    :cover-img="CoverImg"
+    :title="bookName"
+    :cover-img="coverImg"
   >
     <a-descriptions
       style="margin-top: 16px"
@@ -14,8 +14,8 @@
   <BookClassical
     v-else
     :loading="loading"
-    :title="BookName"
-    :title-show="BookName.replace(/[\(（)].*$/, '')"
+    :title="bookName"
+    :title-show="bookName.replace(/[\(（)].*$/, '')"
   >
   </BookClassical>
 </template>
@@ -29,11 +29,11 @@
       type: Boolean,
       default: true,
     },
-    BookName: {
+    bookName: {
       type: String,
       default: '',
     },
-    CoverImg: {
+    coverImg: {
       type: String,
       default: '',
     },

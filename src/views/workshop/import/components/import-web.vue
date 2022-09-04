@@ -1,13 +1,8 @@
 <template>
-  <a-modal
-    v-model:visible="visible"
-    title="从网址导入"
-    @cancel="handleCancel"
-    @before-ok="handleBeforeOk"
-  >
+  <a-modal v-model:visible="visible" title="从网址导入">
     <a-form :model="form">
       <a-form-item field="indexUrl" label="网址">
-        <a-textarea v-model="form.indexUrl" aria-rowcount="4" />
+        <a-textarea v-model="form.indexUrl" />
       </a-form-item>
     </a-form>
   </a-modal>

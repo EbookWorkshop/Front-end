@@ -1,7 +1,7 @@
 import { DEFAULT_LAYOUT } from '../base';
 import { AppRouteRecordRaw } from '../types';
 
-const LIBRARY: AppRouteRecordRaw = {
+const WORKSHOP: AppRouteRecordRaw = {
   path: '/workshop',
   name: 'workshop',
   component: DEFAULT_LAYOUT,
@@ -26,7 +26,7 @@ const LIBRARY: AppRouteRecordRaw = {
     {
       path: 'export',
       name: 'export',
-      component: () => import('@/views/workshop/export/index.vue'),
+      component: DEFAULT_LAYOUT,
       meta: {
         locale: 'menu.workshop.export',
         requiresAuth: true,
@@ -34,7 +34,18 @@ const LIBRARY: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
+    {
+      path: 'send',
+      name: 'Send',
+      component: () => import('@/views/workshop/export/index.vue'),
+      meta: {
+        locale: 'menu.workshop.send',
+        requiresAuth: true,
+        icon: 'icon-email',
+        roles: ['*'],
+      },
+    },
   ],
 };
 
-export default LIBRARY;
+export default WORKSHOP;

@@ -1,7 +1,7 @@
 import { DEFAULT_LAYOUT } from '../base';
 import { AppRouteRecordRaw } from '../types';
 
-const LIBRARY: AppRouteRecordRaw = {
+const BOOK: AppRouteRecordRaw = {
   path: '/book',
   name: 'book',
   component: DEFAULT_LAYOUT,
@@ -34,4 +34,4 @@ const LIBRARY: AppRouteRecordRaw = {
   ],
 };
 
-export default LIBRARY;
+export default BOOK;
