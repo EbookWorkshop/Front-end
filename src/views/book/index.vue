@@ -31,8 +31,18 @@
             </a-skeleton>
           </a-col>
         </a-row>
-        <a-row v-else :gutter="[10, 10]" align="stretch" justify="start">
-          <a-col v-for="item in renderData.Index" :key="item.IndexId" :span="4">
+
+        <a-grid
+          :cols="{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }"
+          :col-gap="12"
+          :row-gap="16"
+          class="grid-demo-grid"
+        >
+          <a-grid-item
+            v-for="item in renderData.Index"
+            :key="item.IndexId"
+            class="demo-item"
+          >
             <a-button
               long
               :disabled="!item.IsHasContent"
@@ -40,8 +50,8 @@
               @click="goto(item.IndexId)"
               >{{ item.Title }}
             </a-button>
-          </a-col>
-        </a-row>
+          </a-grid-item>
+        </a-grid>
       </a-col>
     </a-row>
   </div>
