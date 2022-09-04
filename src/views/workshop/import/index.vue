@@ -23,6 +23,17 @@
                 </template>
               </a-upload>
             </a-col>
+            <a-col flex="auto" class="col-align-center">
+              <a-upload action="/ul">
+                <template #upload-button>
+                  <BookClassical
+                    :title-show="'不可编辑格式导入：PDF，Mobi、EPUB等'"
+                    conver-color="#cb1f2f"
+                  >
+                  </BookClassical>
+                </template>
+              </a-upload>
+            </a-col>
           </a-row>
         </a-spin>
       </a-col>
@@ -58,11 +69,11 @@
   // 提交按钮后，向后台发送请求
   const handleBeforeOk = (url: string) => {
     processing.value = true;
+    isShow.value = false;
 
     addANewWebBook(url)
       .then((result) => {
-        Message.success(`添加成功！新书：${result.data.BookName}已入库！`);
-        isShow.value = false;
+        Message.success(`添加成功！新书：《${result.data.BookName}》已入库！`);
       })
       .catch((err) => {
         Message.error(`添加书失败：${err.message}`);

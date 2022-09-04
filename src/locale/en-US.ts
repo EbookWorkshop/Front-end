@@ -1,10 +1,13 @@
 import localeMessageBox from '@/components/message-box/locale/en-US';
 import localeLogin from '@/views/login/locale/en-US';
 
-import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
+// import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 
 import localeLibrary from '@/views/library/list/locale/en-US';
 import localeWorkshop from '@/views/workshop/locale/en-US';
+import localeWorkplace from '@/views/workplace/locale/zh-CN';
+import localeSystem from '@/views/system/locale/zh-CN';
+
 import localeSettings from './en-US/settings';
 
 export default {
@@ -26,6 +29,8 @@ export default {
 
   'menu.library': 'Library',
   'menu.workshop': 'Workshop',
+  'menu.workplace': 'Workplace',
+  'menu.system': 'System Setting',
 
   ...localeSettings,
   ...localeMessageBox,
@@ -33,4 +38,5 @@ export default {
   ...localeWorkplace,
   ...localeLibrary,
   ...localeWorkshop,
+  ...localeSystem,
 };

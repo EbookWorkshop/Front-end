@@ -1,10 +1,13 @@
 import localeMessageBox from '@/components/message-box/locale/zh-CN';
 import localeLogin from '@/views/login/locale/zh-CN';
 
-import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
+// import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
 
 import localeLibrary from '@/views/library/list/locale/zh-CN';
 import localeWorkshop from '@/views/workshop/locale/zh-CN';
+import localeWorkplace from '@/views/workplace/locale/zh-CN';
+import localeSystem from '@/views/system/locale/zh-CN';
+
 import localeSettings from './zh-CN/settings';
 
 export default {
@@ -26,6 +29,8 @@ export default {
 
   'menu.library': '图书馆',
   'menu.workshop': '图书工坊',
+  'menu.workplace': '图书工场',
+  'menu.system': '系统设置',
 
   ...localeSettings,
   ...localeMessageBox,
@@ -33,4 +38,5 @@ export default {
   ...localeWorkplace,
   ...localeLibrary,
   ...localeWorkshop,
+  ...localeSystem,
 };

@@ -26,7 +26,7 @@ const WORKSHOP: AppRouteRecordRaw = {
     {
       path: 'export',
       name: 'export',
-      component: DEFAULT_LAYOUT,
+      component: () => import('@/views/workshop/export/index.vue'),
       meta: {
         locale: 'menu.workshop.export',
         requiresAuth: true,
@@ -37,11 +37,11 @@ const WORKSHOP: AppRouteRecordRaw = {
     {
       path: 'send',
       name: 'Send',
-      component: () => import('@/views/workshop/export/index.vue'),
+      component: () => import('@/views/workplace/index.vue'),
       meta: {
         locale: 'menu.workshop.send',
         requiresAuth: true,
-        icon: 'icon-email',
+        icon: 'icon-send',
         roles: ['*'],
       },
     },
