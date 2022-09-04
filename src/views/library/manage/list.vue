@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.library', 'menu.library.list']" />
-    <BookList :title="$t('menu.library.list')" />
+    <Breadcrumb :items="['menu.library', 'menu.library.manage']" />
+    <BookList :title="$t('menu.library.manage')" :is-edit="true" />
   </div>
 </template>
 

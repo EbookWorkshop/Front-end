@@ -3,7 +3,7 @@ import localeLogin from '@/views/login/locale/zh-CN';
 
 // import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
 
-import localeLibrary from '@/views/library/list/locale/zh-CN';
+import localeLibrary from '@/views/library/locale/zh-CN';
 import localeWorkshop from '@/views/workshop/locale/zh-CN';
 import localeWorkplace from '@/views/workplace/locale/zh-CN';
 import localeSystem from '@/views/system/locale/zh-CN';

@@ -31,6 +31,17 @@ const BOOK: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
+
+    {
+      path: '/bookedit/:id(\\d+)',
+      name: 'BookEdit',
+      component: () => import('@/views/book/index.vue'),
+      meta: {
+        requiresAuth: true,
+        hideInMenu: true,
+        roles: ['*'],
+      },
+    },
   ],
 };
 

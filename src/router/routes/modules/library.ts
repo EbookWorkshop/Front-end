@@ -9,7 +9,7 @@ const LIBRARY: AppRouteRecordRaw = {
     locale: 'menu.library',
     requiresAuth: true,
     // hideChildrenInMenu: true,
-    icon: 'icon-bookmark',
+    icon: 'icon-home',
     order: 2,
   },
   children: [
@@ -19,6 +19,17 @@ const LIBRARY: AppRouteRecordRaw = {
       component: () => import('@/views/library/list/index.vue'),
       meta: {
         locale: 'menu.library.list',
+        requiresAuth: true,
+        icon: 'icon-book',
+        roles: ['*'],
+      },
+    },
+    {
+      path: 'manage',
+      name: 'Manage',
+      component: () => import('@/views/library/manage/list.vue'),
+      meta: {
+        locale: 'menu.library.manage',
         requiresAuth: true,
         icon: 'icon-storage',
         roles: ['*'],

@@ -8,7 +8,7 @@ const WORKSHOP: AppRouteRecordRaw = {
   meta: {
     locale: 'menu.workshop',
     requiresAuth: true,
-    icon: 'icon-translate',
+    icon: 'icon-loop',
     order: 2,
   },
   children: [
