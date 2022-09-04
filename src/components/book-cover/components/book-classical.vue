@@ -3,7 +3,14 @@
     <a-card v-if="loading" :bordered="false" hoverable>
       <slot name="skeleton"></slot>
     </a-card>
-    <a-card v-else :bordered="false" hoverable>
+    <a-card
+      v-else
+      :bordered="false"
+      hoverable
+      :body-style="{
+        backgroundColor: converColor,
+      }"
+    >
       <a-space align="start">
         <a-card-meta>
           <template v-if="isHasSubTitle" #title>
@@ -54,6 +61,17 @@
     hasSubTitle: {
       type: Boolean,
       default: true,
+    },
+    /**
+     * 封面颜色：
+     * + [藏青：#0b3154]
+     * + [红绸：#cb1f2f]
+     * + [白锦：#f2e3a4]
+     * + [青灰：#212f30]
+     */
+    converColor: {
+      type: String,
+      default: '#0b3154',
     },
   });
   let fTitle = '';
@@ -130,10 +148,9 @@
   }
 
   .bookstyle-classical {
-    :deep(.arco-card-body) {
-      background-color: #0b3154;
-    }
-
+    // :deep(.arco-card-body) {
+    //   background-color: #0b3154;
+    // }
     :deep(.arco-card-meta-title) {
       position: absolute;
       top: 50px;
@@ -193,17 +210,19 @@
       left: 0;
       width: 30px;
       height: 100%;
-      border-right: 1px solid lightblue;
+      border-right: 2px solid lightblue;
 
       .binding-line-cross {
+        position: absolute;
+        top: 35px;
         width: 100%;
-        height: 25%;
-        margin-top: 60px;
+        height: 28%;
         border-top: 1px solid lightblue;
         border-bottom: 1px solid lightblue;
 
         &:last-child {
-          margin-bottom: 60px;
+          top: unset;
+          bottom: 35px;
         }
       }
     }

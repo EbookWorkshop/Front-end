@@ -4,30 +4,11 @@
     <a-row :gutter="20" align="stretch" justify="center">
       <a-col :span="2"></a-col>
       <a-col :span="3">
-        <BookWrap
-          v-if="renderData.CoverImg !== null"
+        <BookCover
           :loading="loading"
-          :title="renderData.BookName"
+          :book-name="renderData.BookName"
           :cover-img="renderData.CoverImg"
-        >
-          <a-descriptions
-            style="margin-top: 16px"
-            layout="inline-horizontal"
-            :column="2"
-          />
-        </BookWrap>
-        <BookClassical
-          v-else
-          :loading="loading"
-          :title="renderData.BookName"
-          :title-show="renderData.BookName.replace(/[\(（)].*$/, '')"
-        >
-          <a-descriptions
-            style="margin-top: 16px"
-            layout="inline-horizontal"
-            :column="2"
-          />
-        </BookClassical>
+        ></BookCover>
       </a-col>
       <a-col :span="14">
         <a-row :gutter="20" align="center" justify="center">
@@ -43,15 +24,22 @@
         <!-- 【章节列表】给左边预留一点空位 -->
       </a-col>
       <a-col :span="20">
-        <a-row :gutter="[10, 10]" align="stretch" justify="start">
+        <a-row v-if="loading" :gutter="10">
+          <a-col v-for="i in [1, 2, 3, 4, 5, 6]" :key="i" :span="4">
+            <a-skeleton :animation="true">
+              <a-skeleton-line :rows="4" :line-height="48" :line-spacing="10" />
+            </a-skeleton>
+          </a-col>
+        </a-row>
+        <a-row v-else :gutter="[10, 10]" align="stretch" justify="start">
           <a-col v-for="item in renderData.Index" :key="item.IndexId" :span="4">
             <a-button
               long
-              :loading="!item.IsHasContent"
+              :disabled="!item.IsHasContent"
               class="chapter"
               @click="goto(item.IndexId)"
-              >{{ item.Title }}</a-button
-            >
+              >{{ item.Title }}
+            </a-button>
           </a-col>
         </a-row>
       </a-col>
@@ -63,8 +51,7 @@
   import { useRouter, useRoute } from 'vue-router';
   import { queryBookById, Book, Chapter } from '@/api/book';
   import useRequest from '@/hooks/request';
-  import BookWrap from './components/book-wrap.vue'; // 带封面图书
-  import BookClassical from './components/book-classical.vue'; // 古典线装书风格封面
+  import BookCover from '@/components/book-cover/index.vue';
 
   const route = useRoute();
   const bookid = Number(route.params.id);

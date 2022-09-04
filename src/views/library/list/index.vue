@@ -19,30 +19,12 @@
                 :xxl="3"
                 @click="goto(item.BookId)"
               >
-                <BookWrap
-                  v-if="item.CoverImg !== null"
+                <BookCover
                   :loading="loading"
-                  :title="item.BookName"
+                  :book-name="item.BookName"
                   :cover-img="item.CoverImg"
                 >
-                  <a-descriptions
-                    style="margin-top: 16px"
-                    layout="inline-horizontal"
-                    :column="2"
-                  />
-                </BookWrap>
-                <BookClassical
-                  v-if="item.CoverImg === null"
-                  :loading="loading"
-                  :title="item.BookName"
-                  :title-show="item.BookName.replace(/[\(（)].*$/, '')"
-                >
-                  <a-descriptions
-                    style="margin-top: 16px"
-                    layout="inline-horizontal"
-                    :column="2"
-                  />
-                </BookClassical>
+                </BookCover>
               </a-col>
             </a-row>
           </div>
@@ -56,8 +38,7 @@
   import { queryBookList, Book } from '@/api/library';
   import useRequest from '@/hooks/request';
   import { useRouter, useRoute } from 'vue-router';
-  import BookWrap from '@/views/book/components/book-wrap.vue'; // 带封面图书
-  import BookClassical from '@/views/book/components/book-classical.vue'; // 古典线装书风格封面
+  import BookCover from '@/components/book-cover/index.vue';
 
   const defaultValue: Book[] = new Array(4).fill({});
   /**

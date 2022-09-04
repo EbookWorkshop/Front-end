@@ -15,7 +15,7 @@ const LIBRARY: AppRouteRecordRaw = {
     {
       path: 'import',
       name: 'import',
-      component: () => import('@/views/library/list/index.vue'),
+      component: () => import('@/views/workshop/import/index.vue'),
       meta: {
         locale: 'menu.workshop.import',
         requiresAuth: true,
@@ -26,7 +26,7 @@ const LIBRARY: AppRouteRecordRaw = {
     {
       path: 'export',
       name: 'export',
-      component: () => import('@/views/library/list/index.vue'),
+      component: () => import('@/views/workshop/export/index.vue'),
       meta: {
         locale: 'menu.workshop.export',
         requiresAuth: true,
