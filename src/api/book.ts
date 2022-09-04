@@ -38,3 +38,12 @@ export function queryBookById(id: number) {
 export function queryChapterById(cid: number) {
   return axios.get(`/library/book/chapter?chapterid=${cid}`);
 }
+
+/**
+ * 创建一本书，新书入库
+ * @param url 书目录地址
+ * @returns
+ */
+export function addANewWebBook(url: string) {
+  return axios.post(`/library/webbook`, url);
+}

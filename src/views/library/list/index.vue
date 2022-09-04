@@ -11,12 +11,12 @@
                 v-for="item in renderData"
                 :key="item.BookId"
                 class="list-col"
-                :xs="12"
+                :xs="24"
                 :sm="12"
                 :md="12"
-                :lg="3"
-                :xl="3"
-                :xxl="3"
+                :lg="6"
+                :xl="6"
+                :xxl="4"
                 @click="goto(item.BookId)"
               >
                 <BookCover

@@ -20,7 +20,7 @@ const LIBRARY: AppRouteRecordRaw = {
       meta: {
         locale: 'menu.library.list',
         requiresAuth: true,
-        icon: 'icon-book',
+        icon: 'icon-storage',
         roles: ['*'],
       },
     },

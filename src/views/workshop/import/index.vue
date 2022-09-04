@@ -4,27 +4,73 @@
     <a-row :gutter="20" align="center" justify="start">
       <a-col :span="6"></a-col>
       <a-col :span="12">
-        <a-row :gutter="20" align="center" justify="center">
-          <a-col flex="auto" class="col-align-center">
-            <BookClassical :title-show="'网文导入'"></BookClassical>
-          </a-col>
-          <a-col flex="auto" class="col-align-center">
-            <a-upload action="/ul">
-              <template #upload-button>
-                <BookClassical :title-show="'TXT 导入'" conver-color="#f2e3a4">
-                </BookClassical>
-              </template>
-            </a-upload>
-          </a-col>
-        </a-row>
+        <a-spin :loading="processing" tip="正在处理中，这需要稍等...">
+          <a-row :gutter="20" align="center" justify="center">
+            <a-col flex="auto" class="col-align-center">
+              <BookClassical
+                :title-show="'网文导入'"
+                @click="toImport"
+              ></BookClassical>
+            </a-col>
+            <a-col flex="auto" class="col-align-center">
+              <a-upload action="/ul">
+                <template #upload-button>
+                  <BookClassical
+                    :title-show="'TXT 导入'"
+                    conver-color="#f2e3a4"
+                  >
+                  </BookClassical>
+                </template>
+              </a-upload>
+            </a-col>
+          </a-row>
+        </a-spin>
       </a-col>
     </a-row>
+    <ImportWeb
+      :visible="isShow"
+      @cancel="toImportClose"
+      @ok="toImportClose"
+      @check="handleBeforeOk"
+    >
+    </ImportWeb>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { useRouter, useRoute } from 'vue-router';
+  import { ref, reactive } from 'vue';
+  import { Message, Modal } from '@arco-design/web-vue';
+  // import { useRouter, useRoute } from 'vue-router';
   import BookClassical from '@/components/book-cover/components/book-classical.vue';
+  import { addANewWebBook } from '@/api/book';
+  import ImportWeb from './components/import-web.vue';
+
+  const isShow = ref(false);
+  const toImport = () => {
+    isShow.value = true;
+  };
+  const toImportClose = () => {
+    isShow.value = false;
+  };
+
+  const processing = ref(false); // 处理中窗口
+
+  // 提交按钮后，向后台发送请求
+  const handleBeforeOk = (url: string) => {
+    processing.value = true;
+
+    addANewWebBook(url)
+      .then((result) => {
+        Message.success(`添加成功！新书：${result.data.BookName}已入库！`);
+        isShow.value = false;
+      })
+      .catch((err) => {
+        Message.error(`添加书失败：${err.message}`);
+      })
+      .finally(() => {
+        processing.value = false;
+      });
+  };
 </script>
 
 <style>

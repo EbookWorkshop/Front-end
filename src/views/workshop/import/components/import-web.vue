@@ -1,5 +1,10 @@
 <template>
-  <a-modal v-model:visible="visible" title="从网址导入">
+  <a-modal
+    v-model:visible="visible"
+    title="从网址导入"
+    :on-before-ok="handleBeforeOk"
+    unmount-on-close
+  >
     <a-form :model="form">
       <a-form-item field="indexUrl" label="网址">
         <a-textarea v-model="form.indexUrl" />
@@ -12,33 +17,22 @@
   import { reactive, ref } from 'vue';
 
   export default {
-    setup() {
+    emits: ['check'],
+    setup(props: any, ctx: any) {
       const visible = ref(false);
       const form = reactive({
         indexUrl: '',
       });
 
-      const handleClick = () => {
-        visible.value = true;
-      };
-      const handleBeforeOk = (param: string) => {
-        console.log('组件内部', param);
-        window.setTimeout(() => {
-          // done(true)
-          // prevent close
-          // done(false)
-        }, 1000);
-      };
-      const handleCancel = () => {
-        visible.value = false;
+      const handleBeforeOk = (done: any) => {
+        ctx.emit('check', form.indexUrl);
+        done(false);
       };
 
       return {
         visible,
         form,
-        handleClick,
         handleBeforeOk,
-        handleCancel,
       };
     },
   };
