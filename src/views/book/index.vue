@@ -17,6 +17,15 @@
           </a-col>
           <a-col :span="14"> </a-col>
         </a-row>
+        <a-row>
+          <!-- 书详情页面 -->
+        </a-row>
+        <template v-if="isEdit">
+          <!-- 管理按钮 -->
+          <a-row justify="start">
+            <a-col></a-col>
+          </a-row>
+        </template>
       </a-col>
     </a-row>
     <a-row class="grid-chapter" style="margin-bottom: 16px">
@@ -24,6 +33,7 @@
         <!-- 【章节列表】给左边预留一点空位 -->
       </a-col>
       <a-col :span="20">
+        <!-- loading用的骨架页 -->
         <a-row v-if="loading" :gutter="10">
           <a-col v-for="i in [1, 2, 3, 4, 5, 6]" :key="i" :span="4">
             <a-skeleton :animation="true">
@@ -38,19 +48,53 @@
           :row-gap="16"
           class="grid-demo-grid"
         >
-          <a-grid-item
-            v-for="item in renderData.Index"
-            :key="item.IndexId"
-            class="demo-item"
-          >
-            <a-button
-              long
-              :disabled="!item.IsHasContent"
-              class="chapter"
-              @click="goto(item.IndexId)"
-              >{{ item.Title }}
-            </a-button>
-          </a-grid-item>
+          <template v-if="!isEdit">
+            <!-- 阅读视图 阅读时的章节列表 -->
+            <a-grid-item
+              v-for="item in renderData.Index"
+              :key="item.IndexId"
+              class="reading-index"
+            >
+              <a-button
+                long
+                :disabled="!item.IsHasContent"
+                class="chapter"
+                @click="goto(item.IndexId)"
+                >{{ item.Title }}
+              </a-button>
+            </a-grid-item>
+          </template>
+          <template v-else>
+            <!-- 编辑视图 班级功能时的章节列表 -->
+            <a-grid-item
+              v-for="item in renderData.Index"
+              :key="item.IndexId"
+              class="edit-index"
+            >
+              <a-button-group
+                style="align-items: stretch; width: 100%"
+                :status="item.IsHasContent ? 'normal' : 'warning'"
+                :title="item.Title"
+              >
+                <a-button long type="dashed" class="chapter">
+                  <a-checkbox :value="item.IndexId">{{
+                    item.Title
+                  }}</a-checkbox>
+                </a-button>
+
+                <a-button
+                  type="dashed"
+                  size="large"
+                  style="height: unset !important"
+                  @click="showeditmenu(item.IndexId)"
+                >
+                  <template #icon>
+                    <icon-settings />
+                  </template>
+                </a-button>
+              </a-button-group>
+            </a-grid-item>
+          </template>
         </a-grid>
       </a-col>
     </a-row>
@@ -64,6 +108,11 @@
   import BookCover from '@/components/book-cover/index.vue';
 
   const route = useRoute();
+  const router = useRouter();
+
+  // 是否编辑模式
+  const isEdit = route.path.includes('/bookedit/');
+  // 当前书的ID
   const bookid = Number(route.params.id);
   const queryBook = () => {
     return queryBookById(bookid);
@@ -71,10 +120,12 @@
 
   const { loading, response: renderData } = useRequest<Book>(queryBook);
 
-  const router = useRouter();
   const goto = (chapterId: number) => {
     router.push({ path: `/book/${bookid}/chapter/${chapterId}` });
   };
+
+  /** ****下面是编辑模式专有****** */
+  const showeditmenu = (chapterId: number) => {};
 </script>
 
 <style>
