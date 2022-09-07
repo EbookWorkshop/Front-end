@@ -43,7 +43,7 @@
                   <icon-loop />同步目录
                 </a-button>
 
-                <a-badge :count="chapterHasCheckedNum">
+                <a-badge :max-count="20000" :count="chapterHasCheckedNum">
                   <a-button-group status="warning" style="align-items: stretch">
                     <a-button type="primary" size="large">
                       <a-checkbox value="all-empty" @change="checkEmptyChapter"
