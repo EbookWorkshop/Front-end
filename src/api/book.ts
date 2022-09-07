@@ -47,3 +47,17 @@ export function queryChapterById(cid: number) {
 export function addANewWebBook(url: string) {
   return axios.post(`/library/webbook`, url);
 }
+
+/**
+ * 更新指定的章节
+ * @param bookid 需要更新的书
+ * @param chapterIds 要更新的章节Id
+ * @returns
+ */
+export function updateChapter(bookid: number, chapterIds: number[]) {
+  return axios.patch(`/library/webbook/updatechapter`, {
+    bookId: bookid,
+    chapterIds,
+    isUpdate: false,
+  });
+}
