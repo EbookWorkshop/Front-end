@@ -2,7 +2,11 @@
   <div class="navbar">
     <div class="left-side">
       <a-space>
-        <img alt="logo" src="/src/assets/logo.svg" width="32" />
+        <img
+          alt="logo"
+          :src="`/src/assets/logo${isDark ? '-dark' : ''}.svg`"
+          width="32"
+        />
         <a-typography-title
           :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
