@@ -24,6 +24,17 @@ const SYSTEM: AppRouteRecordRaw = {
       },
     },
     {
+      path: 'email',
+      name: 'Email',
+      component: () => import('@/views/system/kindlemail.vue'),
+      meta: {
+        locale: 'menu.system.email_kindle',
+        icon: 'icon-mobile',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
+    {
       path: 'webrule',
       name: 'webrule',
       component: () => import('@/views/system/index.vue'),
