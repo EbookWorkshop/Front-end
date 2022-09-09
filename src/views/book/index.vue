@@ -91,7 +91,7 @@
         <!-- loading用的骨架页 -->
         <a-row v-if="loading" :gutter="10">
           <a-col v-for="i in [1, 2, 3, 4, 5, 6]" :key="i" :span="4">
-            <a-skeleton :animation="true">
+            <a-skeleton :animation="loading">
               <a-skeleton-line :rows="4" :line-height="48" :line-spacing="10" />
             </a-skeleton>
           </a-col>
@@ -120,7 +120,7 @@
             </a-grid-item>
           </template>
           <template v-else>
-            <!-- 编辑视图 班级功能时的章节列表 -->
+            <!-- 编辑视图 编辑功能时的章节列表 -->
             <a-grid-item
               v-for="item in renderData.Index"
               :key="item.IndexId"
@@ -157,12 +157,18 @@
         </a-grid>
       </a-col>
     </a-row>
+
+    <a-back-top
+      target-container=".grid-chapter"
+      :style="{ position: 'absolute' }"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
   import { ref, reactive } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
+  import { Message, Modal } from '@arco-design/web-vue';
   import { queryBookById, updateChapter, Book, Chapter } from '@/api/book';
   import useRequest from '@/hooks/request';
   import BookCover from '@/components/book-cover/index.vue';
@@ -242,8 +248,24 @@
     indexOptionMap.forEach((i: any, key: any) => {
       if (i.isCheck) chapterOnCheck.push(key);
     });
+    if (chapterOnCheck.length !== 0)
+      Message.loading(`已选中${chapterOnCheck.length}章，正在开始尝试获取。`);
+    else
+      Message.error(`没选中任何章节，请先勾选需要选获取的章节，然后再开始。`);
 
-    updateChapter(bookid, chapterOnCheck);
+    updateChapter(bookid, chapterOnCheck)
+      .then((result) => {
+        Message.success('所有章节已处理完毕！');
+        result.data.map((cid: number | any) => {
+          const option = indexOptionMap.get(cid);
+          option.isHasContent = true; // 不知道为何不生效，完成后不会切换样式
+          option.isCheck = false;
+          return cid;
+        });
+      })
+      .catch((err) => {
+        Message.error(`获取章节失败：${err}`);
+      });
   };
 
   // 只读模式下的打开章节

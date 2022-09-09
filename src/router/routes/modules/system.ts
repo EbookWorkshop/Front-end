@@ -15,7 +15,7 @@ const SYSTEM: AppRouteRecordRaw = {
     {
       path: 'smtp',
       name: 'smtp',
-      component: () => import('@/views/system/index.vue'),
+      component: () => import('@/views/system/smtpsetting.vue'),
       meta: {
         locale: 'menu.system.smtp',
         icon: 'icon-email',
