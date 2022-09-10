@@ -37,7 +37,7 @@ const SYSTEM: AppRouteRecordRaw = {
     {
       path: 'webrule',
       name: 'webrule',
-      component: () => import('@/views/system/index.vue'),
+      component: () => import('@/views/system/webrule/index.vue'),
       meta: {
         locale: 'menu.system.webrule',
         icon: 'icon-robot',

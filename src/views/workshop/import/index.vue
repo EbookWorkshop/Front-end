@@ -13,7 +13,7 @@
               ></BookClassical>
             </a-col>
             <a-col flex="auto" class="col-align-center">
-              <a-upload action="/ul">
+              <a-upload action="/upload/importBook">
                 <template #upload-button>
                   <BookClassical
                     :title-show="'TXT 导入'"
@@ -24,7 +24,7 @@
               </a-upload>
             </a-col>
             <a-col flex="auto" class="col-align-center">
-              <a-upload action="/ul">
+              <a-upload action="/upload/importBook/pdf">
                 <template #upload-button>
                   <BookClassical
                     :title-show="'不可编辑格式导入：PDF，Mobi、EPUB等'"
