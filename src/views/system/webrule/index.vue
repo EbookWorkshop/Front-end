@@ -14,9 +14,17 @@
                 >保存当前方案</a-button
               >
             </a-affix>
-            <a-button type="primary" status="danger" @click="DeleteIt"
-              >删除当前方案</a-button
+            <a-popconfirm
+              content="你确定要删除当前站点配置？这将无法恢复。"
+              type="warning"
+              @ok="DeleteIt"
             >
+              <a-button type="primary" status="danger">删除当前方案</a-button>
+            </a-popconfirm>
+            <a-button-group>
+              <a-button type="primary">导出当前方案（json）</a-button>
+              <a-button type="primary">导入当前方案（json）</a-button>
+            </a-button-group>
           </a-space>
         </a-col>
       </a-row>
@@ -64,6 +72,7 @@
               :label="rule.ruleShowName"
             >
               <a-space direction="vertical" fill style="width: 100%">
+                <a-divider />
                 <input v-model="rule.ruleName" type="hidden" />
                 <a-form-item
                   label="选择器"

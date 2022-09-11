@@ -15,7 +15,7 @@ const WORKPLACE: AppRouteRecordRaw = {
     {
       path: 'correction',
       name: 'correction', // 改错别字
-      component: () => import('@/views/workplace/index.vue'),
+      component: () => import('@/views/workplace/reviewrule.vue'),
       meta: {
         icon: 'icon-find-replace',
         locale: 'menu.workplace.correction',
