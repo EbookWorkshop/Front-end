@@ -3,7 +3,7 @@ import { AppRouteRecordRaw } from '../types';
 
 const LIBRARY: AppRouteRecordRaw = {
   path: '/library',
-  name: 'library',
+  name: 'Library',
   component: DEFAULT_LAYOUT,
   meta: {
     locale: 'menu.library',
@@ -14,8 +14,8 @@ const LIBRARY: AppRouteRecordRaw = {
   },
   children: [
     {
-      path: 'list',
-      name: 'List',
+      path: 'booklist',
+      name: 'BookList',
       component: () => import('@/views/library/list/index.vue'),
       meta: {
         locale: 'menu.library.list',

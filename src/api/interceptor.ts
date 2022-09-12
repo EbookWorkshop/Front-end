@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Message, Modal } from '@arco-design/web-vue';
-import { useUserStore } from '@/store';
+// import { useUserStore } from '@/store';
 import { getToken } from '@/utils/auth';
 
 // 全局的接口返回格式
