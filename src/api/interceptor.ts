@@ -39,7 +39,16 @@ axios.interceptors.request.use(
 // add response interceptors
 axios.interceptors.response.use(
   (response: AxiosResponse<HttpResponse>) => {
-    return response;
+    const res = response.data;
+    // if the custom code is not 20000, it is judged as an error.
+    if (res.code !== 20000) {
+      Message.error({
+        content: res.msg || '未知错误',
+        duration: 5 * 1000,
+      });
+      return Promise.reject(new Error(res.msg || 'Error'));
+    }
+    return res;
   },
   (error) => {
     Message.error({
