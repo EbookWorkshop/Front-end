@@ -3,7 +3,7 @@
     <Breadcrumb :items="['menu.workplace', 'menu.workplace.correction']" />
     <a-divider />
     <a-space>
-      <a-button @click="createNewRule">添加</a-button>
+      <a-button status="success" @click="createNewRule">添加</a-button>
     </a-space>
     <a-table :columns="columns" :data="renderData" :loading="tableLoading">
       <template #optional="{ record }">
