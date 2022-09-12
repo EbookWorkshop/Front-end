@@ -1,42 +1,36 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['menu.workshop', 'menu.workshop.import']" />
-    <a-row :gutter="20" align="center" justify="start">
-      <a-col :span="6"></a-col>
-      <a-col :span="12">
-        <a-spin :loading="processing" tip="正在处理中，这需要稍等...">
-          <a-row :gutter="20" align="center" justify="center">
-            <a-col flex="auto" class="col-align-center">
-              <BookClassical
-                :title-show="'网文导入'"
-                @click="toImport"
-              ></BookClassical>
-            </a-col>
-            <a-col flex="auto" class="col-align-center">
-              <a-upload action="/upload/importBook">
-                <template #upload-button>
-                  <BookClassical
-                    :title-show="'TXT 导入'"
-                    conver-color="#f2e3a4"
-                  >
-                  </BookClassical>
-                </template>
-              </a-upload>
-            </a-col>
-            <a-col flex="auto" class="col-align-center">
-              <a-upload action="/upload/importBook/pdf">
-                <template #upload-button>
-                  <BookClassical
-                    :title-show="'不可编辑格式导入：PDF，Mobi、EPUB等'"
-                    conver-color="#cb1f2f"
-                  >
-                  </BookClassical>
-                </template>
-              </a-upload>
-            </a-col>
-          </a-row>
-        </a-spin>
-      </a-col>
+    <a-row justify="center">
+      <a-spin :loading="processing" tip="正在处理中，这需要稍等...">
+        <a-row align="center" justify="center">
+          <a-col :span="8" flex="auto" class="col-align-center">
+            <BookClassical
+              :title-show="'网文导入'"
+              @click="toImport"
+            ></BookClassical>
+          </a-col>
+          <a-col :span="8" flex="auto" class="col-align-center">
+            <a-upload action="/upload/importBook">
+              <template #upload-button>
+                <BookClassical :title-show="'TXT 导入'" conver-color="#f2e3a4">
+                </BookClassical>
+              </template>
+            </a-upload>
+          </a-col>
+          <a-col :span="8" flex="auto" class="col-align-center">
+            <a-upload action="/upload/importBook/pdf">
+              <template #upload-button>
+                <BookClassical
+                  :title-show="'不可编辑格式导入：PDF，Mobi、EPUB等'"
+                  conver-color="#cb1f2f"
+                >
+                </BookClassical>
+              </template>
+            </a-upload>
+          </a-col>
+        </a-row>
+      </a-spin>
     </a-row>
     <ImportWeb
       :visible="isShow"
