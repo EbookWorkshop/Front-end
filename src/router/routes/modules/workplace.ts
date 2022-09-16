@@ -15,13 +15,37 @@ const WORKPLACE: AppRouteRecordRaw = {
     {
       path: 'correction',
       name: 'correction', // 改错别字
-      component: () => import('@/views/workplace/reviewrule.vue'),
+      component: DEFAULT_LAYOUT,
       meta: {
         icon: 'icon-find-replace',
         locale: 'menu.workplace.correction',
         requiresAuth: true,
         roles: ['*'],
       },
+      children: [
+        {
+          path: 'reviewrule',
+          name: 'Reviewrule', // 改错别字
+          component: () => import('@/views/workplace/reviewrule.vue'),
+          meta: {
+            icon: 'icon-list',
+            locale: 'menu.workplace.correction.reviewrule',
+            requiresAuth: true,
+            roles: ['*'],
+          },
+        },
+        {
+          path: 'bookandrule',
+          name: 'BookAndRule', // 改错别字
+          component: () => import('@/views/workplace/bookandrule.vue'),
+          meta: {
+            icon: 'icon-select-all',
+            locale: 'menu.workplace.correction.bookandrule',
+            requiresAuth: true,
+            roles: ['*'],
+          },
+        },
+      ],
     },
     {
       path: 'readtypeset',

@@ -5,7 +5,7 @@
         :items="[
           'menu.workplace',
           'menu.workplace.correction',
-          'menu.workplace.correction.reviewrule',
+          'menu.workplace.correction.bookandrule',
         ]"
       />
       <a-divider />
@@ -51,33 +51,30 @@
   import { reactive, ref } from 'vue';
   import useRequest from '@/hooks/request';
   import {
-    queryReviewRuleList,
+    queryReviewRuleUsingList,
     updateReviewRule,
     deleteReviewRule,
-    Rule,
+    RuleAndBook,
   } from '@/api/workplace';
   import { Message } from '@arco-design/web-vue';
 
   const columns = [
     {
-      title: '规则描述',
-      dataIndex: 'Name',
+      title: '书名',
+      dataIndex: 'bookName',
     },
     {
       title: '规则',
-      dataIndex: 'Rule',
-    },
-    {
-      title: '替换内容',
-      dataIndex: 'Replace',
+      dataIndex: 'ruleName',
     },
     {
       title: '操作',
       slotName: 'optional',
     },
   ];
-  const { loading: tableLoading, response: renderData } =
-    useRequest<Rule[]>(queryReviewRuleList);
+  const { loading: tableLoading, response: renderData } = useRequest<
+    RuleAndBook[]
+  >(queryReviewRuleUsingList);
 
   const visible = ref(false);
   const form = reactive({
@@ -102,7 +99,7 @@
    */
   const TableReload = () => {
     tableLoading.value = true;
-    queryReviewRuleList()
+    queryReviewRuleUsingList()
       .then((result) => {
         renderData.value = result.data;
       })

@@ -24,3 +24,21 @@ export function updateReviewRule(rule: any) {
 export function deleteReviewRule(id: number) {
   return axios.delete(`/review/rule?id=${id}`);
 }
+
+/**
+ * 每本书和规则的情况
+ */
+export interface RuleAndBook {
+  id: number;
+  bookId: number;
+  bookName: string;
+  ruleId: number;
+  ruleName: string;
+}
+/**
+ * 书引用规则的情况看
+ * @returns
+ */
+export function queryReviewRuleUsingList() {
+  return axios.get(`/review/bookwithrule/list`);
+}
