@@ -78,7 +78,11 @@
           </a-row>
           <a-row justify="start">
             <a-col>
-              <a-button type="outline" size="large">
+              <a-button
+                type="outline"
+                size="large"
+                @click="goToSendSelectedChapter"
+              >
                 <icon-mobile />发送到默认邮箱账户
               </a-button>
             </a-col>
@@ -169,7 +173,13 @@
   import { ref, reactive } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
   import { Message, Modal } from '@arco-design/web-vue';
-  import { queryBookById, updateChapter, Book, Chapter } from '@/api/book';
+  import {
+    queryBookById,
+    updateChapter,
+    createPDF,
+    Book,
+    Chapter,
+  } from '@/api/book';
   import useRequest from '@/hooks/request';
   import BookCover from '@/components/book-cover/index.vue';
 
@@ -196,6 +206,27 @@
       indexOptionMap.set(i.IndexId, temOption);
       return i;
     });
+  }
+
+  /**
+   * 实际爬章节
+   * @param bookid 当前书ID
+   * @param chapterIds 需要爬的章节ID
+   */
+  function GetChapterContent(bookid: number, chapterIds: number[]) {
+    return updateChapter(bookid, chapterIds)
+      .then((result) => {
+        Message.success('所有章节已处理完毕！');
+        result.data.map((cid: number | any) => {
+          const option = indexOptionMap.get(cid);
+          option.isHasContent = true; // 不知道为何不生效，完成后不会切换样式
+          option.isCheck = false;
+          return cid;
+        });
+      })
+      .catch((err) => {
+        Message.error(`获取章节失败：${err}`);
+      });
   }
 
   // 每一个章节是否选中时触发
@@ -253,18 +284,33 @@
     else
       Message.error(`没选中任何章节，请先勾选需要选获取的章节，然后再开始。`);
 
-    updateChapter(bookid, chapterOnCheck)
+    GetChapterContent(bookid, chapterOnCheck);
+  };
+
+  // 爬=>打包=>发到邮箱
+  const goToSendSelectedChapter = async () => {
+    const chapterIsEmpty: number[] = []; // 没内容的章节
+    const chapterOnCheck: number[] = []; // 全部已选章节
+    indexOptionMap.forEach((i: any, key: any) => {
+      if (i.isCheck) {
+        if (!i.isHasContent) chapterIsEmpty.push(key);
+        chapterOnCheck.push(key);
+      }
+    });
+
+    if (chapterIsEmpty.length > 0) {
+      Message.warning(
+        `共${chapterIsEmpty.length}章还没有正文，先尝试获取章节内容。`
+      );
+      await GetChapterContent(bookid, chapterOnCheck);
+    }
+    Message.loading(`开始生成PDF`);
+    createPDF(bookid, chapterOnCheck, true)
       .then((result) => {
-        Message.success('所有章节已处理完毕！');
-        result.data.map((cid: number | any) => {
-          const option = indexOptionMap.get(cid);
-          option.isHasContent = true; // 不知道为何不生效，完成后不会切换样式
-          option.isCheck = false;
-          return cid;
-        });
+        Message.success(`已通过邮件发送：《${result.data.book.filename}》`);
       })
       .catch((err) => {
-        Message.error(`获取章节失败：${err}`);
+        Message.error(`生成PDF的时候出现错误：${err}`);
       });
   };
 

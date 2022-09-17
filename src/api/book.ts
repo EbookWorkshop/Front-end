@@ -61,3 +61,21 @@ export function updateChapter(bookid: number, chapterIds: number[]) {
     isUpdate: false,
   });
 }
+
+/**
+ * 制作pdf——并且发到默认邮箱
+ * @param bookid
+ * @param chapterIds
+ * @returns
+ */
+export function createPDF(
+  bookid: number,
+  chapterIds: number[],
+  isSendEmail: boolean
+) {
+  return axios.post(`/library/pdf`, {
+    bookId: bookid,
+    chapterIds,
+    sendByEmail: isSendEmail,
+  });
+}
