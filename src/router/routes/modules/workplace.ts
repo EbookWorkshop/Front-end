@@ -25,7 +25,7 @@ const WORKPLACE: AppRouteRecordRaw = {
       children: [
         {
           path: 'reviewrule',
-          name: 'Reviewrule', // 改错别字
+          name: 'Reviewrule',
           component: () => import('@/views/workplace/reviewrule.vue'),
           meta: {
             icon: 'icon-list',
@@ -36,7 +36,7 @@ const WORKPLACE: AppRouteRecordRaw = {
         },
         {
           path: 'bookandrule',
-          name: 'BookAndRule', // 改错别字
+          name: 'BookAndRule',
           component: () => import('@/views/workplace/bookandrule.vue'),
           meta: {
             icon: 'icon-select-all',
