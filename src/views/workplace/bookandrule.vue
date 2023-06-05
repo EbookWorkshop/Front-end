@@ -24,36 +24,34 @@
         </template>
       </a-table>
     </div>
-    <template>
-      <a-modal
-        v-model:visible="visible"
-        title="添加规则引用"
-        @before-ok="handleBeforeOk"
-      >
-        <a-form :model="form">
-          <a-form-item field="book" label="书">
-            <SelectBook v-model="form.bookid" />
-          </a-form-item>
-          <a-form-item field="name" label="校正规则">
-            <a-select
-              :style="{ width: '100%' }"
-              size="large"
-              placeholder="请选应用规则"
-              :loading="ruleLoading"
-              allow-search
+    <a-modal
+      v-model:visible="visible"
+      title="添加规则引用"
+      @before-ok="handleBeforeOk"
+    >
+      <a-form :model="form">
+        <a-form-item field="book" label="书">
+          <SelectBook v-model="form.bookid" />
+        </a-form-item>
+        <a-form-item field="name" label="校正规则">
+          <a-select
+            :style="{ width: '100%' }"
+            size="large"
+            placeholder="请选应用规则"
+            :loading="ruleLoading"
+            allow-search
+          >
+            <a-option
+              v-for="r in ruleListData"
+              :key="r.id"
+              :value="r.id"
+              :title="r.Rule"
+              >{{ r.Name }}</a-option
             >
-              <a-option
-                v-for="r in ruleListData"
-                :key="r.id"
-                :value="r.id"
-                :title="r.Rule"
-                >{{ r.Name }}</a-option
-              >
-            </a-select>
-          </a-form-item>
-        </a-form>
-      </a-modal>
-    </template>
+          </a-select>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
@@ -158,7 +156,7 @@
 
   const editRow = (data: any) => {
     visible.value = true;
-    // form.bookid = data.bookid,
-    // form.ruleid = data.ruleid
+    form.bookid = data.bookid;
+    form.ruleid = data.ruleid;
   };
 </script>
