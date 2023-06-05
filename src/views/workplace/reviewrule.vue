@@ -60,7 +60,7 @@
 
   const columns = [
     {
-      title: '规则描述',
+      title: '规则名称',
       dataIndex: 'Name',
     },
     {

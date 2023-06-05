@@ -1,10 +1,14 @@
 import axios from 'axios';
 
+/**
+ * 校阅规则
+ */
 export interface Rule {
-  id: number;
-  Name: string;
-  Rule: string;
+  id: number; // 规则id
+  Name: string; // 规则名称
+  Rule: string; // 校阅内容
 }
+export type RuleListType = Rule[];
 
 /**
  * 取得所有自动校阅的规则

@@ -80,7 +80,7 @@
       <li>
         <a-tooltip :content="$t('settings.navbar.alerts')">
           <div class="message-box-trigger">
-            <a-badge :count="9" dot>
+            <a-badge :count="0" dot>
               <a-button
                 class="nav-btn"
                 type="outline"
