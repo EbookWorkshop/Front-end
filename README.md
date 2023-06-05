@@ -27,3 +27,18 @@
 │   └── main.ts  # 入口文件
 └── tsconfig.json
 ```
+
+## 初始化安装
+```
+npm install --registry=https://registry.npmmirror.com
+```
+
+## 启动
+```bat
+npm run dev
+```
+
+## TODO List
+* 发邮件时选章节得一个一个选
+* 选后面的章节后，得滚动页面到最开始操作发送邮件
+* 书添加校阅规则
