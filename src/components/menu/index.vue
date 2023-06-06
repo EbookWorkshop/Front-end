@@ -1,4 +1,7 @@
 <script lang="tsx">
+  /**
+   * 右侧树状菜单
+   */
   import { defineComponent, ref, h, compile, computed } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useRoute, useRouter, RouteRecordRaw } from 'vue-router';
@@ -62,7 +65,8 @@
           }
           if (item.children?.length) {
             item.children.forEach((el) => {
-              backtrack(el, [...keys], target);
+              const selectKey = new Set([...keys, el.name as string]);
+              backtrack(el, [...selectKey], target);
             });
           }
         };
@@ -153,6 +157,7 @@
       display: flex;
       align-items: center;
     }
+
     .arco-icon {
       &:not(.arco-icon-down) {
         font-size: 18px;

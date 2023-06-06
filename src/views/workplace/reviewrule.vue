@@ -24,26 +24,24 @@
         </template>
       </a-table>
     </div>
-    <template>
-      <a-modal
-        v-model:visible="visible"
-        title="设置规则"
-        @before-ok="handleBeforeOk"
-      >
-        <a-form :model="form">
-          <input type="hidden" :value="form.id" />
-          <a-form-item field="name" label="规则名">
-            <a-input v-model="form.name" />
-          </a-form-item>
-          <a-form-item field="rule" label="查找内容">
-            <a-textarea v-model="form.rule"></a-textarea>
-          </a-form-item>
-          <a-form-item field="replace" label="替换内容">
-            <a-textarea v-model="form.replace"></a-textarea>
-          </a-form-item>
-        </a-form>
-      </a-modal>
-    </template>
+    <a-modal
+      v-model:visible="visible"
+      title="设置规则"
+      @before-ok="handleBeforeOk"
+    >
+      <a-form :model="form">
+        <input type="hidden" :value="form.id" />
+        <a-form-item field="name" label="规则名">
+          <a-input v-model="form.name" />
+        </a-form-item>
+        <a-form-item field="rule" label="查找内容">
+          <a-textarea v-model="form.rule"></a-textarea>
+        </a-form-item>
+        <a-form-item field="replace" label="替换内容">
+          <a-textarea v-model="form.replace"></a-textarea>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
