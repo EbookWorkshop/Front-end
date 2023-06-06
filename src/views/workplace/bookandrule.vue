@@ -31,13 +31,14 @@
     >
       <a-form :model="form">
         <a-form-item field="book" label="书">
-          <SelectBook v-model="form.bookid" />
+          <SelectBook v-model="form.bookId" />
         </a-form-item>
         <a-form-item field="name" label="校正规则">
           <a-select
+            v-model="form.ruleId"
             :style="{ width: '100%' }"
             size="large"
-            placeholder="请选应用规则"
+            placeholder="请选校阅规则"
             :loading="ruleLoading"
             allow-search
           >
@@ -63,8 +64,8 @@
     // api
     queryReviewRuleUsingList,
     queryReviewRuleList,
-    updateReviewRule,
-    deleteReviewRule,
+    updateReviewRuleForBook,
+    deleteReviewRuleForBook,
 
     // type
     RuleAndBook,
@@ -101,16 +102,16 @@
 
   const visible = ref(false);
   const form = reactive({
-    bookid: '',
-    ruleid: '',
+    bookId: '',
+    ruleId: '',
   });
 
   /**
    * 添加新规则
    */
   const createNewRule = () => {
-    form.bookid = '';
-    form.ruleid = '';
+    form.bookId = '';
+    form.ruleId = '';
     visible.value = true;
   };
   /**
@@ -131,7 +132,7 @@
    * 保存提交
    */
   const handleBeforeOk = (callback: any) => {
-    updateReviewRule(form)
+    updateReviewRuleForBook(form)
       .then(() => {
         callback(true);
         TableReload();
@@ -145,7 +146,7 @@
    * 删除规则
    */
   const deleteRule = (id: number) => {
-    deleteReviewRule(id)
+    deleteReviewRuleForBook(id)
       .then(() => {
         TableReload();
       })
@@ -153,10 +154,13 @@
         Message.error(`删除失败：${err}`);
       });
   };
-
+  /**
+   * 修改规则
+   * @param data
+   */
   const editRow = (data: any) => {
     visible.value = true;
-    form.bookid = data.bookid;
-    form.ruleid = data.ruleid;
+    form.bookId = data.bookId;
+    form.ruleId = data.ruleId;
   };
 </script>

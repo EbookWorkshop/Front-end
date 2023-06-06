@@ -37,6 +37,12 @@ npm install --registry=https://registry.npmmirror.com
 ```bat
 npm run dev
 ```
+前后端一起启动（需要在公共的父级目录执行）
+```
+wt --maximized -d %cd%\\EBWFrontEnd PowerShell -c npm run dev;split-pane -d %cd%\\EbookWorkshop node --inspect app
+```
+>  --inspect 参数用于远程附加
+
 
 ## TODO List
 * 发邮件时选章节得一个一个选

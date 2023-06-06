@@ -46,3 +46,14 @@ export interface RuleAndBook {
 export function queryReviewRuleUsingList() {
   return axios.get(`/review/bookwithrule/list`);
 }
+/**
+ * 更新图书使用的校阅规则
+ * @param setting
+ * @returns
+ */
+export function updateReviewRuleForBook(setting: any) {
+  return axios.post('/review/bookwithrule', setting);
+}
+export function deleteReviewRuleForBook(id: number) {
+  return axios.delete(`/review/bookwithrule?id=${id}`);
+}
