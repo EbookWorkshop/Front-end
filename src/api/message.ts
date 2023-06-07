@@ -9,7 +9,7 @@ export interface MessageRecord {
   content: string;
   time: string;
   status: 0 | 1;
-  messageType?: number; // ��src\components\message-box\list.vue::template::#extra ��ʹ��
+  messageType?: number; // 在src\components\message-box\list.vue::template::#extra 中使用
 }
 export type MessageListType = MessageRecord[];
 
@@ -18,10 +18,10 @@ export function queryMessageList() {
   const m: MessageRecord = {
     id: 0,
     type: 'message',
-    title: 'Kindle�й������ڽ���6��30�չرգ�',
+    title: 'Kindle中国服务将于今年6月30日关闭！',
     subTitle: '',
-    content: '����',
-    time: '2023��6��5��',
+    content: '如题',
+    time: '2023年6月5日',
     status: 0,
   };
 

@@ -38,38 +38,31 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
   import { reactive } from 'vue';
   import { getSMTPServer, saveSMTPServer } from '@/api/system';
   import { Message } from '@arco-design/web-vue';
 
-  export default {
-    setup() {
-      const form = reactive({
-        email: '',
-        post: '',
-        isRead: false,
-      });
-      getSMTPServer().then((result: any) => {
-        // console.log(result);
-        form.email = result.data?.address;
-        form.post = result.data?.password;
-      });
-      const handleSubmit = (data: object) => {
-        Message.loading('已提交，请稍候...');
-        saveSMTPServer(form.email, form.post)
-          .then((rsl: any) => {
-            Message.success('邮箱服务器信息保存成功！');
-          })
-          .catch((err: any) => {
-            Message.error(`保存失败：${err}`);
-          });
-      };
+  const form = reactive({
+    email: '',
+    post: '',
+    isRead: false,
+  });
 
-      return {
-        form,
-        handleSubmit,
-      };
-    },
-  };
+  getSMTPServer().then((result: any) => {
+    // console.log(result);
+    form.email = result.data?.address;
+    form.post = result.data?.password;
+  });
+
+  function handleSubmit(data: object) {
+    Message.loading('已提交，请稍候...');
+    saveSMTPServer(form.email, form.post)
+      .then((rsl: any) => {
+        Message.success('邮箱服务器信息保存成功！');
+      })
+      .catch((err: any) => {
+        Message.error(`保存失败：${err}`);
+      });
+  }
 </script>

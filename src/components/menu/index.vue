@@ -1,6 +1,6 @@
 <script lang="tsx">
   /**
-   * �Ҳ���״�˵�
+   * 右侧树状菜单
    */
   import { defineComponent, ref, h, compile, computed } from 'vue';
   import { useI18n } from 'vue-i18n';
