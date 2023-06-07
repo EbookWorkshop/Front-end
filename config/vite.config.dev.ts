@@ -12,6 +12,7 @@ export default mergeConfig(
       },
     },
     plugins: [
+      // 关掉了dev模式运行时，控台里的eslint提示
       // eslint({
       //   cache: false,
       //   include: ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.vue'],

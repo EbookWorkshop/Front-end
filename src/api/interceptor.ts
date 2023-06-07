@@ -4,7 +4,7 @@ import { Message, Modal } from '@arco-design/web-vue';
 // import { useUserStore } from '@/store';
 import { getToken } from '@/utils/auth';
 
-// 全局的接口返回格式
+// ȫ�ֵĽӿڷ��ظ�ʽ
 export interface HttpResponse<T = unknown> {
   status: number;
   msg: string;
@@ -43,7 +43,7 @@ axios.interceptors.response.use(
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 20000) {
       Message.error({
-        content: res.msg || '未知错误',
+        content: res.msg || 'δ֪����',
         duration: 5 * 1000,
       });
       return Promise.reject(new Error(res.msg || 'Error'));
@@ -52,7 +52,7 @@ axios.interceptors.response.use(
   },
   (error) => {
     Message.error({
-      content: error.msg || '请求错误',
+      content: error.msg || '�������',
       duration: 5 * 1000,
     });
     return Promise.reject(error);

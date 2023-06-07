@@ -1,3 +1,6 @@
+# EBook WorkShop Front End
+基于 Arco Design Vue 搭建的个人图书管理平台前端。
+
 
 
 ## 目录结构
@@ -27,6 +30,14 @@
 │   └── main.ts  # 入口文件
 └── tsconfig.json
 ```
+
+## Arco Design Vue 搭建(已完成)
+使用arco-cli搭建：
+```
+npm i -g arco-cli --registry=https://registry.npmmirror.com
+arco init EbookWorkshop-FrontEnd
+```
+ArcoDesignVue已更新到v2.8.0
 
 ## 初始化安装
 ```

@@ -14,11 +14,14 @@
           Ebook Workshop
         </a-typography-title>
         <icon-menu-fold
-          v-if="appStore.device === 'mobile'"
+          v-if="!topMenu && appStore.device === 'mobile'"
           style="font-size: 22px; cursor: pointer"
           @click="toggleDrawerMenu"
         />
       </a-space>
+    </div>
+    <div class="center-side">
+      <Menu v-if="topMenu" />
     </div>
     <ul class="right-side">
       <li>
@@ -51,6 +54,9 @@
               :key="item.value"
               :value="item.value"
             >
+              <template #icon>
+                <icon-check v-show="item.value === currentLocale" />
+              </template>
               {{ item.label }}
             </a-doption>
           </template>
@@ -195,12 +201,13 @@
   import { LOCALE_OPTIONS } from '@/locale';
   import useLocale from '@/hooks/locale';
   import useUser from '@/hooks/user';
+  import Menu from '@/components/menu/index.vue';
   import MessageBox from '../message-box/index.vue';
 
   const appStore = useAppStore();
   const userStore = useUserStore();
   const { logout } = useUser();
-  const { changeLocale } = useLocale();
+  const { changeLocale, currentLocale } = useLocale();
   const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
   const locales = [...LOCALE_OPTIONS];
   const avatar = computed(() => {
@@ -209,6 +216,7 @@
   const theme = computed(() => {
     return appStore.theme;
   });
+  const topMenu = computed(() => appStore.topMenu && appStore.menu);
   const isDark = useDark({
     selector: 'body',
     attribute: 'arco-theme',
@@ -252,7 +260,7 @@
     const res = await userStore.switchRoles();
     Message.success(res as string);
   };
-  const toggleDrawerMenu = inject('toggleDrawerMenu');
+  const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
 </script>
 
 <style scoped lang="less">
@@ -270,15 +278,17 @@
     padding-left: 20px;
   }
 
+  .center-side {
+    flex: 1;
+  }
+
   .right-side {
     display: flex;
     padding-right: 20px;
     list-style: none;
-
     :deep(.locale-select) {
       border-radius: 20px;
     }
-
     li {
       display: flex;
       align-items: center;
@@ -289,19 +299,16 @@
       color: var(--color-text-1);
       text-decoration: none;
     }
-
     .nav-btn {
+      border-color: rgb(var(--gray-2));
       color: rgb(var(--gray-8));
       font-size: 16px;
-      border-color: rgb(var(--gray-2));
     }
-
     .trigger-btn,
     .ref-btn {
       position: absolute;
       bottom: 14px;
     }
-
     .trigger-btn {
       margin-left: 14px;
     }

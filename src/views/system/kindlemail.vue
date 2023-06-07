@@ -5,7 +5,7 @@
       <a-col :span="20" :offset="2">
         <a-form
           :model="form"
-          :size="large"
+          size="large"
           :style="{ width: '700px' }"
           auto-label-width
           @submit="handleSubmit"
