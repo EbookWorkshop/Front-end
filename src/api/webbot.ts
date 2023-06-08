@@ -37,3 +37,13 @@ export function deleteHostSetting(host: string) {
 export function saveHostSetting(rules: object[]) {
   return axios.post(`/services/botrule`, rules);
 }
+
+/**
+ * 预览规则配置
+ * @param url 预览用地址
+ * @param rule 预览用规则配置
+ * @returns
+ */
+export function visRuleSetting(url: string, rule: Rule) {
+  return axios.post('/services/rulevis', { testUrl: url, ...rule });
+}

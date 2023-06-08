@@ -25,6 +25,10 @@
               <a-button type="primary">导出当前方案（json）</a-button>
               <a-button type="primary">导入当前方案（json）</a-button>
             </a-button-group>
+            <a-button :status="isUseVisStatus" @click="toggleFormUrl4Vis">
+              <template #icon><icon-eye /></template>
+              <template #default>启用预览辅助配置模式</template>
+            </a-button>
           </a-space>
         </a-col>
       </a-row>
@@ -135,6 +139,12 @@
                     placeholder="判断是否命中的文本。如相同的选择器，只匹配‘下一页’不匹配‘下一章’"
                   />
                 </a-form-item>
+                <a-button
+                  v-if="isUseVisModel"
+                  status="warning"
+                  @click="VisRuleSetting(rule)"
+                  >预览规则：{{ rule.ruleShowName }}</a-button
+                >
               </a-space>
             </a-form-item>
             <a-form-item>
@@ -146,19 +156,40 @@
         </a-col>
       </a-row>
     </a-form>
+    <a-modal
+      v-model:visible="formUrlForVisVisible"
+      title="首先：请提供两个网址用于辅助预览"
+    >
+      <a-form :model="formUrlForVis" layout="vertical">
+        <a-form-item field="indexUrl" label="图书章节目录页网址:">
+          <a-input v-model="formUrlForVis.indexUrl" />
+        </a-form-item>
+        <a-form-item field="contentUrl" label="图书正文阅读页网址:">
+          <a-input v-model="formUrlForVis.contentUrl" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
 
     <WebList ref="myWebList" @set-form="setFormWithSetting"></WebList>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue';
-  import { saveHostSetting, deleteHostSetting } from '@/api/webbot';
+  import { reactive, ref, computed } from 'vue';
+  import {
+    saveHostSetting,
+    deleteHostSetting,
+    visRuleSetting,
+  } from '@/api/webbot';
   import { Message } from '@arco-design/web-vue';
   import WebList from './components/web-list.vue';
 
-  // 抽屉显示状态开关
-  const isShowWebList = ref(false);
+  const formUrlForVisVisible = ref(false); // 配置弹窗是否显示
+  const formUrlForVis = reactive({ indexUrl: '', contentUrl: '' }); // 弹窗表单——辅助预览的网址采集表单
+  const isUseVisModel = ref(false);
+  const isUseVisStatus = computed(() =>
+    isUseVisModel.value ? 'warning' : 'normal'
+  );
 
   // 规则类型选项
   const rulesOptions = [
@@ -183,6 +214,7 @@
     },
   ];
 
+  // 绑定数据的规则配置表单
   const form = reactive({
     hostname: '',
     rulename: ['BookName'], // ,"ChapterList","Content"],
@@ -200,7 +232,11 @@
     ],
   });
 
+  // 展开右边网站列表
   const myWebList = ref(WebList);
+  const showWebList = () => {
+    myWebList.value.show();
+  };
 
   /**
    * 根据规则值-找到对应的规则显示名称
@@ -215,10 +251,7 @@
     });
     return txt;
   }
-  // 展开右边网站列表
-  const showWebList = () => {
-    myWebList.value.show();
-  };
+
   // 按选好的内容设置表单——加载已知网站配置
   const setFormWithSetting = (setting: any) => {
     if (setting.length === 0) return;
@@ -312,7 +345,7 @@
 
     Message.loading('正在保存...');
     saveHostSetting(myRule)
-      .then((result) => {
+      .then(() => {
         Message.success(`保存成功！`);
       })
       .catch((err) => {
@@ -327,12 +360,44 @@
 
     Message.loading('正在删除...');
     deleteHostSetting(form.hostname)
-      .then((result) => {
+      .then(() => {
         Message.success(`删除成功！`);
       })
       .catch((err) => {
         Message.error(`删除失败：${err.message}`);
       });
+  }
+
+  // 切换预览地址设置窗口是否可见
+  const toggleFormUrl4Vis = () => {
+    isUseVisModel.value = !isUseVisModel.value;
+    if (isUseVisModel.value)
+      formUrlForVisVisible.value = !formUrlForVisVisible.value;
+  };
+
+  /**
+   * 点击预览规则按钮
+   */
+  function VisRuleSetting(rule: any) {
+    let url = '';
+    switch (rule.ruleName) {
+      case 'BookCover':
+      case 'BookName':
+      case 'ChapterList':
+      case 'IndexNextPage':
+        url = formUrlForVis.indexUrl;
+        break;
+      case 'CapterTitle':
+      case 'Content':
+      case 'ContentNextPage':
+        url = formUrlForVis.contentUrl;
+        break;
+      default:
+        break;
+    }
+    visRuleSetting(url, rule).then((data) => {
+      console.log(data);
+    });
   }
 </script>
 
