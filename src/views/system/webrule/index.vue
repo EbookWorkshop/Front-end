@@ -22,7 +22,9 @@
               <a-button type="primary" status="danger">删除当前方案</a-button>
             </a-popconfirm>
             <a-button-group>
-              <a-button type="primary">导出当前方案（json）</a-button>
+              <a-button type="primary" @click="exportScheme"
+                >导出当前方案（json）</a-button
+              >
               <a-button type="primary">导入当前方案（json）</a-button>
             </a-button-group>
             <a-button :status="isUseVisStatus" @click="toggleFormUrl4Vis">
@@ -180,6 +182,7 @@
     saveHostSetting,
     deleteHostSetting,
     visRuleSetting,
+    exportSecheme,
   } from '@/api/webbot';
   import { Message } from '@arco-design/web-vue';
   import WebList from './components/web-list.vue';
@@ -396,8 +399,22 @@
         break;
     }
     visRuleSetting(url, rule).then((data) => {
-      console.log(data);
+      console.log(data); // TODO：结果可视化，前端显示
     });
+  }
+
+  /**
+   * 导出按钮点击
+   */
+  function exportScheme() {
+    if (form.hostname === '') {
+      Message.error('请先选择方案！');
+      return;
+    }
+    // exportSecheme(form.hostname)
+    // .then(()=>Message.success("导出成功"))
+    // .catch((err)=>Message.error("导出失败"+err));
+    window.open(exportSecheme(form.hostname));
   }
 </script>
 

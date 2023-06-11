@@ -47,3 +47,12 @@ export function saveHostSetting(rules: object[]) {
 export function visRuleSetting(url: string, rule: Rule) {
   return axios.post('/services/botrule/vis', { testUrl: url, ...rule });
 }
+/**
+ * 获取导出规则的下载地址
+ * @param host 需要导出的站点规则
+ * @returns
+ */
+export function exportSecheme(host: string) {
+  // return axios.get(`/services/botrule/export?host=${host}`);
+  return `${axios.defaults.baseURL}/services/botrule/export?host=${host}`;
+}
