@@ -1,6 +1,6 @@
 <template>
   <a-config-provider :locale="locale">
-    <router-view />
+    <router-view /><!-- 主功能区 -->
     <global-setting />
   </a-config-provider>
 </template>

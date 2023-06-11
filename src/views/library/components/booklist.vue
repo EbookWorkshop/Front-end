@@ -1,5 +1,5 @@
 <template>
-  <a-row :gutter="20" align="stretch">
+  <a-row :gutter="20" align="stretch" style="overflow-x: hidden">
     <a-col :span="24">
       <a-card class="general-card" :title="title">
         <div class="book-list-wrap">

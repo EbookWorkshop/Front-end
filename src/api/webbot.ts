@@ -45,5 +45,5 @@ export function saveHostSetting(rules: object[]) {
  * @returns
  */
 export function visRuleSetting(url: string, rule: Rule) {
-  return axios.post('/services/rulevis', { testUrl: url, ...rule });
+  return axios.post('/services/botrule/vis', { testUrl: url, ...rule });
 }

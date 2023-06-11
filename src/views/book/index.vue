@@ -39,7 +39,7 @@
                 >
                   <a-option>http://www.qidian.com</a-option>
                 </a-select>
-                <a-button type="primary" size="large">
+                <a-button type="primary" size="large" @click="mergeIndex">
                   <icon-loop />同步目录
                 </a-button>
 
@@ -179,6 +179,7 @@
     createPDF,
     Book,
     Chapter,
+    mergeWebBookIndex,
   } from '@/api/book';
   import useRequest from '@/hooks/request';
   import BookCover from '@/components/book-cover/index.vue';
@@ -190,6 +191,24 @@
   const chapterHasCheckedNum = ref(0);
   // 章节选项数据对象
   const indexOptionMap = new Map();
+
+  // 是否编辑模式
+  const isEdit = route.path.includes('/bookedit/');
+  // 当前书的ID
+  const bookid = Number(route.params.id);
+
+  /**
+   * 合并当前章节
+   * @param bookid
+   */
+  function mergeIndex() {
+    return mergeWebBookIndex(bookid)
+      .then((result) => {
+        Message.success('已启动章节更新合并');
+        console.log(result);
+      })
+      .catch((err) => Message.error(`合并、更新章节失败${err}`));
+  }
 
   /**
    * 编辑模式下页面的细节选项
@@ -210,11 +229,11 @@
 
   /**
    * 实际爬章节
-   * @param bookid 当前书ID
+   * @param curBookId 当前书ID
    * @param chapterIds 需要爬的章节ID
    */
-  function GetChapterContent(bookid: number, chapterIds: number[]) {
-    return updateChapter(bookid, chapterIds)
+  function GetChapterContent(curBookId: number, chapterIds: number[]) {
+    return updateChapter(curBookId, chapterIds)
       .then((result) => {
         Message.success('所有章节已处理完毕！');
         result.data.map((cid: number | any) => {
@@ -239,10 +258,6 @@
     return true;
   };
 
-  // 是否编辑模式
-  const isEdit = route.path.includes('/bookedit/');
-  // 当前书的ID
-  const bookid = Number(route.params.id);
   const queryBook = () => {
     return queryBookById(bookid).then((rsl: any) => {
       if (isEdit) {

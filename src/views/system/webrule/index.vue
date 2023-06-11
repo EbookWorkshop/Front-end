@@ -44,7 +44,7 @@
             >
               <a-input-search
                 v-model="form.hostname"
-                placeholder="网站域名（一级域名，如：baidu.com）"
+                placeholder="网站域名（域名，如：book.xiaoshuo.com）"
                 search-button
               >
                 <template #button-icon>

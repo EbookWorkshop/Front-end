@@ -67,7 +67,7 @@
 
     addANewWebBook(url)
       .then((result) => {
-        Message.success(`添加成功！新书：《${result.data.BookName}》已入库！`);
+        Message.success(`${result.data}`);
       })
       .catch((err) => {
         Message.error(`添加书失败：${err.message}`);

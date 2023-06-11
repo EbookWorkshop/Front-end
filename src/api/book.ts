@@ -49,6 +49,15 @@ export function addANewWebBook(url: string) {
 }
 
 /**
+ * 合并方式更新当前书目录
+ * @param id 书ID
+ * @returns
+ */
+export function mergeWebBookIndex(id: number) {
+  return axios.patch(`/library/webbook/mergeindex`, { bookId: id });
+}
+
+/**
  * 更新指定的章节
  * @param bookid 需要更新的书
  * @param chapterIds 要更新的章节Id
