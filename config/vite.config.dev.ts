@@ -10,6 +10,7 @@ export default mergeConfig(
       fs: {
         strict: true,
       },
+      port: 3100,
     },
     plugins: [
       // 关掉了dev模式运行时，控台里的eslint提示

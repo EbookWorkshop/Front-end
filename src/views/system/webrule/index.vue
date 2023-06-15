@@ -25,7 +25,9 @@
               <a-button type="primary" @click="exportScheme"
                 >导出当前方案（json）</a-button
               >
-              <a-button type="primary">导入当前方案（json）</a-button>
+              <a-button type="primary" @click="testSocket"
+                >导入当前方案（json）</a-button
+              >
             </a-button-group>
             <a-button :status="isUseVisStatus" @click="toggleFormUrl4Vis">
               <template #icon><icon-eye /></template>
@@ -185,7 +187,10 @@
     exportSecheme,
   } from '@/api/webbot';
   import { Message } from '@arco-design/web-vue';
+  import useSocket from '@/hooks/socket';
   import WebList from './components/web-list.vue';
+
+  const socket = useSocket();
 
   const formUrlForVisVisible = ref(false); // 配置弹窗是否显示
   const formUrlForVis = reactive({ indexUrl: '', contentUrl: '' }); // 弹窗表单——辅助预览的网址采集表单
@@ -240,6 +245,15 @@
   const showWebList = () => {
     myWebList.value.show();
   };
+
+  // test
+  function testSocket() {
+    // socket.io.connect();
+    // socket.io.timeout(5000).emit("message","666666666");
+    if (!socket.io.connected) socket.io.connect();
+    console.log(socket);
+    socket.io.emit('message', 'this message data!');
+  }
 
   /**
    * 根据规则值-找到对应的规则显示名称

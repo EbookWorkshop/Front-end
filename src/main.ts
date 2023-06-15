@@ -24,5 +24,11 @@ app.use(store);
 app.use(i18n);
 app.use(globalComponents);
 app.use(directive);
+// app.use(
+//     new VueSocketIO({
+//         debug: true,
+//         connection: import.meta.env.VITE_API_BASE_URL
+//     })
+// )
 
 app.mount('#app');
