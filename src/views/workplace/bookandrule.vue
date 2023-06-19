@@ -8,51 +8,52 @@
           'menu.workplace.correction.bookandrule',
         ]"
       />
-      <a-divider />
-      <a-space>
-        <a-button status="success" @click="createNewRule">添加</a-button>
-      </a-space>
-      <a-table :columns="columns" :data="renderData" :loading="tableLoading">
-        <template #optional="{ record }">
-          <a-button @click="editRow(record)">编辑</a-button>
-          <a-popconfirm
-            content="确认删除？此操作将无法恢复！"
-            @ok="deleteRule(record.id)"
-          >
-            <a-button status="danger">删除</a-button>
-          </a-popconfirm>
-        </template>
-      </a-table>
-    </div>
-    <a-modal
-      v-model:visible="visible"
-      title="添加规则引用"
-      @before-ok="handleBeforeOk"
-    >
-      <a-form :model="form">
-        <a-form-item field="book" label="书">
-          <SelectBook v-model="form.bookId" />
-        </a-form-item>
-        <a-form-item field="name" label="校正规则">
-          <a-select
-            v-model="form.ruleId"
-            :style="{ width: '100%' }"
-            size="large"
-            placeholder="请选校阅规则"
-            :loading="ruleLoading"
-            allow-search
-          >
-            <a-option
-              v-for="r in ruleListData"
-              :key="r.id"
-              :value="r.id"
-              :title="r.Rule"
-              >{{ r.Name }}</a-option
+      <div class="wrapper">
+        <a-space>
+          <a-button status="success" @click="createNewRule">添加</a-button>
+        </a-space>
+        <a-table :columns="columns" :data="renderData" :loading="tableLoading">
+          <template #optional="{ record }">
+            <a-button @click="editRow(record)">编辑</a-button>
+            <a-popconfirm
+              content="确认删除？此操作将无法恢复！"
+              @ok="deleteRule(record.id)"
             >
-          </a-select>
-        </a-form-item>
-      </a-form>
-    </a-modal>
+              <a-button status="danger">删除</a-button>
+            </a-popconfirm>
+          </template>
+        </a-table>
+      </div>
+      <a-modal
+        v-model:visible="visible"
+        title="添加规则引用"
+        @before-ok="handleBeforeOk"
+      >
+        <a-form :model="form">
+          <a-form-item field="book" label="书">
+            <SelectBook v-model="form.bookId" />
+          </a-form-item>
+          <a-form-item field="name" label="校正规则">
+            <a-select
+              v-model="form.ruleId"
+              :style="{ width: '100%' }"
+              size="large"
+              placeholder="请选校阅规则"
+              :loading="ruleLoading"
+              allow-search
+            >
+              <a-option
+                v-for="r in ruleListData"
+                :key="r.id"
+                :value="r.id"
+                :title="r.Rule"
+                >{{ r.Name }}</a-option
+              >
+            </a-select>
+          </a-form-item>
+        </a-form>
+      </a-modal>
+    </div>
   </div>
 </template>
 

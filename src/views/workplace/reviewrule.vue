@@ -8,40 +8,41 @@
           'menu.workplace.correction.reviewrule',
         ]"
       />
-      <a-divider />
-      <a-space>
-        <a-button status="success" @click="createNewRule">添加</a-button>
-      </a-space>
-      <a-table :columns="columns" :data="renderData" :loading="tableLoading">
-        <template #optional="{ record }">
-          <a-button @click="editRow(record)">编辑</a-button>
-          <a-popconfirm
-            content="确认删除？此操作将无法恢复！"
-            @ok="deleteRule(record.id)"
-          >
-            <a-button status="danger">删除</a-button>
-          </a-popconfirm>
-        </template>
-      </a-table>
+      <div class="wrapper">
+        <a-space>
+          <a-button status="success" @click="createNewRule">添加</a-button>
+        </a-space>
+        <a-table :columns="columns" :data="renderData" :loading="tableLoading">
+          <template #optional="{ record }">
+            <a-button @click="editRow(record)">编辑</a-button>
+            <a-popconfirm
+              content="确认删除？此操作将无法恢复！"
+              @ok="deleteRule(record.id)"
+            >
+              <a-button status="danger">删除</a-button>
+            </a-popconfirm>
+          </template>
+        </a-table>
+      </div>
+      <a-modal
+        v-model:visible="visible"
+        title="设置规则"
+        @before-ok="handleBeforeOk"
+      >
+        <a-form :model="form">
+          <input type="hidden" :value="form.id" />
+          <a-form-item field="name" label="规则名">
+            <a-input v-model="form.name" />
+          </a-form-item>
+          <a-form-item field="rule" label="查找内容">
+            <a-textarea v-model="form.rule"></a-textarea>
+          </a-form-item>
+          <a-form-item field="replace" label="替换内容">
+            <a-textarea v-model="form.replace"></a-textarea>
+          </a-form-item>
+        </a-form>
+      </a-modal>
     </div>
-    <a-modal
-      v-model:visible="visible"
-      title="设置规则"
-      @before-ok="handleBeforeOk"
-    >
-      <a-form :model="form">
-        <input type="hidden" :value="form.id" />
-        <a-form-item field="name" label="规则名">
-          <a-input v-model="form.name" />
-        </a-form-item>
-        <a-form-item field="rule" label="查找内容">
-          <a-textarea v-model="form.rule"></a-textarea>
-        </a-form-item>
-        <a-form-item field="replace" label="替换内容">
-          <a-textarea v-model="form.replace"></a-textarea>
-        </a-form-item>
-      </a-form>
-    </a-modal>
   </div>
 </template>
 

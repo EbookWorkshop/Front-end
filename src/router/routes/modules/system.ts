@@ -48,7 +48,7 @@ const SYSTEM: AppRouteRecordRaw = {
     {
       path: 'fontmanager',
       name: 'fontmanager',
-      component: () => import('@/views/system/index.vue'),
+      component: () => import('@/views/system/fontmanager.vue'),
       meta: {
         locale: 'menu.system.fontmanager',
         icon: 'icon-language',
