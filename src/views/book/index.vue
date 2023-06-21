@@ -1,167 +1,186 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.library.list']" />
-    <a-row :gutter="20" align="stretch" justify="center">
-      <a-col :span="2"></a-col>
-      <a-col :span="3">
-        <BookCover
-          :loading="loading"
-          :book-name="renderData.BookName"
-          :cover-img="renderData.CoverImg"
-        ></BookCover>
-      </a-col>
-      <a-col :span="14" :offset="1">
-        <a-row :gutter="20" align="center" justify="center">
-          <a-col :span="10" style="margin-top: 50px; text-align: center">
-            <a-typography-title> {{ renderData.BookName }}</a-typography-title>
+    <div class="wrapper">
+      <a-spin
+        :loading="loading"
+        tip="加载中..."
+        :size="64"
+        style="width: 100%; height: 100%"
+      >
+        <a-row :gutter="20" align="stretch" justify="center">
+          <a-col :span="2"></a-col>
+          <a-col :span="3">
+            <BookCover
+              :loading="loading"
+              :book-name="renderData.BookName"
+              :cover-img="renderData.CoverImg"
+            ></BookCover>
           </a-col>
-          <a-col :span="14"> </a-col>
-        </a-row>
-        <a-row>
-          <!-- 书详情页面 -->
-          <a-col :offset="2">
-            <a-typography-text>作者：</a-typography-text>
-          </a-col>
-          <a-col :offset="2">
-            <a-typography-text>简介：</a-typography-text>
-          </a-col>
-          <a-col>&nbsp;</a-col>
-        </a-row>
-        <template v-if="isEdit">
-          <!-- 管理按钮 -->
-          <a-row justify="start">
-            <a-col>
-              <a-space wrap>
-                <a-select
-                  :style="{ width: '160px' }"
-                  placeholder="指定其它数据来源"
-                  :trigger-props="{ autoFitPopupMinWidth: true }"
+          <a-col :span="14" :offset="1">
+            <a-row :gutter="20" align="center" justify="center">
+              <a-col :span="10" style="margin-top: 50px; text-align: center">
+                <a-typography-title>
+                  {{ renderData.BookName }}</a-typography-title
                 >
-                  <a-option>http://www.qidian.com</a-option>
-                </a-select>
-                <a-button type="primary" size="large" @click="mergeIndex">
-                  <icon-loop />同步目录
-                </a-button>
-
-                <a-badge :max-count="20000" :count="chapterHasCheckedNum">
-                  <a-button-group status="warning" style="align-items: stretch">
-                    <a-button type="primary" size="large">
-                      <a-checkbox value="all-empty" @change="checkEmptyChapter"
-                        >选中空章节</a-checkbox
-                      >
+              </a-col>
+              <a-col :span="14"> </a-col>
+            </a-row>
+            <a-row>
+              <!-- 书详情页面 -->
+              <a-col :offset="2">
+                <a-typography-text>作者：</a-typography-text>
+              </a-col>
+              <a-col :offset="2">
+                <a-typography-text>简介：</a-typography-text>
+              </a-col>
+              <a-col>&nbsp;</a-col>
+            </a-row>
+            <template v-if="isEdit">
+              <!-- 管理按钮 -->
+              <a-row justify="start">
+                <a-col>
+                  <a-space wrap>
+                    <a-select
+                      :style="{ width: '160px' }"
+                      placeholder="指定其它数据来源"
+                      :trigger-props="{ autoFitPopupMinWidth: true }"
+                    >
+                      <a-option>http://www.qidian.com</a-option>
+                    </a-select>
+                    <a-button type="primary" size="large" @click="mergeIndex">
+                      <icon-loop />同步目录
                     </a-button>
+
+                    <a-badge :max-count="20000" :count="chapterHasCheckedNum">
+                      <a-button-group
+                        status="warning"
+                        style="align-items: stretch"
+                      >
+                        <a-button type="primary" size="large">
+                          <a-checkbox
+                            value="all-empty"
+                            @change="checkEmptyChapter"
+                            >选中空章节</a-checkbox
+                          >
+                        </a-button>
+                        <a-button
+                          type="primary"
+                          size="large"
+                          style="height: unset !important"
+                        >
+                          <template #icon>
+                            <icon-down />
+                          </template>
+                        </a-button>
+                      </a-button-group>
+                    </a-badge>
+
                     <a-button
                       type="primary"
                       size="large"
+                      status="success"
+                      @click="goToGetAllChapter"
+                    >
+                      <icon-robot-add />获取选中章节内容
+                    </a-button>
+                    <a-button size="large">
+                      <icon-ordered-list />章节排序
+                    </a-button>
+                  </a-space>
+                </a-col>
+              </a-row>
+              <a-row justify="start">
+                <a-col>
+                  <a-button
+                    type="outline"
+                    size="large"
+                    @click="goToSendSelectedChapter"
+                  >
+                    <icon-mobile />发送到默认邮箱账户
+                  </a-button>
+                </a-col>
+              </a-row>
+            </template>
+          </a-col>
+        </a-row>
+        <a-row class="grid-chapter" style="margin-bottom: 16px">
+          <a-col :span="20" :offset="2">
+            <!-- loading用的骨架页 -->
+            <a-row v-if="loading" :gutter="10">
+              <a-col v-for="i in [1, 2, 3, 4, 5, 6]" :key="i" :span="4">
+                <a-skeleton :animation="loading">
+                  <a-skeleton-line
+                    :rows="4"
+                    :line-height="48"
+                    :line-spacing="10"
+                  />
+                </a-skeleton>
+              </a-col>
+            </a-row>
+
+            <a-grid
+              :cols="{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }"
+              :col-gap="12"
+              :row-gap="16"
+              class="grid-demo-grid"
+            >
+              <template v-if="!isEdit">
+                <!-- 阅读视图 阅读时的章节列表 -->
+                <a-grid-item
+                  v-for="item in renderData.Index"
+                  :key="item.IndexId"
+                  class="reading-index"
+                >
+                  <a-button
+                    long
+                    :disabled="!item.IsHasContent"
+                    class="chapter"
+                    @click="goto(item.IndexId)"
+                    >{{ item.Title }}
+                  </a-button>
+                </a-grid-item>
+              </template>
+              <template v-else>
+                <!-- 编辑视图 编辑功能时的章节列表 -->
+                <a-grid-item
+                  v-for="item in renderData.Index"
+                  :key="item.IndexId"
+                  class="edit-index"
+                >
+                  <a-button-group
+                    style="align-items: stretch; width: 100%"
+                    :status="item.IsHasContent ? 'normal' : 'warning'"
+                    :title="item.Title"
+                  >
+                    <a-button long type="dashed" class="chapter">
+                      <a-checkbox
+                        :value="item.IndexId"
+                        :model-value="indexOptionMap.get(item.IndexId)?.isCheck"
+                        @change="changeChapterIsCheck"
+                      >
+                        {{ item.Title }}
+                      </a-checkbox>
+                    </a-button>
+
+                    <a-button
+                      type="dashed"
+                      size="large"
                       style="height: unset !important"
+                      @click="showeditmenu(item.IndexId)"
                     >
                       <template #icon>
-                        <icon-down />
+                        <icon-settings />
                       </template>
                     </a-button>
                   </a-button-group>
-                </a-badge>
-
-                <a-button
-                  type="primary"
-                  size="large"
-                  status="success"
-                  @click="goToGetAllChapter"
-                >
-                  <icon-robot-add />获取选中章节内容
-                </a-button>
-                <a-button size="large">
-                  <icon-ordered-list />章节排序
-                </a-button>
-              </a-space>
-            </a-col>
-          </a-row>
-          <a-row justify="start">
-            <a-col>
-              <a-button
-                type="outline"
-                size="large"
-                @click="goToSendSelectedChapter"
-              >
-                <icon-mobile />发送到默认邮箱账户
-              </a-button>
-            </a-col>
-          </a-row>
-        </template>
-      </a-col>
-    </a-row>
-    <a-row class="grid-chapter" style="margin-bottom: 16px">
-      <a-col :span="20" :offset="2">
-        <!-- loading用的骨架页 -->
-        <a-row v-if="loading" :gutter="10">
-          <a-col v-for="i in [1, 2, 3, 4, 5, 6]" :key="i" :span="4">
-            <a-skeleton :animation="loading">
-              <a-skeleton-line :rows="4" :line-height="48" :line-spacing="10" />
-            </a-skeleton>
+                </a-grid-item>
+              </template>
+            </a-grid>
           </a-col>
         </a-row>
-
-        <a-grid
-          :cols="{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }"
-          :col-gap="12"
-          :row-gap="16"
-          class="grid-demo-grid"
-        >
-          <template v-if="!isEdit">
-            <!-- 阅读视图 阅读时的章节列表 -->
-            <a-grid-item
-              v-for="item in renderData.Index"
-              :key="item.IndexId"
-              class="reading-index"
-            >
-              <a-button
-                long
-                :disabled="!item.IsHasContent"
-                class="chapter"
-                @click="goto(item.IndexId)"
-                >{{ item.Title }}
-              </a-button>
-            </a-grid-item>
-          </template>
-          <template v-else>
-            <!-- 编辑视图 编辑功能时的章节列表 -->
-            <a-grid-item
-              v-for="item in renderData.Index"
-              :key="item.IndexId"
-              class="edit-index"
-            >
-              <a-button-group
-                style="align-items: stretch; width: 100%"
-                :status="item.IsHasContent ? 'normal' : 'warning'"
-                :title="item.Title"
-              >
-                <a-button long type="dashed" class="chapter">
-                  <a-checkbox
-                    :value="item.IndexId"
-                    :model-value="indexOptionMap.get(item.IndexId)?.isCheck"
-                    @change="changeChapterIsCheck"
-                  >
-                    {{ item.Title }}
-                  </a-checkbox>
-                </a-button>
-
-                <a-button
-                  type="dashed"
-                  size="large"
-                  style="height: unset !important"
-                  @click="showeditmenu(item.IndexId)"
-                >
-                  <template #icon>
-                    <icon-settings />
-                  </template>
-                </a-button>
-              </a-button-group>
-            </a-grid-item>
-          </template>
-        </a-grid>
-      </a-col>
-    </a-row>
-
+      </a-spin>
+    </div>
     <a-back-top
       target-container=".grid-chapter"
       :style="{ position: 'absolute' }"
