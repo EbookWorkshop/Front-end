@@ -24,7 +24,8 @@
   import BookWrap from './components/book-wrap.vue'; // 带封面图书
   import BookClassical from './components/book-classical.vue'; // 古典线装书风格封面
 
-  const props = defineProps({
+  // 定义组件入参
+  defineProps({
     loading: {
       type: Boolean,
       default: true,

@@ -1,54 +1,60 @@
 <template>
-  <a-list :bordered="false">
-    <a-list-item
-      v-for="item in renderList"
-      :key="item.id"
-      action-layout="vertical"
-      :style="{
-        opacity: item.status ? 0.5 : 1,
-      }"
-    >
-      <template #extra>
-        <a-tag v-if="item.messageType === 0" color="gray">未开始</a-tag>
-        <a-tag v-else-if="item.messageType === 1" color="green">已开通</a-tag>
-        <a-tag v-else-if="item.messageType === 2" color="blue">进行中</a-tag>
-        <a-tag v-else-if="item.messageType === 3" color="red">即将到期</a-tag>
-      </template>
-      <div class="item-wrap" @click="onItemClick(item)">
-        <a-list-item-meta>
-          <template v-if="item.avatar" #avatar>
-            <a-avatar shape="circle">
-              <img v-if="item.avatar" :src="item.avatar" />
-              <icon-desktop v-else />
-            </a-avatar>
-          </template>
-          <template #title>
-            <a-space :size="4">
-              <span>{{ item.title }}</span>
-              <a-typography-text type="secondary">
-                {{ item.subTitle }}
-              </a-typography-text>
-            </a-space>
-          </template>
-          <template #description>
-            <div>
-              <a-typography-paragraph
-                :ellipsis="{
-                  rows: 1,
-                }"
-                >{{ item.content }}</a-typography-paragraph
-              >
-              <a-typography-text
-                v-if="item.type === 'message'"
-                class="time-text"
-              >
-                {{ item.time }}
-              </a-typography-text>
-            </div>
-          </template>
-        </a-list-item-meta>
-      </div>
-    </a-list-item>
+  <a-list
+    :bordered="false"
+    size="small"
+    :virtual-list-props="{
+      height: 560,
+    }"
+    :data="renderList"
+  >
+    <template #item="{ item, index }">
+      <a-list-item
+        :key="index"
+        action-layout="vertical"
+        :style="{
+          opacity: item.status ? 0.5 : 1,
+        }"
+      >
+        <template #extra>
+          <a-tag v-if="item.messageType === 0" color="gray">未开始</a-tag>
+          <a-tag v-else-if="item.messageType === 1" color="green">已开通</a-tag>
+          <a-tag v-else-if="item.messageType === 2" color="blue">进行中</a-tag>
+          <a-tag v-else-if="item.messageType === 3" color="red">即将到期</a-tag>
+        </template>
+        <div class="item-wrap" @click="onItemClick(item)">
+          <a-list-item-meta>
+            <template v-if="item.avatar" #avatar>
+              <a-avatar shape="circle">
+                <span v-if="item.avatar == 'index'">{{ index + 1 }}</span>
+                <img v-else-if="item.avatar" :src="item.avatar" />
+                <icon-desktop v-else />
+              </a-avatar>
+            </template>
+            <template #title>
+              <a-space :size="4">
+                <span>{{ item.title }}</span>
+                <a-typography-text type="secondary">
+                  {{ item.subTitle }}
+                </a-typography-text>
+              </a-space>
+            </template>
+            <template #description>
+              <div>
+                <a-typography-paragraph
+                  :ellipsis="{
+                    rows: 1,
+                  }"
+                  >{{ item.content }}</a-typography-paragraph
+                >
+                <a-typography-text class="time-text">
+                  {{ item.time }}
+                </a-typography-text>
+              </div>
+            </template>
+          </a-list-item-meta>
+        </div>
+      </a-list-item>
+    </template>
     <template #footer>
       <a-space
         fill

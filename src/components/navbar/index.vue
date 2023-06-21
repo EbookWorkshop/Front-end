@@ -77,7 +77,7 @@
       <li>
         <a-tooltip :content="$t('settings.navbar.alerts')">
           <div class="message-box-trigger">
-            <a-badge :count="11">
+            <a-badge :count="messageList.length">
               <a-button
                 class="nav-btn"
                 type="outline"
@@ -97,7 +97,7 @@
         >
           <div ref="refBtn" class="ref-btn"></div>
           <template #content>
-            <message-box />
+            <message-box :message-list="messageList" @emptyList="OnEmptyList" />
           </template>
         </a-popover>
       </li>
@@ -185,7 +185,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, inject } from 'vue';
+  import { computed, ref, inject, reactive } from 'vue';
   import { Message } from '@arco-design/web-vue';
   import { useDark, useToggle, useFullscreen } from '@vueuse/core';
   import { useAppStore, useUserStore } from '@/store';
@@ -193,7 +193,13 @@
   import useLocale from '@/hooks/locale';
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
+  import { MessageRecord } from '@/api/message';
+
+  import useSocket from '@/hooks/socket';
   import MessageBox from '../message-box/index.vue';
+
+  const socket = useSocket();
+  if (!socket.io.connected) socket.io.connect();
 
   const appStore = useAppStore();
   const userStore = useUserStore();
@@ -252,6 +258,25 @@
     Message.success(res as string);
   };
   const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
+
+  const messageList = reactive<MessageRecord[]>([]);
+  function OnEmptyList() {
+    messageList.splice(0);
+  }
+
+  // DEBUG: 测试用
+  socket.io.on('Notice.Debug', (msg) => {
+    messageList.push({
+      id: 0,
+      type: 'notice',
+      title: msg?.title || msg.message,
+      subTitle: '',
+      content: msg.message,
+      time: new Date().toJSON(),
+      status: 0,
+      avatar: 'index',
+    });
+  });
 </script>
 
 <style scoped lang="less">

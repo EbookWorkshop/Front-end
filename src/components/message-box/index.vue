@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, toRefs, computed } from 'vue';
+  import { ref, reactive, toRefs, computed, PropType } from 'vue';
   import { useI18n } from 'vue-i18n';
   import {
     queryMessageList,
@@ -40,8 +40,20 @@
     title: string;
     avatar?: string;
   }
+
+  // 定义组件入参
+  const props = defineProps({
+    messageList: {
+      type: Array as PropType<MessageRecord[]>,
+      default: [] as MessageRecord[],
+    },
+  });
+
+  // 向父组件传递信息
+  const emit = defineEmits(['emptyList']);
+
   const { loading, setLoading } = useLoading(true);
-  const messageType = ref('message');
+  const messageType = ref('notice');
   const { t } = useI18n();
   const messageData = reactive<{
     renderList: MessageRecord[];
@@ -53,12 +65,12 @@
   toRefs(messageData);
   const tabList: TabItem[] = [
     {
-      key: 'message',
-      title: t('messageBox.tab.title.message'),
-    },
-    {
       key: 'notice',
       title: t('messageBox.tab.title.notice'),
+    },
+    {
+      key: 'message',
+      title: t('messageBox.tab.title.message'),
     },
     {
       key: 'todo',
@@ -68,8 +80,9 @@
   async function fetchSourceData() {
     setLoading(true);
     try {
-      const { data } = await queryMessageList();
-      messageData.messageList = data;
+      // const { data } = await queryMessageList();
+      // messageData.messageList = data;
+      messageData.messageList = props.messageList;
     } catch (err) {
       // you can report use errorHandler or other
     } finally {
@@ -104,6 +117,7 @@
   };
   const emptyList = () => {
     messageData.messageList = [];
+    emit('emptyList');
   };
   fetchSourceData();
 </script>
