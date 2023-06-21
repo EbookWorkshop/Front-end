@@ -1,24 +1,26 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.library.list']" />
-    <a-typography :style="{ marginTop: '-40px' }">
-      <a-typography-title class="title"
-        >{{ renderData.Title }}
-      </a-typography-title>
-      <a-row class="grid-chapter" style="margin-bottom: 16px">
-        <a-col :span="2" style="height: 100%">
-          <!-- 【阅读列表】给左边预留一点空位 -->
-        </a-col>
-        <a-col :span="20" class="content">
-          <a-typography-paragraph
-            v-for="p in renderData.Content?.split('\n')"
-            :key="p"
-          >
-            {{ p }}
-          </a-typography-paragraph>
-        </a-col>
-      </a-row>
-    </a-typography>
+    <div class="wrapper">
+      <a-typography :style="{ marginTop: '-40px' }">
+        <a-typography-title class="title"
+          >{{ renderData.Title }}
+        </a-typography-title>
+        <a-row class="grid-chapter" style="margin-bottom: 16px">
+          <a-col :span="2" style="height: 100%">
+            <!-- 【阅读列表】给左边预留一点空位 -->
+          </a-col>
+          <a-col :span="20" class="content">
+            <a-typography-paragraph
+              v-for="p in renderData.Content?.split('\n')"
+              :key="p"
+            >
+              {{ p }}
+            </a-typography-paragraph>
+          </a-col>
+        </a-row>
+      </a-typography>
+    </div>
   </div>
 </template>
 

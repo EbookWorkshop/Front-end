@@ -53,27 +53,25 @@
                     </a-button>
 
                     <a-badge :max-count="20000" :count="chapterHasCheckedNum">
-                      <a-button-group
+                      <a-dropdown-button
+                        type="primary"
+                        size="large"
                         status="warning"
                         style="align-items: stretch"
                       >
-                        <a-button type="primary" size="large">
-                          <a-checkbox
-                            value="all-empty"
-                            @change="checkEmptyChapter"
-                            >选中空章节</a-checkbox
-                          >
-                        </a-button>
-                        <a-button
-                          type="primary"
-                          size="large"
-                          style="height: unset !important"
+                        <a-checkbox
+                          value="all-empty"
+                          @change="checkEmptyChapter"
+                          >选中空章节</a-checkbox
                         >
-                          <template #icon>
-                            <icon-down />
-                          </template>
-                        </a-button>
-                      </a-button-group>
+                        <template #icon>
+                          <icon-down />
+                        </template>
+                        <template #content>
+                          <a-doption>选中空章节</a-doption>
+                          <a-doption>选中全部章节</a-doption>
+                        </template>
+                      </a-dropdown-button>
                     </a-badge>
 
                     <a-button
@@ -153,11 +151,14 @@
                     :status="item.IsHasContent ? 'normal' : 'warning'"
                     :title="item.Title"
                   >
-                    <a-button long type="dashed" class="chapter">
+                    <a-button
+                      long
+                      type="dashed"
+                      class="chapter"
+                      @click="changeChapterIsCheck(item.IndexId)"
+                    >
                       <a-checkbox
-                        :value="item.IndexId"
                         :model-value="indexOptionMap.get(item.IndexId)?.isCheck"
-                        @change="changeChapterIsCheck"
                       >
                         {{ item.Title }}
                       </a-checkbox>
@@ -181,10 +182,6 @@
         </a-row>
       </a-spin>
     </div>
-    <a-back-top
-      target-container=".grid-chapter"
-      :style="{ position: 'absolute' }"
-    />
   </div>
 </template>
 
@@ -202,6 +199,19 @@
   } from '@/api/book';
   import useRequest from '@/hooks/request';
   import BookCover from '@/components/book-cover/index.vue';
+  /**
+   * 章节状态
+   */
+  interface ChapterStatus {
+    /**
+     * 是否已选
+     */
+    isCheck: boolean;
+    /**
+     * 是否已有正文
+     */
+    isHasContent: boolean;
+  }
 
   const route = useRoute();
   const router = useRouter();
@@ -209,7 +219,7 @@
   // 已选中的章节数
   const chapterHasCheckedNum = ref(0);
   // 章节选项数据对象
-  const indexOptionMap = new Map();
+  const indexOptionMap = reactive(new Map());
 
   // 是否编辑模式
   const isEdit = route.path.includes('/bookedit/');
@@ -236,11 +246,11 @@
    */
   function InitEditModelOption(data: Book) {
     data.Index.map((i) => {
-      const temOption = reactive({
+      const temOption = {
         // indexId: i.IndexId,
         isCheck: false,
         isHasContent: i.IsHasContent,
-      });
+      };
       indexOptionMap.set(i.IndexId, temOption);
       return i;
     });
@@ -268,12 +278,10 @@
   }
 
   // 每一个章节是否选中时触发
-  const changeChapterIsCheck = (
-    isChecked: boolean | (string | number | boolean)[],
-    ev: any
-  ) => {
-    chapterHasCheckedNum.value += isChecked ? 1 : -1;
-    indexOptionMap.get(Number(ev.target.value)).isCheck = isChecked; // DEBUG: 直觉这不是正常做法——当checkbox的选中绑定对象后，不能直接通过鼠标操作选中了，只能通过修改对应的绑定值实现
+  const changeChapterIsCheck = (cIndex: number) => {
+    const cStatus = indexOptionMap.get(cIndex);
+    chapterHasCheckedNum.value += !cStatus.isCheck ? 1 : -1;
+    cStatus.isCheck = !cStatus.isCheck;
     return true;
   };
 
