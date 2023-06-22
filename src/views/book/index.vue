@@ -58,18 +58,19 @@
                         size="large"
                         status="warning"
                         style="align-items: stretch"
+                        @click="checkEmptyChapter"
                       >
-                        <a-checkbox
-                          value="all-empty"
-                          @change="checkEmptyChapter"
-                          >选中空章节</a-checkbox
-                        >
+                        选中空章节
                         <template #icon>
                           <icon-down />
                         </template>
                         <template #content>
-                          <a-doption>选中空章节</a-doption>
-                          <a-doption>选中全部章节</a-doption>
+                          <a-doption @click="checkAllChapter"
+                            >选中全部章节</a-doption
+                          >
+                          <a-doption @click="cleanAllChapter"
+                            >清空已选</a-doption
+                          >
                         </template>
                       </a-dropdown-button>
                     </a-badge>
@@ -219,7 +220,7 @@
   // 已选中的章节数
   const chapterHasCheckedNum = ref(0);
   // 章节选项数据对象
-  const indexOptionMap = reactive(new Map());
+  const indexOptionMap: Map<number, ChapterStatus> = reactive(new Map());
 
   // 是否编辑模式
   const isEdit = route.path.includes('/bookedit/');
@@ -246,10 +247,10 @@
    */
   function InitEditModelOption(data: Book) {
     data.Index.map((i) => {
-      const temOption = {
+      const temOption: ChapterStatus = {
         // indexId: i.IndexId,
         isCheck: false,
-        isHasContent: i.IsHasContent,
+        isHasContent: i.IsHasContent || false,
       };
       indexOptionMap.set(i.IndexId, temOption);
       return i;
@@ -266,7 +267,7 @@
       .then((result) => {
         Message.success('所有章节已处理完毕！');
         result.data.map((cid: number | any) => {
-          const option = indexOptionMap.get(cid);
+          const option = indexOptionMap.get(cid) || ({} as ChapterStatus);
           option.isHasContent = true; // 不知道为何不生效，完成后不会切换样式
           option.isCheck = false;
           return cid;
@@ -279,7 +280,7 @@
 
   // 每一个章节是否选中时触发
   const changeChapterIsCheck = (cIndex: number) => {
-    const cStatus = indexOptionMap.get(cIndex);
+    const cStatus = indexOptionMap.get(cIndex) || ({} as ChapterStatus);
     chapterHasCheckedNum.value += !cStatus.isCheck ? 1 : -1;
     cStatus.isCheck = !cStatus.isCheck;
     return true;
@@ -307,12 +308,27 @@
     isChecked: boolean | (string | number | boolean)[]
   ) => {
     let count = 0;
-    indexOptionMap.forEach((i: any) => {
+    indexOptionMap.forEach((i: ChapterStatus) => {
       if (i.isHasContent) return;
-      i.isCheck = isChecked;
+      i.isCheck = isChecked as boolean;
       count += 1;
     });
     chapterHasCheckedNum.value += isChecked ? count : -count;
+  };
+
+  // 选中所有章节
+  const checkAllChapter = () => {
+    indexOptionMap.forEach((i: ChapterStatus) => {
+      i.isCheck = true;
+    });
+    chapterHasCheckedNum.value = indexOptionMap.size;
+  };
+  // 清空所有章节
+  const cleanAllChapter = () => {
+    indexOptionMap.forEach((i: ChapterStatus) => {
+      i.isCheck = false;
+    });
+    chapterHasCheckedNum.value = 0;
   };
 
   // 开始爬选中的章节
