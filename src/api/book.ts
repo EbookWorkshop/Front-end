@@ -17,6 +17,13 @@ export interface Book {
   data?: DescData[];
 }
 
+/**
+ * 图书来源类型
+ */
+export interface BookSources {
+  Path: string;
+}
+
 if (import.meta.env.VITE_API_BASE_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 }
@@ -28,6 +35,14 @@ if (import.meta.env.VITE_API_BASE_URL) {
  */
 export function queryBookById(id: number) {
   return axios.get(`/library/book?bookid=${id}`);
+}
+/**
+ * 拿到书的来源地址
+ * @param id
+ * @returns
+ */
+export function queryBookSourcesById(id: number) {
+  return axios.get(`/library/webbook/sources?bookid=${id}`);
 }
 
 /**

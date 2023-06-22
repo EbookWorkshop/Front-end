@@ -10,7 +10,7 @@ export const NOT_FOUND = {
 export const REDIRECT_ROUTE_NAME = 'Redirect';
 
 export const DEFAULT_ROUTE_NAME = 'BookList';
-// ��½���Ĭ��·��
+// 登录后的默认路由
 export const DEFAULT_ROUTE = {
   title: 'menu.library.list',
   name: DEFAULT_ROUTE_NAME,

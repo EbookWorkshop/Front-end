@@ -30,7 +30,9 @@ socket.on('disconnect', () => {
 // });
 
 export default function useSocket() {
+  if (!socket.connected) socket.connect();
   console.log('获取socket对象');
+
   return {
     io: socket,
   };

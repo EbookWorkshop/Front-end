@@ -24,17 +24,6 @@ const LIBRARY: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
-    {
-      path: 'manage',
-      name: 'Manage',
-      component: () => import('@/views/library/manage/list.vue'),
-      meta: {
-        locale: 'menu.library.manage',
-        requiresAuth: true,
-        icon: 'icon-storage',
-        roles: ['*'],
-      },
-    },
   ],
 };
 

@@ -97,7 +97,10 @@
         >
           <div ref="refBtn" class="ref-btn"></div>
           <template #content>
-            <message-box :message-list="messageList" @emptyList="OnEmptyList" />
+            <message-box
+              :message-list="messageList"
+              @empty-list="OnEmptyList"
+            />
           </template>
         </a-popover>
       </li>
@@ -199,7 +202,6 @@
   import MessageBox from '../message-box/index.vue';
 
   const socket = useSocket();
-  if (!socket.io.connected) socket.io.connect();
 
   const appStore = useAppStore();
   const userStore = useUserStore();
@@ -263,6 +265,22 @@
   function OnEmptyList() {
     messageList.splice(0);
   }
+
+  socket.io.on(
+    'WebBook.UpdateChapter.Finish',
+    ({ bookid, bookName, doneNum, failNum }) => {
+      messageList.push({
+        id: bookid,
+        type: 'notice',
+        title: `《${bookName}》已完成任务。`,
+        subTitle: '',
+        content: `其中，成功：${doneNum}失败：${failNum}。`,
+        time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
+        status: 0,
+        avatar: 'index',
+      });
+    }
+  );
 
   // DEBUG: 测试用
   socket.io.on('Notice.Debug', (msg) => {

@@ -13,6 +13,17 @@ const WORKSHOP: AppRouteRecordRaw = {
   },
   children: [
     {
+      path: 'manage',
+      name: 'Manage',
+      component: () => import('@/views/library/manage/list.vue'),
+      meta: {
+        locale: 'menu.library.manage',
+        requiresAuth: true,
+        icon: 'icon-storage',
+        roles: ['*'],
+      },
+    },
+    {
       path: 'import',
       name: 'import',
       component: () => import('@/views/workshop/import/index.vue'),
@@ -34,17 +45,6 @@ const WORKSHOP: AppRouteRecordRaw = {
         roles: ['*'],
       },
       children: [
-        {
-          path: 'make',
-          name: 'Make',
-          component: () => import('@/views/workplace/reviewrule.vue'),
-          meta: {
-            icon: 'icon-list',
-            locale: 'menu.workshop.export.make',
-            requiresAuth: true,
-            roles: ['*'],
-          },
-        },
         {
           path: 'productsmanagement',
           name: 'ProductsManagement',

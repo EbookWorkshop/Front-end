@@ -2,6 +2,7 @@
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.library.list']" />
     <div class="wrapper">
+      <ProcessBar :bookid="bookid" :begin-percent="curDoingProcent" />
       <a-spin
         :loading="loading"
         tip="加载中..."
@@ -19,7 +20,7 @@
           </a-col>
           <a-col :span="14" :offset="1">
             <a-row :gutter="20" align="center" justify="center">
-              <a-col :span="10" style="margin-top: 50px; text-align: center">
+              <a-col :span="22" style="margin-top: 50px; text-align: left">
                 <a-typography-title>
                   {{ renderData.BookName }}</a-typography-title
                 >
@@ -43,10 +44,15 @@
                   <a-space wrap>
                     <a-select
                       :style="{ width: '160px' }"
-                      placeholder="指定其它数据来源"
+                      placeholder="数据来源"
                       :trigger-props="{ autoFitPopupMinWidth: true }"
                     >
-                      <a-option>http://www.qidian.com</a-option>
+                      <a-option
+                        v-for="s of bookSourcesData"
+                        :key="s.Path as string"
+                        @click="open(s.Path as string)"
+                        >{{ s.Path }}</a-option
+                      >
                     </a-select>
                     <a-button type="primary" size="large" @click="mergeIndex">
                       <icon-loop />同步目录
@@ -149,7 +155,14 @@
                 >
                   <a-button-group
                     style="align-items: stretch; width: 100%"
-                    :status="item.IsHasContent ? 'normal' : 'warning'"
+                    :status="
+                      indexOptionMap.get(item.IndexId)?.isError
+                        ? 'danger'
+                        : item.IsHasContent ||
+                          indexOptionMap.get(item.IndexId)?.isHasContent
+                        ? 'normal'
+                        : 'warning'
+                    "
                     :title="item.Title"
                   >
                     <a-button
@@ -189,17 +202,23 @@
 <script lang="ts" setup>
   import { ref, reactive } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
-  import { Message, Modal } from '@arco-design/web-vue';
+  import { Message, Modal, Notification } from '@arco-design/web-vue';
   import {
     queryBookById,
     updateChapter,
     createPDF,
     Book,
-    Chapter,
+    // Chapter,
     mergeWebBookIndex,
+    BookSources,
+    queryBookSourcesById,
   } from '@/api/book';
   import useRequest from '@/hooks/request';
+  import useSocket from '@/hooks/socket';
+
   import BookCover from '@/components/book-cover/index.vue';
+  import ProcessBar from './components/processbar.vue';
+
   /**
    * 章节状态
    */
@@ -212,6 +231,10 @@
      * 是否已有正文
      */
     isHasContent: boolean;
+    /**
+     * 是否更新失败了
+     */
+    isError: boolean;
   }
 
   const route = useRoute();
@@ -219,6 +242,9 @@
 
   // 已选中的章节数
   const chapterHasCheckedNum = ref(0);
+  // 是否显示进度条
+  const curDoingProcent = ref(-1);
+
   // 章节选项数据对象
   const indexOptionMap: Map<number, ChapterStatus> = reactive(new Map());
 
@@ -251,6 +277,7 @@
         // indexId: i.IndexId,
         isCheck: false,
         isHasContent: i.IsHasContent || false,
+        isError: false,
       };
       indexOptionMap.set(i.IndexId, temOption);
       return i;
@@ -265,12 +292,9 @@
   function GetChapterContent(curBookId: number, chapterIds: number[]) {
     return updateChapter(curBookId, chapterIds)
       .then((result) => {
-        Message.success('所有章节已处理完毕！');
-        result.data.map((cid: number | any) => {
-          const option = indexOptionMap.get(cid) || ({} as ChapterStatus);
-          option.isHasContent = true; // 不知道为何不生效，完成后不会切换样式
-          option.isCheck = false;
-          return cid;
+        curDoingProcent.value = 0; // 使进度条显示
+        indexOptionMap.forEach((i: ChapterStatus) => {
+          i.isError = false;
         });
       })
       .catch((err) => {
@@ -300,20 +324,21 @@
   };
 
   const { loading, response: renderData } = useRequest<Book>(queryBook);
+  const { response: bookSourcesData } = useRequest<BookSources[]>(() => {
+    return queryBookSourcesById(bookid);
+  });
 
   const showeditmenu = (chapterId: number) => {};
 
-  // 切换是否选中空章节
-  const checkEmptyChapter = (
-    isChecked: boolean | (string | number | boolean)[]
-  ) => {
+  // 选中所有空章节
+  const checkEmptyChapter = (ev: PointerEvent) => {
     let count = 0;
     indexOptionMap.forEach((i: ChapterStatus) => {
       if (i.isHasContent) return;
-      i.isCheck = isChecked as boolean;
+      i.isCheck = true;
       count += 1;
     });
-    chapterHasCheckedNum.value += isChecked ? count : -count;
+    chapterHasCheckedNum.value = count;
   };
 
   // 选中所有章节
@@ -345,6 +370,54 @@
     GetChapterContent(bookid, chapterOnCheck);
   };
 
+  // 通过socket更新进度
+  const { io: socket } = useSocket();
+  socket.on(
+    'WebBook.UpdateOneChapter.Error',
+    ({
+      bookid: _bookid,
+      chapterId,
+      err,
+    }: {
+      bookid: number;
+      chapterId: number;
+      err: Error;
+    }) => {
+      if (bookid !== _bookid) return;
+      const cStatus = indexOptionMap.get(chapterId) ?? ({} as ChapterStatus);
+      cStatus.isError = true;
+      const cInfo = renderData.value.Index.filter(
+        (i) => i.IndexId === chapterId
+      )[0] ?? { Title: '' };
+      Notification.error({
+        title: err.name,
+        content: `${cInfo.Title}：${err.message}`,
+        showIcon: true,
+      });
+    }
+  );
+  socket.on('WebBook.Chapter.Update', ({ bookid: _bookid, chapterId }) => {
+    if (bookid !== _bookid) return;
+    console.debug('WebBook.Chapter.Update', _bookid, chapterId);
+    const cStatus = indexOptionMap.get(chapterId) ?? ({} as ChapterStatus);
+    cStatus.isError = false;
+    cStatus.isHasContent = true;
+  });
+  socket.on(
+    'WebBook.UpdateChapter.Finish',
+    ({ bookid: _bookid, chapterIndexArray, doneNum, failNum }) => {
+      if (bookid !== _bookid) return;
+      Notification.success({
+        title: `已尝试任务${chapterIndexArray.length}个`,
+        content: `其中成功：${doneNum}，失败：${failNum}`,
+        showIcon: true,
+        duration: 0,
+        closable: true,
+      });
+      curDoingProcent.value = -1;
+    }
+  );
+
   // 爬=>打包=>发到邮箱
   const goToSendSelectedChapter = async () => {
     const chapterIsEmpty: number[] = []; // 没内容的章节
@@ -375,6 +448,9 @@
   // 只读模式下的打开章节
   const goto = (chapterId: number) => {
     router.push({ path: `/book/${bookid}/chapter/${chapterId}` });
+  };
+  const open = (url: string) => {
+    window.open(url);
   };
 </script>
 
