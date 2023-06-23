@@ -1,5 +1,5 @@
 <template>
-  <a-layout-footer class="footer">Ebook Workshop</a-layout-footer>
+  <a-layout-footer class="footer">© 2023 Ebook Workshop</a-layout-footer>
 </template>
 
 <script lang="ts" setup></script>

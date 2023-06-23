@@ -1,90 +1,166 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.result', 'menu.result.success']" />
+    <Breadcrumb :items="['menu.system', 'menu.system.fontmanager']" />
     <div class="wrapper">
-      <a-result
-        class="result"
-        status="success"
-        :title="$t('success.result.title')"
-        :subtitle="$t('success.result.subTitle')"
+      <a-row :gutter="16">
+        <a-col :span="3" style="text-align: center">
+          <a-upload action="/" accept=".ttf,.fon" :show-file-list="false" />
+        </a-col>
+        <a-col :span="7">
+          <a-form-item
+            field="showContent"
+            label="示例文章"
+            label-col-flex="100px"
+          >
+            <a-select
+              id="showContent"
+              :default-value="contentIndex"
+              @change="onContentChange"
+            >
+              <a-option
+                v-for="(t, index) in demoContext"
+                :key="t.name"
+                :value="index"
+                >{{ t.name }}</a-option
+              >
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="7">
+          <a-form-item field="showSize" label="字体大小" label-col-flex="100px">
+            <a-slider
+              v-model:model-value="fontSize"
+              :default-value="fontSize"
+              :style="{ width: '100%' }"
+              :min="10"
+              :max="64"
+            />
+          </a-form-item>
+        </a-col>
+        <a-col :span="7">
+          <a-form-item field="showSize" label="列数" label-col-flex="100px">
+            <a-slider
+              v-model:model-value="colNum"
+              :default-value="4"
+              :style="{ width: '100%' }"
+              :min="1"
+              :max="12"
+              :marks="{ 2: '2', 4: '4', 6: '6', 8: '8', 10: '10', 12: '12' }"
+              @change="ResetCol"
+            />
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <div
+        :style="{
+          boxSizing: 'border-box',
+          width: '100%',
+          padding: '40px',
+          backgroundColor: 'var(--color-fill-2)',
+        }"
       >
-        <template #extra>
-          <a-space class="operation-wrap" :size="16">
-            <a-button key="again" type="secondary">
-              {{ $t('success.result.printResult') }}
-            </a-button>
-            <a-button key="back" type="primary">
-              {{ $t('success.result.projectList') }}
-            </a-button>
-          </a-space>
-        </template>
-      </a-result>
-
-      <div class="steps-wrapper">
-        <a-typography-paragraph bold>{{
-          $t('success.result.progress')
-        }}</a-typography-paragraph>
-        <a-steps type="dot" :current="2">
-          <a-step
-            :title="$t('success.submitApplication')"
-            description="2020/10/10 14:00:39"
-          />
-          <a-step
-            :title="$t('success.leaderReview')"
-            :description="$t('success.processing')"
-          />
-          <a-step
-            :title="$t('success.purchaseCertificate')"
-            :description="$t('success.waiting')"
-          />
-          <a-step
-            :title="$t('success.safetyTest')"
-            :description="$t('success.waiting')"
-          />
-          <a-step
-            :title="$t('success.launched')"
-            :description="$t('success.waiting')"
-          />
-        </a-steps>
+        <a-row
+          v-for="(item, index) in renderData"
+          :key="index"
+          :gutter="20"
+          :style="{ marginBottom: '20px' }"
+        >
+          <a-col
+            v-for="f in item"
+            :key="f.name"
+            :span="Math.floor(24 / item.length)"
+          >
+            <a-card
+              :title="f.name"
+              :bordered="false"
+              :style="{ width: '100%' }"
+            >
+              <template #extra>
+                <a-link>更多</a-link>
+              </template>
+              <div
+                :style="{ fontFamily: f.fontFamily, fontSize: fontSize + 'px' }"
+                class="showContent"
+              >
+                <p
+                  v-for="(p, pIdx) in demoContext[contentIndex]?.content.split(
+                    '\n'
+                  )"
+                  :key="pIdx"
+                  >{{ p }}</p
+                >
+              </div>
+            </a-card>
+          </a-col>
+        </a-row>
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+  import { reactive, ref } from 'vue';
+  import { ContentType, queryFontList, queryDemoContent } from '@/api/font';
 
-<script lang="ts">
-  export default {
-    name: 'Success',
+  interface FontFace {
+    name: string;
+    path: string;
+    fontFamily: string;
+  }
+
+  const demoContext: Array<ContentType> = reactive([]);
+  const renderData: FontFace[][] = reactive([]);
+  const contentIndex = ref(0);
+  const fontSize = ref(24);
+  const colNum = ref(4); // 列数
+  const fontData: FontFace[] = []; // 默认的字体数据
+
+  const ResetCol = () => {
+    const data = fontData.concat();
+    renderData.length = 0;
+    do {
+      renderData.push([...data.splice(0, colNum.value)]);
+    } while (data.length > 0);
   };
+
+  async function Init() {
+    const data = (await queryFontList()) as FontFace[];
+
+    // 初始化到CSS
+    let fontFace = '';
+    let i = 0;
+    data.forEach((f) => {
+      i += 1;
+      f.fontFamily = `font_${i}`;
+      fontFace += `
+      @font-face {
+        font-family: '${f.fontFamily}';
+        src: url('${f.path}') format('truetype');
+        color:red;
+      }
+    `;
+    });
+
+    const styleTag = document.createElement('style');
+    styleTag.textContent = fontFace;
+    document.head.appendChild(styleTag);
+
+    fontData.push(...data);
+    ResetCol();
+    const c = await queryDemoContent();
+    demoContext.push(...c.data);
+  }
+
+  // 切换文章
+  const onContentChange = (value: any) => {
+    contentIndex.value = value as number;
+  };
+
+  Init();
 </script>
 
-<style scoped lang="less">
-  .result {
-    margin: 150px 0 0 0;
-  }
-
-  .operation-wrap {
-    margin-bottom: 40px;
-    text-align: center;
-  }
-
-  .steps-wrapper {
-    width: 100%;
-    min-width: fit-content;
-    margin-bottom: 150px;
-    padding: 20px;
-    background-color: rgb(var(--gray-1));
-  }
-</style>
-
 <style lang="less" scoped>
-  .mobile {
-    .wrapper {
-      padding: 24px 10px;
-      .steps-wrapper {
-        transform: scale(0.8);
-      }
-    }
+  .showContent p::before {
+    content: '　　'; /* 段落前缩进两格 */
   }
 </style>
