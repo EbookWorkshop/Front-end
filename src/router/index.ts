@@ -15,14 +15,14 @@ const router = createRouter({
       path: '/', // 默认入口
       redirect: 'library/booklist',
     },
-    // {
-    //   path: '/login',
-    //   name: 'login',
-    //   component: () => import('@/views/login/index.vue'),
-    //   meta: {
-    //     requiresAuth: false,
-    //   },
-    // },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/login/index.vue'),
+      meta: {
+        requiresAuth: false,
+      },
+    },
     ...appRoutes,
     REDIRECT_MAIN,
     NOT_FOUND_ROUTE,

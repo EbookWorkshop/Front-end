@@ -1,6 +1,6 @@
 import type { Router } from 'vue-router';
 import { setRouteEmitter } from '@/utils/route-listener';
-import setupUserLoginInfoGuard from './userLoginInfo';
+// import setupUserLoginInfoGuard from './userLoginInfo';
 import setupPermissionGuard from './permission';
 
 function setupPageGuard(router: Router) {
@@ -12,6 +12,6 @@ function setupPageGuard(router: Router) {
 
 export default function createRouteGuard(router: Router) {
   setupPageGuard(router);
-  setupUserLoginInfoGuard(router);
+  // setupUserLoginInfoGuard(router);   //在路由规则上去掉登录认证的拦截
   setupPermissionGuard(router);
 }
