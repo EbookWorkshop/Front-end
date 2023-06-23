@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
-const ASSETS_HOST = import.meta.env.VITE_API_BASE_URL;
+export const ASSETS_HOST = import.meta.env.VITE_API_BASE_URL;
 export interface ContentType {
   name: string;
   content: string;

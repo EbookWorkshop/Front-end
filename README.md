@@ -56,9 +56,7 @@ wt --maximized -d %cd%\\EBWFrontEnd PowerShell -c npm run dev;split-pane -d %cd%
 
 
 ## TODO List
-* 发邮件时选章节得一个一个选
-* 选后面的章节后，得滚动页面到最开始操作发送邮件
-* 书添加校阅规则
+* 选后面的章节后，得滚动页面到最开始操作发送邮件 —— [返回顶部 BackTop]控件加不上
 
 
 ## 提交的类型规范
@@ -74,3 +72,6 @@ wt --maximized -d %cd%\\EBWFrontEnd PowerShell -c npm run dev;split-pane -d %cd%
 * ci: 持续集成相关文件修改
 * release: 发布新版本
 * chore: 其他修改（不在上述类型中的修改）
+
+## 关闭某些ESlint规则
+在文件`.eslintrc.js`找到rules节点，加入配置如：`{"no-irregular-whitespace":"off"}`。
