@@ -77,18 +77,30 @@
                           <a-doption @click="cleanAllChapter"
                             >清空已选</a-doption
                           >
+                          <a-doption @click="checkAllChapterAfterFirstChecked"
+                            >已选章节后续全选中</a-doption
+                          >
                         </template>
                       </a-dropdown-button>
                     </a-badge>
 
-                    <a-button
-                      type="primary"
-                      size="large"
-                      status="success"
-                      @click="goToGetAllChapter"
-                    >
-                      <icon-robot-add />获取选中章节内容
-                    </a-button>
+                    <a-dropdown trigger="hover">
+                      <a-button
+                        type="primary"
+                        size="large"
+                        status="success"
+                        @click="goToGetAllChapter(false)"
+                      >
+                        <icon-robot-add />获取选中章节内容
+                      </a-button>
+                      <template #content>
+                        <a-doption @click="goToGetAllChapter(true)"
+                          >获取选中章节内容(强制更新)</a-doption
+                        >
+                        <a-doption>删除选中章节TODO</a-doption>
+                      </template>
+                    </a-dropdown>
+
                     <a-button size="large">
                       <icon-ordered-list />章节排序
                     </a-button>
@@ -288,9 +300,14 @@
    * 实际爬章节
    * @param curBookId 当前书ID
    * @param chapterIds 需要爬的章节ID
+   * @param isUpdate 启用强制更新
    */
-  function GetChapterContent(curBookId: number, chapterIds: number[]) {
-    return updateChapter(curBookId, chapterIds)
+  function GetChapterContent(
+    curBookId: number,
+    chapterIds: number[],
+    isUpdate = false
+  ) {
+    return updateChapter(curBookId, chapterIds, isUpdate)
       .then((result) => {
         curDoingProcent.value = 0; // 使进度条显示
         indexOptionMap.forEach((i: ChapterStatus) => {
@@ -355,9 +372,24 @@
     });
     chapterHasCheckedNum.value = 0;
   };
+  // 从第一个选中的章节开始全部选中
+  const checkAllChapterAfterFirstChecked = () => {
+    let hasMeet = false;
+    let count = chapterHasCheckedNum.value;
+    indexOptionMap.forEach((i: ChapterStatus) => {
+      if (hasMeet) {
+        i.isCheck = true;
+        count++;
+      } else if (i.isCheck === true) {
+        hasMeet = true;
+      }
+    });
+    if (!hasMeet) Message.warning('请先选择一个用于锚记开始的章节！');
+    chapterHasCheckedNum.value = count;
+  };
 
   // 开始爬选中的章节
-  const goToGetAllChapter = () => {
+  const goToGetAllChapter = (isUpdate = false) => {
     const chapterOnCheck: number[] = [];
     indexOptionMap.forEach((i: any, key: any) => {
       if (i.isCheck) chapterOnCheck.push(key);
@@ -367,7 +399,7 @@
     else
       Message.error(`没选中任何章节，请先勾选需要选获取的章节，然后再开始。`);
 
-    GetChapterContent(bookid, chapterOnCheck);
+    GetChapterContent(bookid, chapterOnCheck, isUpdate);
   };
 
   // 通过socket更新进度
