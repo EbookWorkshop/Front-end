@@ -16,9 +16,18 @@ export function queryFontList() {
       return {
         name: item.replace(/(\/font\/)|(\.\w+)/g, ''),
         path: ASSETS_HOST + item,
+        fontFile: item.replace('/font/', ''),
       };
     });
   });
+}
+/**
+ * 删除字体文件
+ * @param fontName
+ * @returns
+ */
+export function deleteFont(fontName: string) {
+  return axios.delete('/services/font', { data: fontName });
 }
 
 /**
