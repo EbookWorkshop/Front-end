@@ -80,6 +80,12 @@
                           <a-doption @click="checkAllChapterAfterFirstChecked"
                             >已选章节后续全选中</a-doption
                           >
+                          <a-doption @click="checkNextChapter(10)"
+                            >选中空或已选章节后续10个</a-doption
+                          >
+                          <a-doption @click="checkNextChapter(20)"
+                            >选中空或已选章节后续20个</a-doption
+                          >
                         </template>
                       </a-dropdown-button>
                     </a-badge>
@@ -387,9 +393,29 @@
     if (!hasMeet) Message.warning('请先选择一个用于锚记开始的章节！');
     chapterHasCheckedNum.value = count;
   };
+  const checkNextChapter = (num: number) => {
+    let hasMeet = false;
+    let count = 0;
+    indexOptionMap.forEach((i: ChapterStatus) => {
+      if (count >= num) return;
+      if (hasMeet && i.isHasContent === false) {
+        i.isCheck = true;
+        count++;
+      } else if (i.isCheck === true || i.isHasContent === false) {
+        hasMeet = true;
+        if (!i.isCheck) {
+          i.isCheck = true;
+          count++;
+        }
+      }
+    });
+    if (!hasMeet) Message.warning('没有合适的章节，请检查。');
+    chapterHasCheckedNum.value = count;
+  };
 
   // 开始爬选中的章节
   const goToGetAllChapter = (isUpdate = false) => {
+    curDoingProcent.value = 0;
     const chapterOnCheck: number[] = [];
     indexOptionMap.forEach((i: any, key: any) => {
       if (i.isCheck) chapterOnCheck.push(key);

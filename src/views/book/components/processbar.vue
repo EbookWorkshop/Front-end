@@ -29,10 +29,12 @@
   const { io: socket } = useSocket();
   socket.on(
     'WebBook.UpdateChapter.Process',
-    ({ bookid, rate /* , chapterId,ok, fail, all */ }) => {
+    ({ bookid, rate, chapterId, ok, fail, all }) => {
       if (bookid !== props.bookid) return;
       isShow.value = true;
-      percent.value = Math.floor(rate * 1000) / 10000;
+      percent.value = Math.floor(rate * 1000) / 1000;
+
+      console.log('更新进度：', rate, chapterId, ok, fail, all);
 
       if (rate >= 1)
         setTimeout(() => {
