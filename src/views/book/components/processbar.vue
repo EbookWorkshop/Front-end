@@ -1,10 +1,12 @@
 <template>
-  <a-progress
-    v-if="isShow || (beginPercent ?? -1) >= 0"
-    status="success"
-    :percent="percent"
-    size="large"
-  />
+  <a-affix :offset-top="80">
+    <a-progress
+      v-if="isShow || (beginPercent ?? -1) >= 0"
+      status="success"
+      :percent="percent"
+      size="large"
+    />
+  </a-affix>
 </template>
 
 <script lang="ts" setup>

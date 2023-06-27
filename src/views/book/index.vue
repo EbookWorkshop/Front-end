@@ -134,7 +134,7 @@
               <a-col v-for="i in [1, 2, 3, 4, 5, 6]" :key="i" :span="4">
                 <a-skeleton :animation="loading">
                   <a-skeleton-line
-                    :rows="4"
+                    :rows="8"
                     :line-height="48"
                     :line-spacing="10"
                   />
