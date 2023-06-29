@@ -2,24 +2,29 @@
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.library.list']" />
     <div class="wrapper">
-      <a-typography :style="{ marginTop: '-40px' }">
-        <a-typography-title class="title"
-          >{{ renderData.Title }}
-        </a-typography-title>
-        <a-row class="grid-chapter" style="margin-bottom: 16px">
-          <a-col :span="2" style="height: 100%">
-            <!-- 【阅读列表】给左边预留一点空位 -->
-          </a-col>
-          <a-col :span="20" class="content">
+      <a-row class="grid-chapter" style="margin-bottom: 16px">
+        <a-col :span="2" style="height: 100%">
+          <!-- 【阅读列表】给左边预留一点空位 -->
+        </a-col>
+        <a-col :span="20" class="content">
+          <a-typography :style="{ marginTop: '-40px' }">
+            <a-typography-title class="title"
+              >{{ renderData.Title }}
+            </a-typography-title>
             <a-typography-paragraph
-              v-for="p in renderData.Content?.split('\n')"
-              :key="p"
+              v-for="(p, index) in renderData.Content?.split('\n')"
+              :key="index"
             >
               {{ p }}
             </a-typography-paragraph>
-          </a-col>
-        </a-row>
-      </a-typography>
+          </a-typography>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-button>上一章</a-button>
+        <a-button>目录</a-button>
+        <a-button>下一章</a-button>
+      </a-row>
     </div>
   </div>
 </template>

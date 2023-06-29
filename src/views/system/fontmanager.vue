@@ -4,16 +4,23 @@
     <div class="wrapper">
       <a-row :gutter="16">
         <a-col :span="3" style="text-align: center">
-          <a-upload
-            :action="ASSETS_HOST + '/services/font/add'"
-            accept=".ttf,.fon"
-            :show-file-list="false"
-            @success="
-              () => {
-                Message.success('添加成功，请刷新页面。');
-              }
-            "
-          />
+          <a-space>
+            <a-upload
+              :action="ASSETS_HOST + '/services/font/add'"
+              accept=".ttf,.fon"
+              :show-file-list="false"
+              @success="
+                () => {
+                  Message.success('添加成功，请刷新页面。');
+                }
+              "
+            />
+            <a-tooltip
+              content="部分字体在浏览器中不能正确渲染，可以生成PDF文件进行预览。"
+            >
+              <a-button type="primary">预览PDF</a-button>
+            </a-tooltip>
+          </a-space>
         </a-col>
         <a-col :span="7">
           <a-form-item

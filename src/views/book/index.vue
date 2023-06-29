@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.library.list']" />
-    <div class="wrapper">
+    <div id="baseWrap" class="wrapper">
       <ProcessBar :bookid="bookid" :begin-percent="curDoingProcent" />
       <a-spin
         :loading="loading"
@@ -213,6 +213,10 @@
           </a-col>
         </a-row>
       </a-spin>
+      <a-back-top
+        target-container="#baseWrap"
+        :style="{ position: 'absolute' }"
+      /><!-- 暂时没生效 -->
     </div>
   </div>
 </template>

@@ -12,15 +12,12 @@
               ></BookClassical>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
-              <a-upload action="/upload/importBook">
-                <template #upload-button>
-                  <BookClassical
-                    :title-show="'TXT 导入'"
-                    conver-color="#f2e3a4"
-                  >
-                  </BookClassical>
-                </template>
-              </a-upload>
+              <BookClassical
+                :title-show="'TXT 导入'"
+                conver-color="#f2e3a4"
+                @click="handleImportText"
+              >
+              </BookClassical>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
               <a-upload action="/upload/importBook/pdf">
@@ -43,6 +40,10 @@
         @check="handleBeforeOk"
       >
       </ImportWeb>
+      <ImportText
+        :visible="showTextImport"
+        @ok="handleImoprtSubmit"
+      ></ImportText>
     </div>
   </div>
 </template>
@@ -54,8 +55,10 @@
   import BookClassical from '@/components/book-cover/components/book-classical.vue';
   import { addANewWebBook } from '@/api/book';
   import ImportWeb from './components/import-web.vue';
+  import ImportText from './components/import-text.vue';
 
   const isShow = ref(false);
+  const showTextImport = ref(false);
   const toImport = () => {
     isShow.value = true;
   };
@@ -80,6 +83,16 @@
       .finally(() => {
         processing.value = false;
       });
+  };
+
+  /**
+   * 处理文本导入
+   */
+  const handleImportText = () => {
+    showTextImport.value = true;
+  };
+  const handleImoprtSubmit = () => {
+    showTextImport.value = false;
   };
 </script>
 
