@@ -5,6 +5,7 @@
   >
   <a-upload
     draggable
+    multiple
     accept=".txt"
     :auto-upload="false"
     @change="onFileChange"
