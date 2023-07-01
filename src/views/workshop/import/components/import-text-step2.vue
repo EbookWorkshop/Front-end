@@ -37,15 +37,20 @@
       </template>
       <template #second>
         <a-space direction="vertical" size="large">
-          <a-form :model="form" :style="{ width: '600px', marginLeft: '40px' }">
+          <a-form
+            ref="formRef"
+            :model="form"
+            :style="{ width: '600px', marginLeft: '40px' }"
+            auto-label-width
+          >
             <a-form-item
-              field=""
+              field="encoderType"
               tooltip="设置文本编码"
               label="选择编码"
-              required
+              :rules="[{ required: true, message: '必须设置文本编码' }]"
             >
               <a-radio-group
-                v-model="encoderType"
+                v-model="form.encoderType"
                 :options="['gb2312', 'utf8']"
                 @change="getFileText"
               />
@@ -75,7 +80,7 @@
             <a-form-item
               field="titleRule"
               label="章节标题"
-              tooltip="章节分割规则，通过命中章节标题分割章节。"
+              tooltip="章节分割规则，通过命中章节标题分割章节。如果留空则不进行任何分割！"
             >
               <a-textarea v-model="form.titleRule" auto-size />
             </a-form-item>
@@ -89,6 +94,7 @@
 <script lang="ts" setup>
   import { PropType, reactive, ref } from 'vue';
   import { FileItem } from '@arco-design/web-vue';
+  import { FormInstance } from '@arco-design/web-vue/es/form';
 
   // 暴露的属性
   const prop = defineProps({
@@ -98,13 +104,13 @@
   // 文档列表
   const contents: { txt: string; name: string }[] = reactive([]);
   // 表单对象
+  const formRef = ref<FormInstance>();
   const form = reactive({
+    encoderType: '',
     oneChapterAFile: (prop.files?.length ?? 0) > 1,
     removeRule: [],
     titleRule: '',
-  });
-  // 解码
-  const encoderType = ref('');
+  }) as any;
 
   // 前端读取文本内容
   const getFileText = () => {
@@ -119,13 +125,13 @@
           name: file.name ?? '未知文件',
         });
       };
-      fileReader.readAsText(file.file as Blob, encoderType.value);
+      fileReader.readAsText(file.file as Blob, form.encoderType);
     });
   };
 
   // 重置数据
-  const restData = () => {
-    encoderType.value = '';
+  const restData = async () => {
+    await formRef.value?.resetFields();
     contents.length = 0;
   };
 
@@ -133,6 +139,7 @@
    * 获取数据、配置
    */
   const getData = () => {
+    formRef.value?.validate(); // 校验表单
     return {
       contents,
       setting: form,

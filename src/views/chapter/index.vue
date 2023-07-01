@@ -3,10 +3,7 @@
     <Breadcrumb :items="['menu.library', 'menu.library.list']" />
     <div class="wrapper">
       <a-row class="grid-chapter" style="margin-bottom: 16px">
-        <a-col :span="2" style="height: 100%">
-          <!-- 【阅读列表】给左边预留一点空位 -->
-        </a-col>
-        <a-col :span="20" class="content">
+        <a-col :span="20" class="content" :offset="2">
           <a-typography :style="{ marginTop: '-40px' }">
             <a-typography-title class="title"
               >{{ renderData.Title }}
@@ -20,10 +17,10 @@
           </a-typography>
         </a-col>
       </a-row>
-      <a-row>
-        <a-button>上一章</a-button>
-        <a-button>目录</a-button>
-        <a-button>下一章</a-button>
+      <a-row :gutter="8">
+        <a-col :span="2" :offset="9"><a-button long>上一章</a-button></a-col>
+        <a-col :span="2"><a-button long>目录</a-button></a-col>
+        <a-col :span="2"><a-button long>下一章</a-button></a-col>
       </a-row>
     </div>
   </div>

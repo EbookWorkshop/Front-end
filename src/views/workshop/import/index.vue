@@ -40,10 +40,7 @@
         @check="handleBeforeOk"
       >
       </ImportWeb>
-      <ImportText
-        :visible="showTextImport"
-        @ok="handleImoprtSubmit"
-      ></ImportText>
+      <ImportText ref="textImportModal" @ok="handleImoprtSubmit"></ImportText>
     </div>
   </div>
 </template>
@@ -58,7 +55,7 @@
   import ImportText from './components/import-text.vue';
 
   const isShow = ref(false);
-  const showTextImport = ref(false);
+  const textImportModal = ref() as any; // 模窗的引用
   const toImport = () => {
     isShow.value = true;
   };
@@ -89,10 +86,12 @@
    * 处理文本导入
    */
   const handleImportText = () => {
-    showTextImport.value = true;
+    // showTextImport.value = true;
+    textImportModal?.value.show();
   };
   const handleImoprtSubmit = () => {
-    showTextImport.value = false;
+    console.log('触发了确定-模窗');
+    // showTextImport.value = false;
   };
 </script>
 

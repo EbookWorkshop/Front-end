@@ -138,11 +138,16 @@
     }
 
     // console.log(chapterList);
+    CurChapter.value = chapterList[0]?.Content ?? '';
 
     return true;
   };
 
   defineExpose({
     initData,
+    getData: () => {
+      console.log(chapterList);
+      return [...chapterList];
+    },
   });
 </script>

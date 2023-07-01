@@ -44,6 +44,8 @@
 </template>
 
 <script lang="ts" setup>
+  import { PropType } from 'vue';
+
   // import { ref } from 'vue';
   const props = defineProps({
     loading: {
@@ -70,7 +72,7 @@
      * + [青灰：#212f30]
      */
     converColor: {
-      type: String,
+      type: String, // as PropType<'#0b3154'|'#cb1f2f'|'#f2e3a4'|'#212f30'>,
       default: '#0b3154',
     },
   });

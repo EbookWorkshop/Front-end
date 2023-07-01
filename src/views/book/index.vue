@@ -30,7 +30,9 @@
             <a-row>
               <!-- 书详情页面 -->
               <a-col :offset="2">
-                <a-typography-text>作者：</a-typography-text>
+                <a-typography-text
+                  >作者：{{ renderData.Author }}</a-typography-text
+                >
               </a-col>
               <a-col :offset="2">
                 <a-typography-text>简介：</a-typography-text>
@@ -155,13 +157,16 @@
                   :key="item.IndexId"
                   class="reading-index"
                 >
-                  <a-button
-                    long
-                    :disabled="!item.IsHasContent"
-                    class="chapter"
-                    @click="goto(item.IndexId)"
-                    >{{ item.Title }}
-                  </a-button>
+                  <a-tooltip :content="item.Title">
+                    <a-button
+                      long
+                      :disabled="!item.IsHasContent"
+                      class="chapter"
+                      @click="goto(item.IndexId)"
+                    >
+                      {{ item.Title }}
+                    </a-button>
+                  </a-tooltip>
                 </a-grid-item>
               </template>
               <template v-else>
@@ -216,7 +221,7 @@
       <a-back-top
         target-container="#baseWrap"
         :style="{ position: 'absolute' }"
-      /><!-- 暂时没生效 -->
+      /><!-- TODO: 返回页面顶端 暂时没生效 -->
     </div>
   </div>
 </template>

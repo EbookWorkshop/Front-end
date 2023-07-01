@@ -1,6 +1,6 @@
 <template>
   <BookWrap
-    v-if="coverImg"
+    v-if="coverImg && !coverImg?.startsWith('#')"
     :loading="loading"
     :title="bookName"
     :cover-img="coverImg"
@@ -16,6 +16,7 @@
     :loading="loading"
     :title="bookName"
     :title-show="bookName.replace(/[\(（)].*$/, '')"
+    :conver-color="coverImg?.startsWith('#') ? coverImg : undefined"
   >
   </BookClassical>
 </template>

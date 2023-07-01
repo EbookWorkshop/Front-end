@@ -15,3 +15,12 @@ if (import.meta.env.VITE_API_BASE_URL) {
 export function queryBookList() {
   return axios.get('/library/booklist');
 }
+
+/**
+ * 添加一本书入书库
+ * @param book
+ * @returns
+ */
+export function addABook(book: any) {
+  return axios.post(`/library/book`, book);
+}

@@ -13,6 +13,7 @@ export interface Book {
   BookId: number;
   BookName: string;
   CoverImg: string;
+  Author: string;
   Index: Chapter[];
   data?: DescData[];
 }
