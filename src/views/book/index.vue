@@ -2,7 +2,7 @@
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.library.list']" />
     <div id="baseWrap" class="wrapper">
-      <ProcessBar :bookid="bookid" :begin-percent="curDoingProcent" />
+      <ProcessBar :bookid="bookId" :begin-percent="curDoingProcent" />
       <a-spin
         :loading="loading"
         tip="加载中..."
@@ -162,7 +162,7 @@
                       long
                       :disabled="!item.IsHasContent"
                       class="chapter"
-                      @click="goto(item.IndexId)"
+                      @click="gotoChapter(item.IndexId)"
                     >
                       {{ item.Title }}
                     </a-button>
@@ -228,7 +228,6 @@
 
 <script lang="ts" setup>
   import { ref, reactive } from 'vue';
-  import { useRouter, useRoute } from 'vue-router';
   import { Message, Modal, Notification } from '@arco-design/web-vue';
   import {
     queryBookById,
@@ -242,6 +241,7 @@
   } from '@/api/book';
   import useRequest from '@/hooks/request';
   import useSocket from '@/hooks/socket';
+  import useBookHelper from '@/hooks/book-helper';
 
   import BookCover from '@/components/book-cover/index.vue';
   import ProcessBar from './components/processbar.vue';
@@ -264,9 +264,6 @@
     isError: boolean;
   }
 
-  const route = useRoute();
-  const router = useRouter();
-
   // 已选中的章节数
   const chapterHasCheckedNum = ref(0);
   // 是否显示进度条
@@ -275,17 +272,14 @@
   // 章节选项数据对象
   const indexOptionMap: Map<number, ChapterStatus> = reactive(new Map());
 
-  // 是否编辑模式
-  const isEdit = route.path.includes('/bookedit/');
-  // 当前书的ID
-  const bookid = Number(route.params.id);
+  const { bookId, isEdit, gotoChapter, gotoIndex } = useBookHelper();
 
   /**
    * 合并当前章节
    * @param bookid
    */
   function mergeIndex() {
-    return mergeWebBookIndex(bookid)
+    return mergeWebBookIndex(bookId)
       .then((result) => {
         Message.success('已启动章节更新合并');
         console.log(result);
@@ -343,7 +337,7 @@
   };
 
   const queryBook = () => {
-    return queryBookById(bookid).then((rsl: any) => {
+    return queryBookById(bookId).then((rsl: any) => {
       if (isEdit) {
         new Promise((ok: any) => {
           ok();
@@ -357,7 +351,7 @@
 
   const { loading, response: renderData } = useRequest<Book>(queryBook);
   const { response: bookSourcesData } = useRequest<BookSources[]>(() => {
-    return queryBookSourcesById(bookid);
+    return queryBookSourcesById(bookId);
   });
 
   const showeditmenu = (chapterId: number) => {};
@@ -434,7 +428,7 @@
     else
       Message.error(`没选中任何章节，请先勾选需要选获取的章节，然后再开始。`);
 
-    GetChapterContent(bookid, chapterOnCheck, isUpdate);
+    GetChapterContent(bookId, chapterOnCheck, isUpdate);
   };
 
   // 通过socket更新进度
@@ -450,7 +444,7 @@
       chapterId: number;
       err: Error;
     }) => {
-      if (bookid !== _bookid) return;
+      if (bookId !== _bookid) return;
       const cStatus = indexOptionMap.get(chapterId) ?? ({} as ChapterStatus);
       cStatus.isError = true;
       const cInfo = renderData.value.Index.filter(
@@ -464,7 +458,7 @@
     }
   );
   socket.on('WebBook.Chapter.Update', ({ bookid: _bookid, chapterId }) => {
-    if (bookid !== _bookid) return;
+    if (bookId !== _bookid) return;
     console.debug('WebBook.Chapter.Update', _bookid, chapterId);
     const cStatus = indexOptionMap.get(chapterId) ?? ({} as ChapterStatus);
     cStatus.isError = false;
@@ -473,7 +467,7 @@
   socket.on(
     'WebBook.UpdateChapter.Finish',
     ({ bookid: _bookid, chapterIndexArray, doneNum, failNum }) => {
-      if (bookid !== _bookid) return;
+      if (bookId !== _bookid) return;
       Notification.success({
         title: `已尝试任务${chapterIndexArray.length}个`,
         content: `其中成功：${doneNum}，失败：${failNum}`,
@@ -500,10 +494,10 @@
       Message.warning(
         `共${chapterIsEmpty.length}章还没有正文，先尝试获取章节内容。`
       );
-      await GetChapterContent(bookid, chapterOnCheck);
+      await GetChapterContent(bookId, chapterOnCheck);
     }
     Message.loading(`开始生成PDF`);
-    createPDF(bookid, chapterOnCheck, true)
+    createPDF(bookId, chapterOnCheck, true)
       .then((result) => {
         Message.success(`已通过邮件发送：《${result.data.book.filename}》`);
       })
@@ -512,10 +506,6 @@
       });
   };
 
-  // 只读模式下的打开章节
-  const goto = (chapterId: number) => {
-    router.push({ path: `/book/${bookid}/chapter/${chapterId}` });
-  };
   const open = (url: string) => {
     window.open(url);
   };
