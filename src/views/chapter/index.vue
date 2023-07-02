@@ -35,28 +35,46 @@
         </a-col>
       </a-row>
       <a-row :gutter="[8, 32]">
-        <a-col :span="2" :offset="9"><a-button long>上一章</a-button></a-col>
+        <a-col :span="2" :offset="9"
+          ><a-button
+            long
+            :disabled="!adjChap.pre"
+            @click="gotoChapter(adjChap?.pre?.id)"
+            >上一章</a-button
+          ></a-col
+        >
         <a-col :span="2"
           ><a-button long @click="gotoIndex">目录</a-button></a-col
         >
-        <a-col :span="2"><a-button long>下一章</a-button></a-col>
+        <a-col :span="2"
+          ><a-button
+            long
+            :disabled="!adjChap.next"
+            @click="gotoChapter(adjChap?.next?.id)"
+            >下一章</a-button
+          ></a-col
+        >
       </a-row>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { queryChapterById, Book, Chapter } from '@/api/book';
+  import {
+    queryChapterById,
+    queryAdjacentChapterInfo,
+    Chapter,
+  } from '@/api/book';
   import useRequest from '@/hooks/request';
   import useBookHelper from '@/hooks/book-helper';
 
-  const { bookId, chapterId, gotoChapter, gotoIndex } = useBookHelper();
-
-  const queryChapter = () => {
-    return queryChapterById(chapterId);
-  };
-
-  const { loading, response: renderData } = useRequest<Chapter>(queryChapter);
+  const { chapterId, gotoChapter, gotoIndex } = useBookHelper();
+  const { loading, response: renderData } = useRequest<Chapter>(
+    queryChapterById.bind(null, chapterId)
+  );
+  const { response: adjChap } = useRequest<any>(
+    queryAdjacentChapterInfo.bind(null, chapterId)
+  );
 </script>
 
 <style>

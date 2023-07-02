@@ -56,6 +56,15 @@ export function queryChapterById(cid: number) {
 }
 
 /**
+ * 找到相邻的章节
+ * @param cid 当前章节ID
+ * @returns
+ */
+export function queryAdjacentChapterInfo(cid: number) {
+  return axios.get(`/library/book/adjacentchapter?chapterid=${cid}`);
+}
+
+/**
  * 创建一本书，新书入库
  * @param url 书目录地址
  * @returns
