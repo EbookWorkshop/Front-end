@@ -24,7 +24,14 @@ export default function useBookHelper() {
     bookId,
     chapterId,
     isEdit,
+    /**
+     * 打开本书目录
+     */
     gotoIndex,
+    /**
+     * 打开某一章-阅读
+     * @param chapterid
+     */
     gotoChapter,
   };
 }
