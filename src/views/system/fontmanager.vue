@@ -18,7 +18,7 @@
             <a-tooltip
               content="部分字体在浏览器中不能正确渲染，可以生成PDF文件进行预览。"
             >
-              <a-button type="primary">预览PDF</a-button>
+              <a-button type="primary">在PDF预览字体</a-button>
             </a-tooltip>
           </a-space>
         </a-col>
