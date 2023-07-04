@@ -3,26 +3,27 @@
     <Breadcrumb :items="['menu.system', 'menu.system.fontmanager']" />
     <div class="wrapper">
       <a-row :gutter="16">
-        <a-col :span="3" style="text-align: center">
+        <a-col :span="3">
           <a-space>
-            <a-upload
-              :action="ASSETS_HOST + '/services/font/add'"
-              accept=".ttf,.fon"
-              :show-file-list="false"
-              @success="
-                () => {
-                  Message.success('添加成功，请刷新页面。');
-                }
-              "
-            />
+            <a-button
+              shape="round"
+              :type="viewModel == 'web' ? 'secondary' : 'text'"
+              @click="() => (viewModel = 'web')"
+              >在网页预览</a-button
+            >
             <a-tooltip
               content="部分字体在浏览器中不能正确渲染，可以生成PDF文件进行预览。"
             >
-              <a-button type="primary">在PDF预览字体</a-button>
+              <a-button
+                shape="round"
+                :type="viewModel == 'pdf' ? 'secondary' : 'text'"
+                @click="() => (viewModel = 'pdf')"
+                >在PDF预览</a-button
+              >
             </a-tooltip>
           </a-space>
         </a-col>
-        <a-col :span="7">
+        <a-col :span="6">
           <a-form-item
             field="showContent"
             label="示例文章"
@@ -42,7 +43,7 @@
             </a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="7">
+        <a-col :span="6">
           <a-form-item field="showSize" label="字体大小" label-col-flex="100px">
             <a-slider
               v-model:model-value="fontSize"
@@ -53,7 +54,7 @@
             />
           </a-form-item>
         </a-col>
-        <a-col :span="7">
+        <a-col v-if="viewModel == 'web'" :span="6">
           <a-form-item field="showSize" label="列数" label-col-flex="100px">
             <a-slider
               v-model:model-value="colNum"
@@ -66,8 +67,34 @@
             />
           </a-form-item>
         </a-col>
+        <a-col v-else-if="viewModel == 'pdf'" :span="6">
+          <a-form-item field="showFont" label="字体" label-col-flex="100px">
+            <a-select
+              id="showFont"
+              v-model="font"
+              :default-value="fontData[0]?.name"
+            >
+              <a-option v-for="t in fontData" :key="t.name" :value="t.name">{{
+                t.name
+              }}</a-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="3" style="text-align: center">
+          <a-upload
+            :action="ASSETS_HOST + '/services/font/add'"
+            accept=".ttf,.fon"
+            :show-file-list="false"
+            @success="
+              () => {
+                Message.success('添加成功，请刷新页面。');
+              }
+            "
+          />
+        </a-col>
       </a-row>
       <div
+        v-if="viewModel == 'web'"
         :style="{
           boxSizing: 'border-box',
           width: '100%',
@@ -117,6 +144,31 @@
           </a-col>
         </a-row>
       </div>
+      <div
+        v-else-if="viewModel == 'pdf'"
+        :style="{
+          boxSizing: 'border-box',
+          width: '100%',
+          padding: '40px',
+          backgroundColor: 'var(--color-fill-2)',
+        }"
+      >
+        <a-row>
+          <a-col :span="24" style="text-align: center">
+            <iframe
+              ref="pdfFrame"
+              width="1072"
+              height="1448"
+              :src="
+                ASSETS_HOST +
+                `/services/pdf/view?content=${encodeURIComponent(
+                  demoContext[contentIndex]?.content
+                )}&fontsize=${fontSize}&fontfamily=${font ?? fontData[0].name}`
+              "
+            ></iframe>
+          </a-col>
+        </a-row>
+      </div>
     </div>
   </div>
 </template>
@@ -145,6 +197,11 @@
   const fontSize = ref(24);
   const colNum = ref(4); // 列数
   const fontData: FontFace[] = []; // 默认的字体数据
+  const font = ref(fontData[0]?.name); // 当前预览字体
+
+  const pdfFrame = ref(null) as any;
+
+  const viewModel = ref('web'); // 预览模式
 
   // 重新设置列数
   const ResetCol = () => {
