@@ -31,8 +31,8 @@
           >
             <a-select
               id="showContent"
+              v-model="contentIndex"
               :default-value="contentIndex"
-              @change="onContentChange"
             >
               <a-option
                 v-for="(t, index) in demoContext"
@@ -247,12 +247,14 @@
     ResetCol();
     const c = await queryDemoContent();
     demoContext.push(...c.data);
+
+    contentIndex.value = Math.floor(Math.random() * 1000) % demoContext.length;
   }
 
-  // 切换文章
-  const onContentChange = (value: any) => {
-    contentIndex.value = value as number;
-  };
+  // // 切换文章
+  // const onContentChange = (value: any) => {
+  //   contentIndex.value = value as number;
+  // };
 
   Init();
 </script>
