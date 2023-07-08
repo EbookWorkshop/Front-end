@@ -48,6 +48,17 @@ const WORKPLACE: AppRouteRecordRaw = {
       ],
     },
     {
+      path: 'revise',
+      name: 'revise', // 修订内容
+      component: () => import('@/views/workplace/index.vue'),
+      meta: {
+        icon: 'icon-eraser',
+        locale: 'menu.workplace.revise',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
+    {
       path: 'readtypeset',
       name: 'readtypeset', // 调章节顺序
       component: () => import('@/views/workplace/index.vue'),
