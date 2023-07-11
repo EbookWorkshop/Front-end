@@ -2,7 +2,7 @@
   <a-spin :loading="loading">
     <a-row :gutter="20" align="stretch" style="overflow-x: hidden">
       <a-col :span="24">
-        <a-card class="general-card" :title="title">
+        <a-card class="general-card">
           <div class="book-list-wrap">
             <a-row class="list-row" :gutter="24">
               <!-- 一行 -->

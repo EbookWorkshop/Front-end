@@ -50,11 +50,21 @@ const WORKPLACE: AppRouteRecordRaw = {
     {
       path: 'revise',
       name: 'revise', // 修订内容
-      component: () => import('@/views/workplace/index.vue'),
+      component: () => import('@/views/workplace/revise/index.vue'),
       meta: {
         icon: 'icon-eraser',
         locale: 'menu.workplace.revise',
         requiresAuth: true,
+        roles: ['*'],
+      },
+    },
+    {
+      path: 'revise/book/:id(\\d+)',
+      name: 'revisebook',
+      component: () => import('@/views/workplace/revise/book.vue'),
+      meta: {
+        requiresAuth: true,
+        hideInMenu: true,
         roles: ['*'],
       },
     },

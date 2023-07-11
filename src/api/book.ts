@@ -56,6 +56,15 @@ export function queryChapterById(cid: number) {
 }
 
 /**
+ * 修改章节信息
+ * @param chapter 章节
+ * @returns 
+ */
+export function editChapter(chapter: Chapter) {
+  return axios.post("/library/book/chapter", chapter);
+}
+
+/**
  * 找到相邻的章节
  * @param cid 当前章节ID
  * @returns

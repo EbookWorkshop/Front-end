@@ -1,7 +1,8 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.library', 'menu.library.list']" />
-    <div class="wrapper"> Success Export </div>
+    <Breadcrumb
+      :items="['menu.workplace',]" />
+    <div class="wrapper"> Success workplace/index.vue </div>
   </div>
 </template>
 
