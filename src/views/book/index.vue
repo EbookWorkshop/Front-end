@@ -54,6 +54,7 @@
                           <a-doption @click="checkAllChapterAfterFirstChecked">已选章节后续全选中</a-doption>
                           <a-doption @click="checkNextChapter(10,1)">选中已选章节后续10个</a-doption>
                           <a-doption @click="checkNextChapter(20,1)">选中已选章节后续20个</a-doption>
+                          <a-doption @click="checkNextChapter(100,1)">选中已选章节后续100个</a-doption>
                           <a-doption @click="checkNextChapter(10,2)">选中空章节后续10个</a-doption>
                           <a-doption @click="checkNextChapter(20,2)">选中空章节后续20个</a-doption>
                         </template>
