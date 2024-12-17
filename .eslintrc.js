@@ -66,5 +66,9 @@ module.exports = {
     'no-param-reassign': 0,
     'prefer-regex-literals': 0,
     'import/no-extraneous-dependencies': 0,
+
+    //报错
+    'media-query-no-invalid': 0,
+    'selector-anb-no-unmatchable': 0,
   },
 };

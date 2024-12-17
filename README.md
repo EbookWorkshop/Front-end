@@ -92,3 +92,8 @@ wt --maximized -d %cd%\\EBWFrontEnd PowerShell -c npm run dev;split-pane -d %cd%
 
 ## 关闭某些ESlint规则
 在文件`.eslintrc.js`找到rules节点，加入配置如：`{"no-irregular-whitespace":"off"}`。
+
+## 绕过校验
+```
+git commit --no-verify -m "提交说明"
+```
