@@ -37,7 +37,7 @@
 npm i -g arco-cli --registry=https://registry.npmmirror.com
 arco init EbookWorkshop-FrontEnd
 ```
-ArcoDesignVue已更新到v2.44.7
+ArcoDesignVue已更新到v2.56.3
 
 ## 初始化安装
 ```

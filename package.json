@@ -1,7 +1,7 @@
 {
   "name": "ebookworkshop",
   "description": " Ebook Workshop,Base from Arco Design Pro for Vue",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "private": true,
   "author": "c0618c",
   "license": "MIT",
@@ -30,7 +30,7 @@
     ]
   },
   "dependencies": {
-    "@arco-design/web-vue": "^2.44.7",
+    "@arco-design/web-vue": "^2.56.3",
     "@vueuse/core": "^9.3.0",
     "axios": "^1.4.0",
     "dayjs": "^1.11.5",
@@ -77,12 +77,12 @@
     "prettier": "^2.7.1",
     "rollup": "^3.9.1",
     "rollup-plugin-visualizer": "^5.8.2",
-    "stylelint": "^14.13.1",
-    "stylelint-config-prettier": "^9.0.3",
+    "stylelint": "^15.10.0",
+    "stylelint-config-prettier": "^9.0.5",
     "stylelint-config-rational-order": "^0.1.2",
-    "stylelint-config-recommended-vue": "^1.4.0",
-    "stylelint-config-standard": "^29.0.0",
-    "stylelint-order": "^5.0.0",
+    "stylelint-config-recommended-vue": "^1.5.0",
+    "stylelint-config-standard": "^34.0.0",
+    "stylelint-order": "^6.0.3",
     "typescript": "^4.8.4",
     "unplugin-vue-components": "^0.24.1",
     "vite": "^3.2.5",
@@ -93,7 +93,7 @@
     "vue-tsc": "^1.0.14"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=20.0.0"
   },
   "resolutions": {
     "bin-wrapper": "npm:bin-wrapper-china",
