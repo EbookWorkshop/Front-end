@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.library.manage']" />
-    <BookList :title="$t('menu.library.manage')" next-router="bookedit" />
+    <div class="wrapper">
+      <BookList :title="$t('menu.library.manage')" next-router="bookedit" />
+    </div>
   </div>
 </template>
 

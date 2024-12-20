@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.library.list']" />
-    Success Export
+    <div class="wrapper">
+      Success Export
+    </div>
   </div>
 </template>
 

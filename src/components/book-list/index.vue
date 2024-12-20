@@ -1,4 +1,5 @@
 <template>
+  <a-empty v-if="renderData!=null && renderData.length == 0" />
   <a-spin :loading="loading">
     <a-row :gutter="20" align="stretch" style="overflow-x: hidden">
       <a-col :span="24">

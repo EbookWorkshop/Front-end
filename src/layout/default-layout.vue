@@ -33,9 +33,9 @@
           <Menu />
         </a-drawer>
         <a-layout class="layout-content" :style="paddingStyle">
-          <TabBar v-if="appStore.tabBar" />
+          <TabBar v-if="appStore.tabBar" /><!--可以切换、关闭页签的页签栏目-->
           <a-layout-content>
-            <PageLayout />
+            <PageLayout /><!--实际内容页主框-面包屑路径在这模块里面-->
           </a-layout-content>
           <Footer v-if="footer" />
         </a-layout>
