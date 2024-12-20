@@ -47,6 +47,7 @@ export default {
   'menu.arcoWebsite': 'EBook Workshop',
   'menu.faq': '常见问题',
   'menu.api': '后台接口文档',
+  'menu.about': '关于',
   'navbar.docs': '文档中心',
   'navbar.action.locale': '切换为中文',
 

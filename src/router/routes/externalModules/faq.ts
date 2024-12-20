@@ -4,7 +4,7 @@ export default {
   meta: {
     locale: 'menu.faq',
     icon: 'icon-question-circle',
-    requiresAuth: true,
+    requiresAuth: false,
     order: 9,
   },
 };

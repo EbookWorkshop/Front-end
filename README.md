@@ -94,6 +94,12 @@ wt --maximized -d %cd%\\EBWFrontEnd PowerShell -c npm run dev;split-pane -d %cd%
 在文件`.eslintrc.js`找到rules节点，加入配置如：`{"no-irregular-whitespace":"off"}`。
 
 ## 绕过校验
-```
+```bash
 git commit --no-verify -m "提交说明"
+```
+
+## 执行校验
+>在git终端bash中才能正确显示颜色和符号
+```bash
+npx lint-staged
 ```

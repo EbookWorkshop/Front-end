@@ -46,6 +46,7 @@ export default {
   'menu.arcoWebsite': 'Arco Design',
   'menu.faq': 'FAQ',
   'menu.api': 'API',
+  'menu.about': 'About',
   'navbar.docs': 'Docs',
   'navbar.action.locale': 'Switch to English',
 

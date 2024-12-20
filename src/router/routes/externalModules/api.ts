@@ -4,7 +4,7 @@ export default {
   meta: {
     locale: 'menu.api',
     icon: 'icon-info-circle-fill',
-    requiresAuth: true,
+    requiresAuth: false,
     order: 8,
   },
 };

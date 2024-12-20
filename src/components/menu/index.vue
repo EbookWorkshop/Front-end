@@ -1,6 +1,6 @@
 <script lang="tsx">
   /**
-   * 右侧树状菜单
+   * 左侧树状菜单
    */
   import { defineComponent, ref, h, compile, computed } from 'vue';
   import { useI18n } from 'vue-i18n';
@@ -41,7 +41,8 @@
           return;
         }
         // Eliminate external link side effects
-        const { hideInMenu, activeMenu } = item.meta as RouteMeta;
+        const { hideInMenu, activeMenu, hideChildrenInMenu } = item.meta as RouteMeta;
+        if (hideChildrenInMenu) selectedKey.value = [item.name as string];   //如果没子菜单，则直接高亮本身
         if (route.name === item.name && !hideInMenu && !activeMenu) {
           selectedKey.value = [item.name as string];
           return;
