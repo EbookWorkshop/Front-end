@@ -1,9 +1,14 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import dayjs from 'dayjs';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import svgLoader from 'vite-svg-loader';
 import configArcoStyleImportPlugin from './plugin/arcoStyleImport';
+
+
+import { dependencies, devDependencies, name, version } from "../package.json"
+import { assert } from 'console';
 
 export default defineConfig({
   plugins: [
@@ -35,6 +40,13 @@ export default defineConfig({
   },
   define: {
     'process.env': {},
+    //这里定义全局的变量
+    "__CONST_INFO__": {
+      "lastBuildTime": dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      package: { dependencies, devDependencies },
+      appinfo: { name, version },
+      assets: resolve(__dirname, '../src/assets')
+    }
   },
   css: {
     preprocessorOptions: {

@@ -1,5 +1,10 @@
 import axios from 'axios';
 
+
+export function getSystemVersion() {
+  return axios.get('/services/version');
+}
+
 /**
  * 保存发邮箱信息
  * @param email 发邮件用邮箱地址
