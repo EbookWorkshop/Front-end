@@ -28,7 +28,11 @@ const appData = reactive([]) as any;
 const app = appInfo?.appinfo;
 appData.push(...[{
   label: "项目名称",
-  value: app.name
+  value: app.name,
+  span:2
+}, {
+  label: "Nodejs版本",
+  value: ""
 }, {
   label: "系统版本",
   value: ""
@@ -54,6 +58,7 @@ getSystemVersion().then((result: any) => {
   const data = result.data;
   // serverVersion.value = data.version;
   appData.filter((item: any) => item.label === "系统版本")[0].value = data.version;
+  appData.filter((item: any) => item.label === "Nodejs版本")[0].value = data.nodeVersion;
   for (let d in data.dependencies) {
     serverData.push({
       label: d,
