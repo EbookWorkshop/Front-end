@@ -147,14 +147,12 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue';
 import { Message, Modal, Notification } from '@arco-design/web-vue';
+import { Book,BookSources } from '@/types/book';
 import {
   queryBookById,
   updateChapter,
   createPDF,
-  Book,
-  // Chapter,
   mergeWebBookIndex,
-  BookSources,
   queryBookSourcesById,
 } from '@/api/book';
 import useRequest from '@/hooks/request';

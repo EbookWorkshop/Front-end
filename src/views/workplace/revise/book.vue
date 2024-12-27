@@ -21,10 +21,10 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue";
 import BookIndex from "@/components/book-index/index.vue"
+import { Chapter } from "@/types/book";
 import {
   queryChapterById,
   editChapter,
-  Chapter,
 } from '@/api/book';
 // import useRequest from '@/hooks/request';
 import { AxiosResponse } from 'axios';

@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-  import { Chapter } from '@/api/book';
+  import { Chapter } from '@/types/book';
   import { reactive, ref } from 'vue';
 
   // 产出数据——章节列表

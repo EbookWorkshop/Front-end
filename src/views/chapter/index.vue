@@ -60,10 +60,10 @@
 </template>
 
 <script lang="ts" setup>
+  import { Chapter } from '@/types/book'; 
   import {
     queryChapterById,
     queryAdjacentChapterInfo,
-    Chapter,
   } from '@/api/book';
   import useRequest from '@/hooks/request';
   import useBookHelper from '@/hooks/book-helper';

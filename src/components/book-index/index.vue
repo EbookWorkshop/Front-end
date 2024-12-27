@@ -54,12 +54,10 @@
 
 
 <script lang="ts" setup>
-import {
-    queryBookById,
-    Book,
-} from './../../api/book';
-import useRequest from './../../hooks/request';
-import useBookHelper from './../../hooks/book-helper';
+import {Book} from '@/types/book';
+import { queryBookById } from '@/api/book';
+import useRequest from '@/hooks/request';
+import useBookHelper from '@/hooks/book-helper';
 
 import BookCover from './../book-cover/index.vue';
 
