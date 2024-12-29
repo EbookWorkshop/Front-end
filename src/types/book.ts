@@ -9,6 +9,24 @@ export interface Chapter {
     IsHasContent?: boolean;
 }
 
+/**
+ * 章节状态
+ */
+export interface ChapterStatus {
+    /**
+     * 是否已选
+     */
+    isCheck: boolean;
+    /**
+     * 是否已有正文
+     */
+    isHasContent: boolean;
+    /**
+     * 是否更新失败了
+     */
+    isError: boolean;
+}
+
 export interface Book {
     BookId: number;
     BookName: string;
@@ -25,3 +43,4 @@ export interface Book {
 export interface BookSources {
     Path: string;
 }
+

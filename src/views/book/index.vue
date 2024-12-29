@@ -147,7 +147,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue';
 import { Message, Modal, Notification } from '@arco-design/web-vue';
-import { Book,BookSources } from '@/types/book';
+import { Book,BookSources,ChapterStatus } from '@/types/book';
 import {
   queryBookById,
   updateChapter,
@@ -162,23 +162,7 @@ import useBookHelper from '@/hooks/book-helper';
 import BookCover from '@/components/book-cover/index.vue';
 import ProcessBar from './components/processbar.vue';
 
-/**
- * 章节状态
- */
-interface ChapterStatus {
-  /**
-   * 是否已选
-   */
-  isCheck: boolean;
-  /**
-   * 是否已有正文
-   */
-  isHasContent: boolean;
-  /**
-   * 是否更新失败了
-   */
-  isError: boolean;
-}
+
 
 // 已选中的章节数
 const chapterHasCheckedNum = ref(0);
