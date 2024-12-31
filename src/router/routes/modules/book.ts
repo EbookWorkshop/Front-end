@@ -14,7 +14,7 @@ const BOOK: AppRouteRecordRaw = {
     {
       path: '/book/:id(\\d+)',
       name: 'BookIndex',
-      component: () => import('@/views/book/index.vue'),
+      component: () => import('@/views/book/reading.vue'),
       meta: {
         requiresAuth: true,
         hideInMenu: true,
