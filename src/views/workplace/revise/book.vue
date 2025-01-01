@@ -12,6 +12,7 @@
         </template>
       </ChapterList>
 
+      <!-- 编辑章节内容的弹出窗口 -->
       <a-modal fullscreen :visible="isEdit" @cancel="() => isEdit = false" :title="form.chapTitle" @ok="onSubmit">
         <a-form :model="form" layout="vertical">
           <a-form-item field="chapTitle" label="章节标题">
