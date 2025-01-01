@@ -4,7 +4,7 @@
       <icon-apps />
     </a-breadcrumb-item>
     <a-breadcrumb-item v-for="item in items" :key="item">
-      {{ $t(item) }}
+      {{/^\w+(\.\w+)+?/.test(item)? $t(item) : item }}<!-- 非xxx.yyy格式的文本就尝试国际化，直接显示文本 -->
     </a-breadcrumb-item>
   </a-breadcrumb>
 </template>

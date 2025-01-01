@@ -1,8 +1,16 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.workplace', 'menu.workplace.revise',]" />
+    <Breadcrumb :items="['menu.workplace', 'menu.workplace.revise', renderData.BookName]" />
     <div class="wrapper">
-      <BookIndex @click-chapter="onClickChapter" />
+      <BookInfo :loading="loading" :bookId="bookId" :BookName="renderData.BookName" :convertImg="renderData.CoverImg"
+        :Author="renderData.Author" />
+      <ChapterList :loading="loading" :Chapters="renderData.Index">
+        <template #content="{ item }">
+          <a-button long class="chapter" @click="onClickChapter(item.IndexId)">
+            {{ item.Title }}
+          </a-button>
+        </template>
+      </ChapterList>
 
       <a-modal fullscreen :visible="isEdit" @cancel="() => isEdit = false" :title="form.chapTitle" @ok="onSubmit">
         <a-form :model="form" layout="vertical">
@@ -19,17 +27,26 @@
 </template>
 
 <script lang="ts" setup>
+import { Book, Chapter } from "@/types/book";
+
 import { ref, reactive } from "vue";
-import BookIndex from "@/components/book-index/index.vue"
-import { Chapter } from "@/types/book";
 import {
   queryChapterById,
+  queryBookById,
   editChapter,
 } from '@/api/book';
-// import useRequest from '@/hooks/request';
 import { AxiosResponse } from 'axios';
-import { Message, Modal } from '@arco-design/web-vue';
 
+//组件
+import { Message, Modal } from '@arco-design/web-vue';
+import BookInfo from "@/components/book-info/index.vue";
+import ChapterList from '@/components/chapter-list/index.vue';
+
+import useRequest from '@/hooks/request';
+import useBookHelper from '@/hooks/book-helper';
+
+const { bookId, gotoChapter, gotoIndex } = useBookHelper();
+const { loading, response: renderData } = useRequest<Book>(queryBookById.bind(null, bookId));
 
 const form = reactive({
   chapTitle: '',
