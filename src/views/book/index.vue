@@ -27,64 +27,62 @@
               </a-col>
               <a-col>&nbsp;</a-col>
             </a-row>
-            <template v-if="isEdit">
-              <!-- 管理按钮 -->
-              <a-row justify="start">
-                <a-col>
-                  <a-space wrap>
-                    <a-select :style="{ width: '160px' }" placeholder="数据来源"
-                      :trigger-props="{ autoFitPopupMinWidth: true }">
-                      <a-option v-for="s of bookSourcesData" :key="s.Path as string" @click="open(s.Path as string)">{{
-                        s.Path }}</a-option>
-                    </a-select>
-                    <a-button type="primary" size="large" @click="mergeIndex">
-                      <icon-loop />同步目录
-                    </a-button>
-
-                    <a-badge :max-count="20000" :count="chapterHasCheckedNum">
-                      <a-dropdown-button type="primary" size="large" status="warning" style="align-items: stretch"
-                        @click="checkEmptyChapter">
-                        选中空章节
-                        <template #icon>
-                          <icon-down />
-                        </template>
-                        <template #content>
-                          <a-doption @click="checkAllChapter">选中全部章节</a-doption>
-                          <a-doption @click="cleanAllChapter">清空已选</a-doption>
-                          <a-doption @click="checkAllChapterAfterFirstChecked">已选章节后续全选中</a-doption>
-                          <a-doption @click="checkNextChapter(10,1)">选中已选章节后续10个</a-doption>
-                          <a-doption @click="checkNextChapter(20,1)">选中已选章节后续20个</a-doption>
-                          <a-doption @click="checkNextChapter(100,1)">选中已选章节后续100个</a-doption>
-                          <a-doption @click="checkNextChapter(10,2)">选中空章节后续10个</a-doption>
-                          <a-doption @click="checkNextChapter(20,2)">选中空章节后续20个</a-doption>
-                        </template>
-                      </a-dropdown-button>
-                    </a-badge>
-
-                    <a-dropdown trigger="hover">
-                      <a-button type="primary" size="large" status="success" @click="goToGetAllChapter(false)">
-                        <icon-robot-add />获取选中章节内容
-                      </a-button>
-                      <template #content>
-                        <a-doption @click="goToGetAllChapter(true)">获取选中章节内容(强制更新)</a-doption>
-                        <a-doption>删除选中章节TODO</a-doption>
-                      </template>
-                    </a-dropdown>
-
-                    <a-button size="large">
-                      <icon-ordered-list />章节排序
-                    </a-button>
-                  </a-space>
-                </a-col>
-              </a-row>
-              <a-row justify="start">
-                <a-col>
-                  <a-button type="outline" size="large" @click="goToSendSelectedChapter">
-                    <icon-mobile />发送到默认邮箱账户
+            <!-- 管理按钮 -->
+            <a-row justify="start">
+              <a-col>
+                <a-space wrap>
+                  <a-select :style="{ width: '160px' }" placeholder="数据来源"
+                    :trigger-props="{ autoFitPopupMinWidth: true }">
+                    <a-option v-for="s of bookSourcesData" :key="s.Path as string" @click="open(s.Path as string)">{{
+                      s.Path }}</a-option>
+                  </a-select>
+                  <a-button type="primary" size="large" @click="mergeIndex">
+                    <icon-loop />同步目录
                   </a-button>
-                </a-col>
-              </a-row>
-            </template>
+
+                  <a-badge :max-count="20000" :count="chapterHasCheckedNum">
+                    <a-dropdown-button type="primary" size="large" status="warning" style="align-items: stretch"
+                      @click="checkEmptyChapter">
+                      选中空章节
+                      <template #icon>
+                        <icon-down />
+                      </template>
+                      <template #content>
+                        <a-doption @click="checkAllChapter">选中全部章节</a-doption>
+                        <a-doption @click="cleanAllChapter">清空已选</a-doption>
+                        <a-doption @click="checkAllChapterAfterFirstChecked">已选章节后续全选中</a-doption>
+                        <a-doption @click="checkNextChapter(10, 1)">选中已选章节后续10个</a-doption>
+                        <a-doption @click="checkNextChapter(20, 1)">选中已选章节后续20个</a-doption>
+                        <a-doption @click="checkNextChapter(100, 1)">选中已选章节后续100个</a-doption>
+                        <a-doption @click="checkNextChapter(10, 2)">选中空章节后续10个</a-doption>
+                        <a-doption @click="checkNextChapter(20, 2)">选中空章节后续20个</a-doption>
+                      </template>
+                    </a-dropdown-button>
+                  </a-badge>
+
+                  <a-dropdown trigger="hover">
+                    <a-button type="primary" size="large" status="success" @click="goToGetAllChapter(false)">
+                      <icon-robot-add />获取选中章节内容
+                    </a-button>
+                    <template #content>
+                      <a-doption @click="goToGetAllChapter(true)">获取选中章节内容(强制更新)</a-doption>
+                      <a-doption>删除选中章节TODO</a-doption>
+                    </template>
+                  </a-dropdown>
+
+                  <a-button size="large">
+                    <icon-ordered-list />章节排序
+                  </a-button>
+                </a-space>
+              </a-col>
+            </a-row>
+            <a-row justify="start">
+              <a-col>
+                <a-button type="outline" size="large" @click="goToSendSelectedChapter">
+                  <icon-mobile />发送到默认邮箱账户
+                </a-button>
+              </a-col>
+            </a-row>
           </a-col>
         </a-row>
         <a-row class="grid-chapter" style="margin-bottom: 16px">
@@ -100,41 +98,29 @@
 
             <a-grid :cols="{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }" :col-gap="12" :row-gap="16"
               class="grid-demo-grid">
-              <template v-if="!isEdit">
-                <!-- 阅读视图 阅读时的章节列表 -->
-                <a-grid-item v-for="item in renderData.Index" :key="item.IndexId" class="reading-index">
-                  <a-tooltip :content="item.Title">
-                    <a-button long :disabled="!item.IsHasContent" class="chapter" @click="gotoChapter(item.IndexId)">
+              <!-- 编辑视图 编辑功能时的章节列表 -->
+              <a-grid-item v-for="item in renderData.Index" :key="item.IndexId" class="edit-index">
+                <a-button-group style="align-items: stretch; width: 100%" :status="indexOptionMap.get(item.IndexId)?.isError
+                  ? 'danger'
+                  : item.IsHasContent ||
+                    indexOptionMap.get(item.IndexId)?.isHasContent
+                    ? 'normal'
+                    : 'warning'
+                  " :title="item.Title">
+                  <a-button long type="dashed" class="chapter" @click="changeChapterIsCheck(item.IndexId)">
+                    <a-checkbox :model-value="indexOptionMap.get(item.IndexId)?.isCheck">
                       {{ item.Title }}
-                    </a-button>
-                  </a-tooltip>
-                </a-grid-item>
-              </template>
-              <template v-else>
-                <!-- 编辑视图 编辑功能时的章节列表 -->
-                <a-grid-item v-for="item in renderData.Index" :key="item.IndexId" class="edit-index">
-                  <a-button-group style="align-items: stretch; width: 100%" :status="indexOptionMap.get(item.IndexId)?.isError
-                      ? 'danger'
-                      : item.IsHasContent ||
-                        indexOptionMap.get(item.IndexId)?.isHasContent
-                        ? 'normal'
-                        : 'warning'
-                    " :title="item.Title">
-                    <a-button long type="dashed" class="chapter" @click="changeChapterIsCheck(item.IndexId)">
-                      <a-checkbox :model-value="indexOptionMap.get(item.IndexId)?.isCheck">
-                        {{ item.Title }}
-                      </a-checkbox>
-                    </a-button>
+                    </a-checkbox>
+                  </a-button>
 
-                    <a-button type="dashed" size="large" style="height: unset !important"
-                      @click="showeditmenu(item.IndexId)">
-                      <template #icon>
-                        <icon-settings />
-                      </template>
-                    </a-button>
-                  </a-button-group>
-                </a-grid-item>
-              </template>
+                  <a-button type="dashed" size="large" style="height: unset !important"
+                    @click="showeditmenu(item.IndexId)">
+                    <template #icon>
+                      <icon-settings />
+                    </template>
+                  </a-button>
+                </a-button-group>
+              </a-grid-item>
             </a-grid>
           </a-col>
         </a-row>
@@ -147,7 +133,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue';
 import { Message, Modal, Notification } from '@arco-design/web-vue';
-import { Book,BookSources,ChapterStatus } from '@/types/book';
+import { Book, BookSources, ChapterStatus } from '@/types/book';
 import {
   queryBookById,
   updateChapter,
@@ -172,7 +158,7 @@ const curDoingProcent = ref(-1);
 // 章节选项数据对象
 const indexOptionMap: Map<number, ChapterStatus> = reactive(new Map());
 
-const { bookId, isEdit, gotoChapter, gotoIndex } = useBookHelper();
+const { bookId, gotoChapter, gotoIndex } = useBookHelper();
 
 /**
  * 合并当前章节
@@ -238,13 +224,11 @@ const changeChapterIsCheck = (cIndex: number) => {
 
 const queryBook = () => {
   return queryBookById(bookId).then((rsl: any) => {
-    if (isEdit) {
-      new Promise((ok: any) => {
-        ok();
-      }).then(() => {
-        InitEditModelOption(rsl.data);
-      });
-    }
+    new Promise((ok: any) => {
+      ok();
+    }).then(() => {
+      InitEditModelOption(rsl.data);
+    });
     return rsl;
   });
 };
