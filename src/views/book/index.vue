@@ -100,26 +100,7 @@
               class="grid-demo-grid">
               <!-- 编辑视图 编辑功能时的章节列表 -->
               <a-grid-item v-for="item in renderData.Index" :key="item.IndexId" class="edit-index">
-                <a-button-group style="align-items: stretch; width: 100%" :status="indexOptionMap.get(item.IndexId)?.isError
-                  ? 'danger'
-                  : item.IsHasContent ||
-                    indexOptionMap.get(item.IndexId)?.isHasContent
-                    ? 'normal'
-                    : 'warning'
-                  " :title="item.Title">
-                  <a-button long type="dashed" class="chapter" @click="changeChapterIsCheck(item.IndexId)">
-                    <a-checkbox :model-value="indexOptionMap.get(item.IndexId)?.isCheck">
-                      {{ item.Title }}
-                    </a-checkbox>
-                  </a-button>
-
-                  <a-button type="dashed" size="large" style="height: unset !important"
-                    @click="showeditmenu(item.IndexId)">
-                    <template #icon>
-                      <icon-settings />
-                    </template>
-                  </a-button>
-                </a-button-group>
+                <ChapterBar :item="item" :index-option-map="indexOptionMap" @chapterCheckChanged="changeChapterIsCheck" />
               </a-grid-item>
             </a-grid>
           </a-col>
@@ -145,9 +126,10 @@ import useRequest from '@/hooks/request';
 import useSocket from '@/hooks/socket';
 import useBookHelper from '@/hooks/book-helper';
 
+// 组件
 import BookCover from '@/components/book-cover/index.vue';
 import ProcessBar from './components/processbar.vue';
-
+import ChapterBar from './components/chapter-bar.vue';
 
 
 // 已选中的章节数
