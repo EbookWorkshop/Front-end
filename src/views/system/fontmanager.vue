@@ -83,7 +83,7 @@
         <a-col :span="3" style="text-align: center">
           <a-upload
             :action="ASSETS_HOST + '/services/font/add'"
-            accept=".ttf,.fon"
+            accept=".ttf,.fon" :multiple="true"
             :show-file-list="false"
             @success="
               () => {
