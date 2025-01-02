@@ -19,7 +19,7 @@
                     <a-typography-text>作者：{{ Author }}</a-typography-text>
                 </a-col>
                 <a-col :offset="2">
-                    <a-typography-text>简介：???</a-typography-text>
+                    <a-typography-text>简介：</a-typography-text>
                 </a-col>
                 <a-col>&nbsp</a-col>
             </a-row>

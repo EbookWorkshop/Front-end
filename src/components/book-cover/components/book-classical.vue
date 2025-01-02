@@ -189,20 +189,20 @@
       }
 
       .sub-title {
-        font-size: 0.5rem;
+        font-size: 0.7rem;
       }
 
       .sub-title-f {
         position: absolute;
         top: 20px;
-        right: 5px;
+        right: 6px;
       }
 
       .sub-title-s {
         position: absolute;
         top: inherit;
         bottom: 20px;
-        left: 2px;
+        left: 4px;
       }
     }
 

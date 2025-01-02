@@ -1,5 +1,6 @@
 // 爬网站机器人规则配置
 import axios from 'axios';
+export const ASSETS_HOST = axios.defaults.baseURL;//import.meta.env.VITE_API_BASE_URL;
 
 /**
  * 一条规则
