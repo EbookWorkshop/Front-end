@@ -17,7 +17,7 @@
 │          └── settings.json  # 配置文件
 │   ├── directives # 指令集（如需，可自行补充）
 │   ├── filters # 过滤器（如需，可自行补充）
-│   ├── hooks # 全局hooks
+│   ├── hooks # 全局hooks       useXXXXX
 │   ├── layout  # 布局
 │   ├── locale  # 国际化语言包
 │   ├── mock  # 模拟数据
