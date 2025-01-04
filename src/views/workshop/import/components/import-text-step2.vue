@@ -22,7 +22,7 @@
                   <!-- <a-typography-title>{{ t.name }}</a-typography-title> -->
                   <a-typography-paragraph style="white-space: pre-wrap">{{
                     t.txt
-                    }}</a-typography-paragraph>
+                  }}</a-typography-paragraph>
                 </a-typography>
               </div>
             </a-scrollbar>
@@ -47,9 +47,19 @@
                 <span v-else>每个文件为单独章节，无需设置</span>
               </a-form-item>
               <a-form-item>
-                <a-button status="warning" @click="testCleanRule">测试删除规则</a-button>
-                <a-button status="warning" @click="testCutRule"
-                  v-if="form.oneChapterAFile === false">测试分割章节规则</a-button>
+                <a-button status="warning" long @click="testCleanRule">测试删除规则</a-button>
+              </a-form-item>
+              <a-form-item v-if="form.oneChapterAFile === false">
+                <a-select placeholder="常见章节规则推荐" :trigger-props="{ autoFitPopupMinWidth: true }"
+                  @change="form.titleRule = $event">
+                  <a-optgroup label="含章节标题">
+                    <a-option value="((第\S+?[回章][^\n]+?)|后记)\r?\n">第x章/回或后记-独立分行</a-option>
+                  </a-optgroup>
+                  <a-optgroup label="无章节标题">
+                    <a-option value="((第\S+?章)|后记)\r?\n">第x章或后记-独立分行</a-option>
+                  </a-optgroup>
+                </a-select>
+                <a-button status="warning" @click="testCutRule">测试分割章节规则</a-button>
               </a-form-item>
             </a-form>
           </a-space>
@@ -61,7 +71,7 @@
 
 <script lang="ts" setup>
 import { PropType, reactive, ref, h } from 'vue';
-import { FileItem, Modal, Table } from '@arco-design/web-vue';
+import { FileItem, Modal, Table, Tag, Space } from '@arco-design/web-vue';
 import { FormInstance } from '@arco-design/web-vue/es/form';
 import { IChapter } from './utils';
 import { cleanContent, cutContent } from './utils';
@@ -123,26 +133,38 @@ function testCleanRule() {
       demo: runRsl.litters[key].slice(0, 5).join(' '),
     });
   }
-  console.log(showResult);
+  // console.log(showResult);
   Modal.info({
     title: '测试结果',
-    content: () => {
-      return h(Table, {
-        columns: [
-          { title: '标签', dataIndex: 'reg' },
-          { title: '命中', dataIndex: 'count' },
-          { title: '命中样例', dataIndex: 'demo' },
-        ],
-        data: showResult,
-        pagination: false,
-      });
-    },
+    width:"auto",
+    draggable:true,
+    content: () => h(Table, {
+      columns: [
+        { title: '标签', dataIndex: 'reg' },
+        { title: '命中', dataIndex: 'count' },
+        { title: '命中样例', dataIndex: 'demo' },
+      ],
+      data: showResult,
+      pagination: false,
+    }),
   });
 
 }
 
 function testCutRule() {
-  cutContent(contents, form.titleRule);
+  let cutRsl = cutContent(contents, form.titleRule);
+  let showTitle = cutRsl.map((c) => c.Title);
+  console.log(showTitle);
+  Modal.info({
+    title: `章节分割结果：共${showTitle.length}章`,
+    width:"auto",
+    draggable:true,
+    content: () => {
+      return h(Space, { wrap: true }, () => {
+        return showTitle.map((t) => h(Tag, () => t));
+      });
+    },
+  });
 }
 
 // 重置数据

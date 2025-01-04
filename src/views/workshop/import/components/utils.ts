@@ -1,3 +1,4 @@
+import { Chapter } from '@/types/book';
 /**
  * 本控件用的章节类型
  */
@@ -30,9 +31,37 @@ export function cleanContent(content: IChapter[], rule: string[]) {
 
   return { result, litters };
 }
+/**
+ * 切割文章内容
+ * @param content 文章合计
+ * @param rule 章节标题规则
+ */
+export function cutContent(content: IChapter[], rule: string) {
+  let result: Chapter[] = [];    //用于收集替换后的内容
+  let combinedContent = content.map(c => c.txt).join('\n');
 
-export function cutContent(content: IChapter[], rule: string[]) {
+  const titleReg = new RegExp(rule, 'g'); //  ((第\S+?回\s[^\n]+)|后记)\r?\n
+  const matchs = Array.from(combinedContent.matchAll(titleReg) ?? []);
+
+  let curEnd = combinedContent.length;//裁剪的结束位置
+  for (let i = matchs.length - 1; i >= 0; i--) {  //从尾部开始逐章取出
+    const m = matchs[i];
+    result.unshift({    //倒叙切的章节，按栈顶插入
+      Title: m[0].replace(/\r|\n/g, ''),
+      Content: combinedContent.slice((m.index ?? 0) + m[0].length, curEnd),
+      OrderNum: i + 1,
+      IndexId: -1,
+    });
+    curEnd = m.index ?? 0;
+  }
+
+  return result;
 }
+
+
+
+
+
 
 /**
  * 根据清除规则清理文章内容
