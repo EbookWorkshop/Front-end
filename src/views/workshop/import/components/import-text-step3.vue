@@ -57,7 +57,6 @@ const CurChapter = ref('');//预览窗口显示的文章
 
 // 完成数据加载/初始化
 const initData = (data: IStepResult) => {
-  console.log(data);
   // 初始化
   chapterList.length = 0;
   CurChapter.value = '';
@@ -89,7 +88,6 @@ const initData = (data: IStepResult) => {
 defineExpose({
   initData,
   getData: () => {
-    console.log(chapterList);
     return [...chapterList];
   },
 });

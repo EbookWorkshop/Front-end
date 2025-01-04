@@ -19,10 +19,7 @@
               <div style="min-height: 64vh; width: 100%">
                 <a-typography v-for="t in contents" :key="t.name">
                   <a-divider orientation="center">{{ t.name }}</a-divider>
-                  <!-- <a-typography-title>{{ t.name }}</a-typography-title> -->
-                  <a-typography-paragraph style="white-space: pre-wrap">{{
-                    t.txt
-                  }}</a-typography-paragraph>
+                  <a-typography-paragraph style="white-space: pre-wrap">{{ t.txt }}</a-typography-paragraph>
                 </a-typography>
               </div>
             </a-scrollbar>
@@ -192,6 +189,8 @@ function testCutRule() {
     });
   });
 }
+
+
 
 // 重置数据
 const restData = async () => {

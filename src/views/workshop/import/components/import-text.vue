@@ -15,14 +15,14 @@
             <Step2 v-else-if="step == 2" ref="Step2Ref" :files="fileList" />
             <Step3 v-else-if="step == 3" ref="Step3Ref" />
             <Step4 v-else-if="step == 4" ref="Step4Ref" :book-name="fileList[0]?.name?.replace(/\.\w+$/, '')" />
-            <a-result v-else status="warning" title="This is title content">
+            <a-result v-else status="warning" title="出错了">
               <template #subtitle>
-                This is subtitle content
+                出现未知错误，返回重试
               </template>
 
               <template #extra>
                 <a-space>
-                  <a-button type='primary'>Back</a-button>
+                  <a-button type='primary'>返回</a-button>
                 </a-space>
               </template>
             </a-result>
@@ -48,7 +48,7 @@
 
 <script lang="ts" setup>
 import { ref, reactive } from 'vue';
-import { FileItem, Message } from '@arco-design/web-vue';
+import { FileItem, Message, Step } from '@arco-design/web-vue';
 import useLoading from '@/hooks/loading';
 import { addABook } from '@/api/library';
 import Step1 from './import-text-step1.vue';
@@ -72,6 +72,7 @@ const Step4Ref = ref(null) as any;
 
 // 章节信息
 let chapterList = [] as any[];
+let fileData = "";//文件内容-第一个文件的原始内容-用于第四步提取作者
 
 // 设置文件-文件列表变更时
 const onSetFile = (files: FileItem[]) => {
@@ -104,25 +105,22 @@ const changeStep = (direction: number) => {
   // 设置每步做什么
   switch (step.value) {
     case 2: // 将文件列表解释，并放在预览框里
-      // getFileText();
-      setTimeout(() => {
-        Step2Ref.value?.restData();
-      }, 100);
+      setTimeout(() => { Step2Ref.value?.restData(); }, 100);
       break;
     case 3:
       {
         const data = Step2Ref?.value?.getData();
+        fileData = data?.contents[0]?.txt ?? "";
         if (data?.setting.encoderType === '') {
           step.value -= 1;
           return;
         }
-        setTimeout(() => {
-          Step3Ref.value?.initData(data as IStepResult);
-        }, 100);
+        setTimeout(() => { Step3Ref.value?.initData(data as IStepResult); }, 100);
       }
       break;
     case 4:
       chapterList = Step3Ref.value?.getData() as any[];
+      setTimeout(() => { Step4Ref.value?.init(fileData); }, 100);
       break;
     default:
       break;
@@ -140,13 +138,11 @@ const handleSubmit = async () => {
     chapterList,
     type: 'txt',
   };
-  // console.log(JSON.stringify(formData));
-  // console.log(formData, chapterList)
+
   await addABook(formData)
     .then((rsl) => {
       Message.success('已提交处理！');
       myVisible.value = false;
-      console.log(rsl);
     })
     .finally(() => {
       setLoading(false);
