@@ -73,7 +73,7 @@
 import { PropType, reactive, ref, h } from 'vue';
 import { FileItem, Modal, Table, Tag, Space } from '@arco-design/web-vue';
 import { FormInstance } from '@arco-design/web-vue/es/form';
-import { IChapter,IForm,IStepResult } from './utils';
+import { IChapter, IForm, IStepResult } from './utils';
 import { cleanContent, cutContent } from './utils';
 import useLoading from '@/hooks/loading';
 
@@ -123,31 +123,41 @@ const getFileText = () => {
  * 测试删除规则
  */
 function testCleanRule() {
-  let runRsl = cleanContent(contents, form.removeRule);
-  let showResult = [];
-  for (let key in runRsl.litters) {
-    showResult.push({
-      key: key,
-      reg: key,
-      count: runRsl.litters[key].length,
-      demo: runRsl.litters[key].slice(0, 5).join(' '),
+  if (form.removeRule.length === 0)
+    formRef.value?.setFields({
+      removeRule: {
+        status: 'error',
+        message: '需要先填写删除规则',
+      }
     });
-  }
-  // console.log(showResult);
-  Modal.info({
-    title: '测试结果',
-    width:"auto",
-    draggable:true,
-    content: () => h(Table, {
-      columns: [
-        { title: '标签', dataIndex: 'reg' },
-        { title: '命中', dataIndex: 'count' },
-        { title: '命中样例', dataIndex: 'demo' },
-      ],
-      data: showResult,
-      pagination: false,
-    }),
-  });
+  formRef.value?.validate((formOk) => {
+    if (formOk?.encoderType?.isRequiredError) return;
+    let runRsl = cleanContent(contents, form.removeRule);
+    let showResult = [];
+    for (let key in runRsl.litters) {
+      showResult.push({
+        key: key,
+        reg: key,
+        count: runRsl.litters[key].length,
+        demo: runRsl.litters[key].slice(0, 5).join(' '),
+      });
+    }
+    // console.log(showResult);
+    Modal.info({
+      title: '测试结果',
+      width: "auto",
+      draggable: true,
+      content: () => h(Table, {
+        columns: [
+          { title: '标签', dataIndex: 'reg' },
+          { title: '命中', dataIndex: 'count' },
+          { title: '命中样例', dataIndex: 'demo' },
+        ],
+        data: showResult,
+        pagination: false,
+      }),
+    });
+  }); // 校验表单
 
 }
 
@@ -155,17 +165,27 @@ function testCleanRule() {
  * 测试章节分割规则
  */
 function testCutRule() {
-  let cutRsl = cutContent(contents, form.titleRule);
-  let showTitle = cutRsl.map((c) => c.Title);
-  Modal.info({
-    title: `章节分割结果：共${showTitle.length}章`,
-    width:"auto",
-    draggable:true,
-    content: () => {
-      return h(Space, { wrap: true }, () => {
-        return showTitle.map((t) => h(Tag, () => t));
-      });
-    },
+  if (form.titleRule.length === 0)
+    formRef.value?.setFields({
+      titleRule: {
+        status: 'error',
+        message: '需要先填写章节标题规则',
+      }
+    });
+  formRef.value?.validate((formOk) => {
+    if (formOk?.encoderType?.isRequiredError) return;
+    let cutRsl = cutContent(contents, form.titleRule);
+    let showTitle = cutRsl.map((c) => c.Title);
+    Modal.info({
+      title: `章节分割结果：共${showTitle.length}章`,
+      width: "auto",
+      draggable: true,
+      content: () => {
+        return h(Space, { wrap: true }, () => {
+          return showTitle.map((t) => h(Tag, () => t));
+        });
+      },
+    });
   });
 }
 
@@ -178,7 +198,7 @@ const restData = async () => {
 /**
  * 获取数据、配置
  */
-const getData = ():IStepResult => {
+const getData = (): IStepResult => {
   formRef.value?.validate(); // 校验表单
   return {
     contents,
