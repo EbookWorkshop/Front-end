@@ -123,13 +123,15 @@ const getFileText = () => {
  * 测试删除规则
  */
 function testCleanRule() {
-  if (form.removeRule.length === 0)
+  if (form.removeRule.length === 0) {
     formRef.value?.setFields({
       removeRule: {
         status: 'error',
         message: '需要先填写删除规则',
       }
     });
+    return;
+  }
   formRef.value?.validate((formOk) => {
     if (formOk?.encoderType?.isRequiredError) return;
     let runRsl = cleanContent(contents, form.removeRule);
@@ -165,13 +167,15 @@ function testCleanRule() {
  * 测试章节分割规则
  */
 function testCutRule() {
-  if (form.titleRule.length === 0)
+  if (form.titleRule.length === 0) {
     formRef.value?.setFields({
       titleRule: {
         status: 'error',
         message: '需要先填写章节标题规则',
       }
     });
+    return;
+  }
   formRef.value?.validate((formOk) => {
     if (formOk?.encoderType?.isRequiredError) return;
     let cutRsl = cutContent(contents, form.titleRule);
