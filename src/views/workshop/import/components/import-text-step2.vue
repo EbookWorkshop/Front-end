@@ -51,7 +51,7 @@
               </a-form-item>
               <a-form-item v-if="form.oneChapterAFile === false">
                 <a-select placeholder="常见章节规则推荐" :trigger-props="{ autoFitPopupMinWidth: true }"
-                  @change="form.titleRule = $event">
+                  @change="form.titleRule = $event as string">
                   <a-optgroup label="含章节标题">
                     <a-option value="((第\S+?[回章][^\n]+?)|后记)\r?\n">第x章/回或后记-独立分行</a-option>
                   </a-optgroup>
@@ -73,7 +73,7 @@
 import { PropType, reactive, ref, h } from 'vue';
 import { FileItem, Modal, Table, Tag, Space } from '@arco-design/web-vue';
 import { FormInstance } from '@arco-design/web-vue/es/form';
-import { IChapter } from './utils';
+import { IChapter,IForm,IStepResult } from './utils';
 import { cleanContent, cutContent } from './utils';
 import useLoading from '@/hooks/loading';
 
@@ -91,12 +91,12 @@ const contents: IChapter[] = reactive([]);
 
 // 表单对象
 const formRef = ref<FormInstance>();
-const form = reactive({
+const form = reactive<IForm>({
   encoderType: '',
   oneChapterAFile: (prop.files?.length ?? 0) > 1,
   removeRule: [],
   titleRule: '',
-}) as any;
+});
 
 // 前端读取文本内容
 const getFileText = () => {
@@ -151,10 +151,12 @@ function testCleanRule() {
 
 }
 
+/**
+ * 测试章节分割规则
+ */
 function testCutRule() {
   let cutRsl = cutContent(contents, form.titleRule);
   let showTitle = cutRsl.map((c) => c.Title);
-  console.log(showTitle);
   Modal.info({
     title: `章节分割结果：共${showTitle.length}章`,
     width:"auto",
@@ -176,12 +178,12 @@ const restData = async () => {
 /**
  * 获取数据、配置
  */
-const getData = () => {
+const getData = ():IStepResult => {
   formRef.value?.validate(); // 校验表单
   return {
     contents,
     setting: form,
-  };
+  } as IStepResult;
 };
 
 // 暴露的方法
