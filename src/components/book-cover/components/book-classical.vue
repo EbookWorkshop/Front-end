@@ -32,7 +32,7 @@
 
           <!-- 装订线 -->
           <template #description>
-            <div class="binding-line">
+            <div :class="'binding-line'+(converColor==='#f2e3a4'?' binding-line-red':'')">
               <div class="binding-line-cross"></div>
               <div class="binding-line-cross"></div>
             </div>
@@ -94,7 +94,7 @@
     width: 264px;
     height: 360px;
     margin: 20px 20px;
-    border: 1px solid var(--color-neutral-3);
+    border: 1px solid var(--color-neutral-5);/* https://arco.design/react/docs/token */
     border-radius: 4px;
     transition: all 0.3s;
 
@@ -212,20 +212,28 @@
       left: 0;
       width: 30px;
       height: 100%;
-      border-right: 2px solid lightblue;
+      border-right: 3px solid lightblue;
 
       .binding-line-cross {
         position: absolute;
         top: 35px;
         width: 100%;
         height: 28%;
-        border-top: 1px solid lightblue;
-        border-bottom: 1px solid lightblue;
+        border-top: 2px solid lightblue;
+        border-bottom: 2px solid lightblue;
 
         &:last-child {
           top: unset;
           bottom: 35px;
         }
+      }
+    }
+
+    .binding-line-red{
+      border-right: 3px solid #A1151E;
+      .binding-line-cross{
+        border-top: 2px solid #A1151E;
+        border-bottom: 2px solid #A1151E;
       }
     }
   }
