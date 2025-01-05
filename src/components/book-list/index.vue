@@ -46,7 +46,7 @@
     nextRouter: String,
   });
 
-  const defaultValue: Book[] = new Array(6).fill({});
+  const defaultValue: Book[] = new Array().fill({});
   /**
    * renderData --实际的数据
    */
@@ -64,6 +64,9 @@
 </script>
 
 <style scoped lang="less">
+  .list-col{
+    min-width:302px;
+  }
   .empty-wrap {
     height: 200px;
     border-radius: 4px;
