@@ -26,7 +26,6 @@
 
 <script lang="ts" setup>
 import { FileItem } from '@arco-design/web-vue';
-import { Chapter } from '@/types/book';
 import { reactive, PropType } from 'vue';
 
 const prop = defineProps({
@@ -49,8 +48,9 @@ const handleSubmit = (data: any) => {
 };
 
 const init = (firstChapter: string) => {
-  let author = firstChapter.match(/作者[：:]+(?:\s+)?(.+?)\r?\n/);
-  form.author = author ? author[1] : '????';
+  let author = firstChapter.match(/(?:作者[：:]+(?:\s+)?(.+?))|(?:\s+(\S+)著)\r?\n/);
+  form.author = author ? (author[1] || author[2]) : '????';
+  form.bookName = form.bookName?.replace(/[《》]/g, "");
 }
 defineExpose({ submit: handleSubmit, init });
 </script>

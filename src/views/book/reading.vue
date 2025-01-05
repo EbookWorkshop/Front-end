@@ -7,7 +7,7 @@
           :Author="renderData.Author" />
         <ChapterList :loading="loading" :Chapters="renderData.Index">
           <template #content="{ item }">
-            <a-button long @click="gotoChapter(item.IndexId)" :status="item.IsHasContent ? 'normal' : 'warning'" :disabled="!item.IsHasContent">
+            <a-button long @click="gotoChapter(item.IndexId)" :status="item.IsHasContent ? 'normal' : 'warning'" :disabled="!item.IsHasContent" :size="renderData.Index.length<50?'large':'medium'">
               {{ item.Title }}
             </a-button>
           </template>

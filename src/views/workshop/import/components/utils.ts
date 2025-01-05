@@ -10,9 +10,9 @@ export interface IChapter {
 /**
  * 本控件用 步骤二的表单
  */
-export interface IForm{
+export interface IForm {
   encoderType: string;
-  oneChapterAFile:boolean;
+  oneChapterAFile: boolean;
   removeRule: string[],
   titleRule: string,
 }
@@ -20,7 +20,7 @@ export interface IForm{
 /**
  * 本控件用 步骤的结果
  */
-export interface IStepResult{
+export interface IStepResult {
   contents: IChapter[];
   setting: IForm;
 }
@@ -67,9 +67,10 @@ export function cutContent(content: IChapter[], rule: string) {
   let curEnd = combinedContent.length;//裁剪的结束位置
   for (let i = matchs.length - 1; i >= 0; i--) {  //从尾部开始逐章取出
     const m = matchs[i];
+    const matchText = m[1];//第一个括号提取的内容
     result.unshift({    //倒叙切的章节，按栈顶插入
-      Title: m[0].replace(/\r|\n/g, ''),
-      Content: combinedContent.slice((m.index ?? 0) + m[0].length, curEnd),
+      Title: matchText.replace(/\r|\n/g, ''),
+      Content: combinedContent.slice((m.index ?? 0) + matchText.length, curEnd),
       OrderNum: i + 1,
       IndexId: -1,
     });

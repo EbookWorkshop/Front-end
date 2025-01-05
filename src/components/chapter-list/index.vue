@@ -10,8 +10,8 @@
                 </a-col>
             </a-row>
 
-            <a-grid :cols="{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }" :col-gap="12" :row-gap="16"
-                class="grid-demo-grid">
+            <a-grid :cols="Chapters.length < 50 ? 4 : { xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }" :col-gap="12"
+                :row-gap="16">
                 <!-- 阅读视图 阅读时的章节列表 -->
                 <a-grid-item v-for="item in Chapters" :key="item.IndexId" class="reading-index">
                     <a-tooltip :content="item.Title">
