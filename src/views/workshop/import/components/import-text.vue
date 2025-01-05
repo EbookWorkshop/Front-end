@@ -3,7 +3,7 @@
     <template #title> 导入向导 </template>
     <a-spin :loading="loading" style="width: 100%">
       <a-card class="general-card">
-        <div class="wrapper">
+        <div class="wrapper" style="margin-bottom: 90px;">
           <a-steps v-model:current="step" style="width: 100%" class="steps">
             <a-step description="选择文件">导入文件</a-step>
             <a-step description="设置分割规则">分割章节</a-step>

@@ -102,17 +102,22 @@ const getFileText = () => {
 
   setLoading(true);
   setTimeout(() => {
+    let finishFile = 0;
+    
     prop.files?.forEach((file) => {
       const fileReader = new FileReader();
+      let curFile: IChapter = {
+        txt: "",
+        name: file.name || '未知文件'
+      }
+      contents.push(curFile);//注意按传入队列顺序先加入队列
       fileReader.onload = () => {
-        contents.push({
-          txt: fileReader.result as string,
-          name: file.name ?? '未知文件',
-        });
+        curFile.txt = fileReader.result as string;
+        finishFile++;
+        if (finishFile >= contents.length ) setLoading(false);
       };
       fileReader.readAsText(file.file as Blob, form.encoderType);
     });
-    setLoading(false);
   }, 200);
 };
 

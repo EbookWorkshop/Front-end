@@ -41,7 +41,7 @@ export function cleanContent(content: IChapter[], rule: string[]) {
     const reg = new RegExp(r, 'g');
     result.forEach((c) => {
       let reg = new RegExp(r, 'g');
-      litters[r] = [];
+      if (!litters[r]) litters[r] = [];
       let newTxt = c.txt.replace(reg, function (target, index, content) {
         litters[r].push(target);
         return "";
