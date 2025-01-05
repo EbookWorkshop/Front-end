@@ -144,7 +144,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, inject, reactive } from 'vue';
+  import { computed, ref, inject, reactive, watch } from 'vue';
   import { Message } from '@arco-design/web-vue';
   import { useDark, useToggle, useFullscreen } from '@vueuse/core';
   import { useAppStore, useUserStore } from '@/store';
@@ -233,24 +233,21 @@
         content: `其中，成功：${doneNum}失败：${failNum}。`,
         time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
         status: 0,
-        avatar: 'index',
+        avatar: '/src/assets/logo.svg?t=12312213',
       });
     }
   );
 
-  // DEBUG: 测试用
-  socket.io.on('Notice.Debug', (msg) => {
-    messageList.push({
-      id: 0,
-      type: 'notice',
-      title: msg?.title || msg.message,
-      subTitle: '',
-      content: msg.message,
-      time: new Date().toJSON(),
-      status: 0,
-      avatar: 'index',
-    });
-  });
+  socket.io.on("Message.Box.Send",(msg)=>{
+    messageList.push(msg);
+  })
+
+  watch(messageList,(newValue)=>{
+    var lastMsg = newValue[newValue.length-1];
+    if(lastMsg.type == "notice"){
+      Message.info(`[${lastMsg.title}]${lastMsg.content}`)
+    }
+  })
 </script>
 
 <style scoped lang="less">

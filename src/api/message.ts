@@ -2,10 +2,10 @@ import axios from 'axios';
 
 export interface MessageRecord {
   id: number;
-  type: string; // message notice todo
+  type: "message" | "notice" | "todo"; //对应：通知、消息、待办
   title: string;
   subTitle: string;
-  avatar?: string;
+  avatar?: string;//头像地址
   content: string;
   time: string;
   status: 0 | 1;
