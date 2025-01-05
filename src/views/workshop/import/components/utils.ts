@@ -70,7 +70,7 @@ export function cutContent(content: IChapter[], rule: string) {
     const matchText = m[1];//第一个括号提取的内容
     result.unshift({    //倒叙切的章节，按栈顶插入
       Title: matchText.replace(/\r|\n/g, ''),
-      Content: combinedContent.slice((m.index ?? 0) + matchText.length, curEnd),
+      Content: combinedContent.slice((m.index ?? 0) + m[0].length, curEnd),//全部匹配内容都为标题部分，舍去
       OrderNum: i + 1,
       IndexId: -1,
     });
