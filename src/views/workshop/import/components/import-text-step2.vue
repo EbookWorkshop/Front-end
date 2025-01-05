@@ -39,14 +39,13 @@
                 <a-input-tag v-model="form.removeRule" placeholder="按回车设置一条规则，使用Global模式的正则表达式" allow-clear />
               </a-form-item>
               <a-form-item field="titleRule" label="章节标题" tooltip="章节分割规则，通过命中章节标题分割章节。如果留空则不进行任何分割！">
-                <a-textarea v-model="form.titleRule" v-if="form.oneChapterAFile === false" :auto-size="{ minRows: 2 }"
+                <a-textarea v-model="form.titleRule"  :auto-size="{ minRows: 2 }"
                   placeholder="使用正则表达式语法，启用全局匹配模式，所以切勿使用$标记行尾；需要用提取符()将章节标题完整取出。" />
-                <span v-else>每个文件为单独章节，无需设置</span>
               </a-form-item>
               <a-form-item>
                 <a-button status="warning" long @click="testCleanRule">测试删除规则</a-button>
               </a-form-item>
-              <a-form-item v-if="form.oneChapterAFile === false">
+              <a-form-item>
                 <a-select placeholder="常见章节规则推荐" :trigger-props="{ autoFitPopupMinWidth: true }"
                   @change="form.titleRule = $event as string">
                   <a-optgroup label="含章节标题">

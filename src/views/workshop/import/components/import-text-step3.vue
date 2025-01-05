@@ -10,8 +10,6 @@
       <template #first>
         <a-card hoverable :style="{
           overflow: 'hidden',
-          marginBottom: '20px',
-          height: '65vh',
           marginRight: '40px',
         }">
           <a-scrollbar style="height: 64vh; overflow: auto">
@@ -42,6 +40,7 @@
             </a-list-item-meta>
             <template #actions>
               <icon-edit @click="c.isEditing = !c.isEditing" />
+              <icon-delete @click="chapterList.splice(chapterList.indexOf(c), 1)" />
             </template>
           </a-list-item>
         </a-list>
@@ -54,7 +53,6 @@
 import { Chapter } from '@/types/book';
 import { reactive, ref } from 'vue';
 import { IStepResult, cleanContent, cutContent } from "./utils"
-import { extend } from 'lodash';
 
 interface ChapterOnBar extends Chapter {
   //是否在控件编辑中
@@ -79,9 +77,15 @@ const initData = (data: IStepResult) => {
   let cleanResult = cleanContent(data.contents, data.setting?.removeRule);
   if (data?.setting?.oneChapterAFile || data?.setting?.titleRule === '') {
     cleanResult.result.forEach((c, i) => {
+      let curTitle = c.name;
+      if (data?.setting?.titleRule !== '') {
+        let rule = new RegExp(data?.setting?.titleRule);
+        let match = c.txt.match(rule);
+        if (match) curTitle = match[1];
+      }
       chapterList.push({
         OrderNum: i + 1,
-        Title: c.name,
+        Title: curTitle,
         Content: c.txt,
         IndexId: -1,
         isEditing: false,
