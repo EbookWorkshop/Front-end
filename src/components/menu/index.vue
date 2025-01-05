@@ -1,4 +1,15 @@
 <script lang="tsx">
+
+//修复下列编译错误
+// error TS7026: JSX element implicitly has type 'any' because no interface 'JSX.IntrinsicElements' exists.
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elem: string]: any;
+    }
+  }
+}
+
   /**
    * 左侧树状菜单
    */
@@ -150,15 +161,16 @@
 </script>
 
 <style lang="less" scoped>
-  :deep(.arco-menu-inner) {
-    .arco-menu-inline-header {
-      display: flex;
-      align-items: center;
-    }
-    .arco-icon {
-      &:not(.arco-icon-down) {
-        font-size: 18px;
-      }
+:deep(.arco-menu-inner) {
+  .arco-menu-inline-header {
+    display: flex;
+    align-items: center;
+  }
+
+  .arco-icon {
+    &:not(.arco-icon-down) {
+      font-size: 18px;
     }
   }
+}
 </style>

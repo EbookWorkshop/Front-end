@@ -132,7 +132,12 @@ function testCleanRule() {
   formRef.value?.validate((formOk) => {
     if (formOk?.encoderType?.isRequiredError) return;
     let runRsl = cleanContent(contents, form.removeRule);
-    let showResult = [];
+    let showResult: Array<{
+      key: string;
+      reg: string;
+      count: number;
+      demo: string;
+    }> = [];
     for (let key in runRsl.litters) {
       showResult.push({
         key: key,
@@ -141,7 +146,7 @@ function testCleanRule() {
         demo: runRsl.litters[key].slice(0, 5).join(' '),
       });
     }
-    // console.log(showResult);
+
     Modal.info({
       title: '测试结果',
       width: "auto",
