@@ -6,6 +6,15 @@ export function getSystemVersion() {
 }
 
 /**
+ * 检查站点是否可以访问
+ * @param host 
+ * @returns 
+ */
+export function checkSiteAccessibility(host: string) {
+  return axios.get(`/services/checkSiteAccessibility?host=${host}`);
+}
+
+/**
  * 保存发邮箱信息
  * @param email 发邮件用邮箱地址
  * @param password 邮箱密码/身份识别码

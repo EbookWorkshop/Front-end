@@ -9,14 +9,17 @@
               <a-space>
                 <a-button type="primary" @click="resetForm">新增新方案</a-button>
                 <a-button type="primary" @click="showWebList">编辑现有方案</a-button>
+                <a-button type="primary" @click="CheckSiteAccessibility">检查站点存活情况</a-button>
                 <a-affix :offset-top="8">
-                  <a-button type="primary" status="success" html-type="submit">保存当前方案</a-button>
+                  <a-button type="primary" status="success" html-type="submit"
+                    :disabled="form.hostname.length == 0">保存当前方案</a-button>
                 </a-affix>
                 <a-popconfirm content="你确定要删除当前站点配置？这将无法恢复。" type="warning" @ok="DeleteIt">
-                  <a-button type="primary" status="danger">删除当前方案</a-button>
+                  <a-button type="primary" status="danger" :disabled="form.hostname.length == 0">删除当前方案</a-button>
                 </a-popconfirm>
                 <a-button-group>
-                  <a-button type="primary" @click="exportScheme">导出当前方案（json）</a-button>
+                  <a-button type="primary" @click="exportScheme"
+                    :disabled="form.hostname.length == 0">导出当前方案（json）</a-button>
                   <a-upload :action="ASSETS_HOST + '/services/botrule/import'" :show-file-list="false" :accept="'.json'"
                     name="data" @success="importScheme">
                     <template #upload-button>
@@ -96,13 +99,13 @@
                     </a-form-item>
                     <a-button v-if="isUseVisModel" status="warning" @click="VisRuleSetting(rule)">预览规则：{{
                       rule.ruleShowName
-                      }}</a-button>
+                    }}</a-button>
                   </a-space>
                 </a-form-item>
                 <a-form-item>
                   <a-button type="primary" status="success" html-type="submit">{{
                     $t('system.form.save')
-                    }}</a-button>
+                  }}</a-button>
                 </a-form-item>
               </a-space>
             </a-col>
@@ -118,6 +121,20 @@
             </a-form-item>
           </a-form>
         </a-modal>
+        <a-modal v-model:visible="isTableModalVisible" title="站点存活情况检查结果">
+          <a-table :data="siteAccessibilityData">
+            <template #columns>
+              <a-table-column title="站点" data-index="hostName"></a-table-column>
+              <a-table-column title="返回状态" data-index="statusCode"></a-table-column>
+              <a-table-column title="是否可访问">
+                <template #cell="{ record }">
+                  <a-spin v-if="record.siteAccessibility === '检查中'" />
+                  <a-alert v-else :type="record.siteAccessibility === '成功' ? 'success' : 'error'"></a-alert>
+                </template>
+              </a-table-column>
+            </template>
+          </a-table>
+        </a-modal>
       </a-spin>
     </div>
     <WebList ref="myWebList" @set-form="setFormWithSetting"></WebList>
@@ -125,17 +142,21 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref, computed, watch, h } from 'vue';
+import { checkSiteAccessibility } from '@/api/system';
 import {
+  queryHostList,
   saveHostSetting,
   deleteHostSetting,
   visRuleSetting,
   exportSecheme,
   ASSETS_HOST
 } from '@/api/webbot';
-import { FileItem, Message } from '@arco-design/web-vue';
+import { FileItem, Message, Spin } from '@arco-design/web-vue';
 import WebList from './components/web-list.vue';
 import { rulesOptions } from './data';  // 规则类型选项
+import useRequest from '@/hooks/request';
+
 
 const formUrlForVisVisible = ref(false); // 配置弹窗是否显示
 const formUrlForVis = reactive({ indexUrl: '', contentUrl: '' }); // 弹窗表单——辅助预览的网址采集表单
@@ -144,6 +165,7 @@ const isUseVisStatus = computed(() =>
   isUseVisModel.value ? 'warning' : 'normal'
 );
 const dataLoading = ref(false);
+const isTableModalVisible = ref(false);
 
 
 // 绑定数据的规则配置表单
@@ -169,6 +191,8 @@ const myWebList = ref(WebList);
 const showWebList = () => {
   myWebList.value.show();
 };
+
+const siteAccessibilityData = ref<any[]>([]);      // 站点存活情况数据
 
 /**
  * 根据规则值-找到对应的规则显示名称
@@ -314,6 +338,43 @@ const toggleFormUrl4Vis = () => {
 };
 
 /**
+ * 检查站点存活情况
+ */
+async function CheckSiteAccessibility() {
+  isTableModalVisible.value = true;
+  const { response: hostList } = useRequest<string[]>(queryHostList);
+  watch(hostList, (newVal /*, oldVal*/) => {
+    siteAccessibilityData.value = [];
+    for (const host of newVal) {
+      siteAccessibilityData.value.push({
+        hostName: host,
+        siteAccessibility: '检查中',
+        statusCode: '',
+      });
+
+      checkSiteAccessibility(host)
+        .then((res: any) => {
+          let isOK = res.data;
+          const index = siteAccessibilityData.value.findIndex(
+            (item) => item.hostName === host
+          );
+          siteAccessibilityData.value[index].siteAccessibility = isOK ? '成功' : '失败';
+          siteAccessibilityData.value[index].statusCode = res.status;
+
+        })
+        .catch((err) => {
+          const index = siteAccessibilityData.value.findIndex(
+            (item) => item.hostName === host
+          );
+          siteAccessibilityData.value[index].siteAccessibility = '失败';
+          console.log(err);
+        });
+    }
+  });
+
+}
+
+/**
  * 点击预览规则按钮
  */
 function VisRuleSetting(rule: any) {
@@ -355,13 +416,13 @@ function exportScheme() {
  * 导入按钮点击
  */
 function importScheme(fileItem: FileItem) {
-  if(fileItem.response.code === 20000){
+  if (fileItem.response.code === 20000) {
     Message.success(fileItem.response.msg);
     setFormWithSetting(fileItem.response.data);
-  }else{
+  } else {
     Message.error(fileItem.response.msg);
   }
-  
+
 }
 </script>
 

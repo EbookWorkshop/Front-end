@@ -26,8 +26,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue';
-  import { queryHostList, queryHostSetting, Rule } from '@/api/webbot';
+  import { ref } from 'vue';
+  import { queryHostList, queryHostSetting } from '@/api/webbot';
   import useRequest from '@/hooks/request';
 
   const visible = ref(false);
