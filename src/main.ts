@@ -14,6 +14,9 @@ import '@/assets/style/global.less';
 import '@/api/interceptor';
 // import VueSocketIO from 'vue-socket.io'
 
+//禁用显示“水合不匹配信息”
+window.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = false;
+
 const app = createApp(App);
 
 app.use(ArcoVue, {});

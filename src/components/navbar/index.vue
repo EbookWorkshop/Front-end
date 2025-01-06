@@ -75,9 +75,10 @@
         </a-tooltip>
       </li>
       <li>
+        <!-- 消息通知待办 -->
         <a-tooltip :content="$t('settings.navbar.alerts')">
           <div class="message-box-trigger">
-            <a-badge :count="messageList.length">
+            <a-badge :count="messageList.filter((item) => !item.status).length">
               <a-button
                 class="nav-btn"
                 type="outline"
@@ -100,9 +101,11 @@
             <message-box
               :message-list="messageList"
               @empty-list="OnEmptyList"
+              @all-read="messageList.forEach(m=>m.status=1)"
             />
           </template>
         </a-popover>
+        <!-- 消息通知待办-结束 -->
       </li>
       <li>
         <a-tooltip
@@ -239,10 +242,12 @@
   );
 
   socket.io.on("Message.Box.Send",(msg)=>{
+    if(typeof(msg.status)==="undefined") msg.status=0;
     messageList.push(msg);
   })
 
-  watch(messageList,(newValue)=>{
+  watch(messageList,(newValue,oldValue)=>{
+    if(oldValue.length >= newValue.length) return;//改变状态，非加入新内容
     var lastMsg = newValue[newValue.length-1];
     if(lastMsg.type == "notice"){
       Message.info(`[${lastMsg.title}]${lastMsg.content}`)

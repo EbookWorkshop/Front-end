@@ -12,6 +12,7 @@
           :render-list="renderList"
           :unread-count="unreadCount"
           @item-click="handleItemClick"
+          @all-read="handleAllRead"
         />
       </a-tab-pane>
       <template #extra>
@@ -50,7 +51,7 @@
   });
 
   // 向父组件传递信息
-  const emit = defineEmits(['emptyList']);
+  const emit = defineEmits(['emptyList','allRead']);
 
   const { loading, setLoading } = useLoading(true);
   const messageType = ref('notice');
@@ -59,8 +60,8 @@
     renderList: MessageRecord[];
     messageList: MessageRecord[];
   }>({
-    renderList: [],
-    messageList: [],
+    renderList: [],//点击Tab时过滤出当前的合计作为渲染内容
+    messageList: [],//所有的信息合集
   });
   toRefs(messageData);
   const tabList: TabItem[] = [
@@ -114,7 +115,12 @@
   };
   const handleItemClick = (items: MessageListType) => {
     if (renderList.value.length) readMessage([...items]);
+  };  
+  const handleAllRead = (items: MessageListType) => {
+    messageData.messageList.forEach(m=>m.status=0);
+    emit('allRead');
   };
+
   const emptyList = () => {
     messageData.messageList = [];
     emit('emptyList');

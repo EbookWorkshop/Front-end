@@ -90,9 +90,9 @@
       default: 0,
     },
   });
-  const emit = defineEmits(['itemClick']);
+  const emit = defineEmits(['itemClick',"allRead"]);
   const allRead = () => {
-    emit('itemClick', [...props.renderList]);
+    emit('allRead');
   };
 
   const onItemClick = (item: MessageRecord) => {
@@ -131,6 +131,7 @@
       height: 50px;
       line-height: 50px;
       border-top: none;
+      overflow: hidden;
       .arco-space-item {
         width: 100%;
         border-right: 1px solid rgb(var(--gray-3));
@@ -142,8 +143,12 @@
         border-top: 1px solid rgb(var(--gray-3));
       }
     }
-    .footer-wrap {
+    .footer-wrap{
       text-align: center;
+      width:100%;
+      .arco-link{
+        width: 80%;
+      }
     }
     .arco-typography {
       margin-bottom: 0;

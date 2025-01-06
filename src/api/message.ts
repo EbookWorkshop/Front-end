@@ -8,6 +8,9 @@ export interface MessageRecord {
   avatar?: string;//头像地址
   content: string;
   time: string;
+  /**
+   * 0未读、1已读
+   */
   status: 0 | 1;
   messageType?: number; // 在src\components\message-box\list.vue::template::#extra 中使用(未开始、已开通、进行中、即将到期)
 }
