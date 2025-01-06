@@ -25,6 +25,11 @@
     </div>
     <ul class="right-side">
       <li>
+        <a-tooltip :content="'服务器'+(getSocketState().connected?'已连接':'未连接')">
+          <ConnectStatus :connected="getSocketState().connected"/>
+        </a-tooltip>
+      </li>
+      <li>
         <a-tooltip :content="$t('settings.language')">
           <a-button
             class="nav-btn"
@@ -157,8 +162,9 @@
   import Menu from '@/components/menu/index.vue';
   import { MessageRecord } from '@/api/message';
 
-  import useSocket from '@/hooks/socket';
+  import {useSocket,getSocketState} from '@/hooks/socket';
   import MessageBox from '../message-box/index.vue';
+  import ConnectStatus from './connect-status.vue';
 
   const socket = useSocket();
 
