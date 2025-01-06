@@ -48,7 +48,7 @@ const WORKSHOP: AppRouteRecordRaw = {
         {
           path: 'productsmanagement',
           name: 'ProductsManagement',
-          component: () => import('@/views/workplace/bookandrule.vue'),
+          component: () => import('@/views/exception/404/index.vue'),
           meta: {
             icon: 'icon-select-all',
             locale: 'menu.workshop.export.productsmanagement',
@@ -59,11 +59,11 @@ const WORKSHOP: AppRouteRecordRaw = {
       ],
     },
     {
-      path: 'send',
-      name: 'Send',
+      path: 'mailto',
+      name: 'MailTo',
       component: () => import('@/views/workplace/index.vue'),
       meta: {
-        locale: 'menu.workshop.send',
+        locale: 'menu.workshop.mailto',
         requiresAuth: true,
         icon: 'icon-send',
         roles: ['*'],

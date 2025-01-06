@@ -3,5 +3,7 @@ export default {
   'menu.workshop.export': 'Export',
   'menu.workshop.export.make': 'Make',
   'menu.workshop.export.productsmanagement': 'Products Management',
-  'menu.workshop.send': 'Send To...',
+  'menu.workshop.mailto': 'Mail To...',
+  'menu.workshop.manage': 'Book Collection Management',
+  'menu.workshop.webbook': 'Web Book Management',
 };

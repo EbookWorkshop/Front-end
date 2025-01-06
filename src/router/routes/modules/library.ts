@@ -24,6 +24,37 @@ const LIBRARY: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
+    {
+      path: 'bookmark',
+      name: 'Bookmark',
+      component: () => import('@/views/not-found/index.vue'),
+      meta: {
+        locale: 'menu.library.bookmark',
+        requiresAuth: true,
+        icon: 'icon-bookmark',
+        roles: ['*'],
+      },
+    },
+    {
+      path: '/book/:id(\\d+)',
+      name: 'Reading',
+      component: () => import('@/views/book/reading.vue'),
+      meta: {
+        requiresAuth: true,
+        hideInMenu: true,
+        roles: ['*'],
+      },
+    },
+    {
+      path: '/book/:id(\\d+)/chapter/:cid(\\d+)',
+      name: 'Chapter',
+      component: () => import('@/views/chapter/index.vue'),
+      meta: {
+        requiresAuth: true,
+        hideInMenu: true,
+        roles: ['*'],
+      },
+    },
   ],
 };
 

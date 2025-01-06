@@ -141,7 +141,7 @@ const handleSubmit = async () => {
 
   await addABook(formData)
     .then((rsl) => {
-      Message.success('已提交处理！');
+      Message.success('已添加到书库中！');
       myVisible.value = false;
     })
     .finally(() => {

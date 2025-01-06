@@ -10,16 +10,25 @@
             {{ item.Title }}
           </a-button>
         </template>
+        <template #addChapterTool>
+          <a-button long class="chapter" type="outline" @click="onClickChapter(-1)">
+            <template #icon>
+              <icon-plus />
+            </template>
+            添加一章
+          </a-button>
+        </template>
       </ChapterList>
 
       <!-- 编辑章节内容的弹出窗口 -->
-      <a-modal fullscreen :visible="isEdit" @cancel="() => isEdit = false" :title="form.chapTitle" @ok="onSubmit">
+      <a-modal fullscreen :visible="isEdit" @cancel="() => isEdit = false"
+        :title="curChapId == -1 ? '新增章节' : form.chapTitle" @ok="onSubmit">
         <a-form :model="form" layout="vertical">
           <a-form-item field="chapTitle" label="章节标题">
             <a-input v-model="form.chapTitle" />
           </a-form-item>
           <a-form-item field="content" label="章节正文">
-            <a-textarea v-model="form.content" auto-size />
+            <a-textarea v-model="form.content" :auto-size="{ minRows: 20 }" show-word-limit />
           </a-form-item>
         </a-form>
       </a-modal>
@@ -45,6 +54,7 @@ import ChapterList from '@/components/chapter-list/index.vue';
 
 import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
+import { fromPairs } from "lodash";
 
 const { bookId, gotoChapter, gotoIndex } = useBookHelper();
 const { loading, response: renderData } = useRequest<Book>(queryBookById.bind(null, bookId));
@@ -62,13 +72,18 @@ const isEdit = ref(false);
 
 /**
  * 点击章节列表
- * @param cid 
+ * @param cid 修改的章节ID，如果是-1则为新增章节
  */
 const onClickChapter = (cid: number) => {
-  isEdit.value = true;
   curChapId.value = cid;
+  isEdit.value = true;
 
   // const { loading, response: renderData } = useRequest<Chapter>(queryChapterById.bind(null, curChapId.value));
+  if (cid == -1) {
+    form.chapTitle = "";
+    form.content = "";
+    return;
+  }
 
   queryChapterById(cid).then((result: AxiosResponse<Chapter>) => {
     form.chapTitle = result.data.Title as any
@@ -84,6 +99,8 @@ const onClickChapter = (cid: number) => {
  * 提交修改
  */
 const onSubmit = () => {
+  if (curChapId.value == -1) return;//TODO: 新增章节未接入
+
   let result = {} as Chapter;
   let change = false;
   if (defTitle !== form.chapTitle) {

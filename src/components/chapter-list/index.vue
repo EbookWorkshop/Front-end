@@ -18,6 +18,9 @@
                         <slot name="content" :item="item"></slot>
                     </a-tooltip>
                 </a-grid-item>
+                <a-grid-item>
+                    <slot name="addChapterTool"></slot>
+                </a-grid-item>
             </a-grid>
         </a-col>
     </a-row>
