@@ -3,6 +3,7 @@ export default {
   'menu.system.email_kindle': 'Kindle/EMail',
   'menu.system.webrule': 'WebBot Rule',
   'menu.system.fontmanager': 'Fonts Manager',
+  'menu.system.preferences': 'Preferences',
 
   'system.form.save': 'Save',
 };

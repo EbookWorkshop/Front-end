@@ -56,6 +56,17 @@ const SYSTEM: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
+    {
+      path: 'preferences',
+      name: 'Preferences',
+      component: () => import('@/views/result/success/index.vue'),
+      meta: {
+        locale: 'menu.system.preferences',
+        icon: 'icon-star',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
   ],
 };
 
