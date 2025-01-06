@@ -48,9 +48,9 @@ const WORKSHOP: AppRouteRecordRaw = {
       ],
     },
     {
-      path: 'manage',
-      name: 'Manage',
-      component: () => import('@/views/library/manage/list.vue'),
+      path: 'webbookmanage',
+      name: 'WebBookManage',
+      component: () => import('@/views/workshop/webbooklist.vue'),
       meta: {
         locale: 'menu.workshop.webbook',
         requiresAuth: true,

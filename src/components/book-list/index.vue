@@ -35,8 +35,9 @@
 </template>
 
 <script lang="ts" setup>
+  import { PropType } from 'vue';
   import { useRouter } from 'vue-router';
-  import { queryBookList, Book } from '../../api/library';
+  import { ListQueryApi, Book } from '../../api/library';
   import useRequest from '../../hooks/request';
   import BookCover from '../book-cover/index.vue';
 
@@ -44,6 +45,10 @@
   const props = defineProps({
     title: String,
     nextRouter: String,
+    Api: {
+      type: Function as PropType<ListQueryApi>,
+      required: true
+    }
   });
 
   const defaultValue: Book[] = new Array().fill({});
@@ -51,7 +56,7 @@
    * renderData --实际的数据
    */
   const { loading, response: renderData } = useRequest<Book[]>(
-    queryBookList,
+    props.Api,
     defaultValue
   );
 
