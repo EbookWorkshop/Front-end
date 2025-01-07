@@ -61,7 +61,7 @@ const WORKSHOP: AppRouteRecordRaw = {
     {
       path: 'mailto',
       name: 'MailTo',
-      component: () => import('@/views/workplace/index.vue'),
+      component: () => import('@/views/workshop/mailto.vue'),
       meta: {
         locale: 'menu.workshop.mailto',
         requiresAuth: true,

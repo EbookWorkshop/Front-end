@@ -6,4 +6,6 @@ export default {
   'menu.workshop.mailto': '邮件发出',
   'menu.workshop.manage': '书库管理',
   'menu.workshop.webbook': '网文管理',
+  
+  'workshop.mailto.send':"发送",
 };

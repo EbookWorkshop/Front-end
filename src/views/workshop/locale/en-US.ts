@@ -6,4 +6,6 @@ export default {
   'menu.workshop.mailto': 'Mail To...',
   'menu.workshop.manage': 'Book Collection Management',
   'menu.workshop.webbook': 'Web Book Management',
+
+  'workshop.mailto.send':"Send",
 };
