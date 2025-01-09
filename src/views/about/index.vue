@@ -89,7 +89,7 @@ getSystemVersion().then((result: any) => {
   updateValue("书库资料目录", data.dataPath);
   updateValue("数据库大小", h(Statistic, { start: true, value: dbSize.fileSize, animation: true, precision: 0.01 }, { suffix: () => dbSize.unit }));
 
-  const outdatedPkg = new Map(Object.entries(data?.outdatedPackages));
+  const outdatedPkg = new Map(Object.entries(data?.outdatedPackages||{}));
   Object.entries(data.dependencies).forEach(([label, value]) => {
     if (outdatedPkg.has(label)) {
       let rslVer = outdatedPkg.get(label);

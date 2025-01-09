@@ -253,8 +253,10 @@
   })
 
   watch(messageList,(newValue,oldValue)=>{
-    if(oldValue.length >= newValue.length) return;//改变状态，非加入新内容
-    var lastMsg = newValue[newValue.length-1];
+    let lastMsg = newValue[newValue.length-1];
+    let t1 = new Date().getTime();
+    let t2 = new Date(lastMsg.time).getTime();
+    if(t1 - t2 > 1100) return;
     if(lastMsg.type == "notice"){
       Message.info(`[${lastMsg.title}]${lastMsg.content}`)
     }
