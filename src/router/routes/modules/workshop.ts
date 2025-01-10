@@ -59,6 +59,17 @@ const WORKSHOP: AppRouteRecordRaw = {
       },
     },
     {
+      path: 'webbook/edit/:id',
+      name: 'webbookEdit',
+      component: () => import('@/views/workshop/webbookedit/index.vue'),
+      meta: {
+        locale: 'menu.workshop.webbook',
+        requiresAuth: true,
+        roles: ['*'],
+        hideInMenu:true
+      },
+    },
+    {
       path: 'mailto',
       name: 'MailTo',
       component: () => import('@/views/workshop/mailto.vue'),

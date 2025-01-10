@@ -2,7 +2,7 @@
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.workshop.webbook']" />
     <div class="wrapper">
-      <BookList :title="$t('menu.workshop.webbook')" next-router="bookedit" :Api="queryWebBookList" />
+      <BookList :title="$t('menu.workshop.webbook')" next-router="workshop/webbook/edit" :Api="queryWebBookList" />
     </div>
   </div>
 </template>
