@@ -25,7 +25,7 @@
         </a-card>
       </template>
       <template #second>
-        <a-list :size="chapterList.length > 30 ? 'small' : 'large'" scrollbar :max-height="858">
+        <a-list :size="chapterList.length > 30 ? 'small' : 'large'" scrollbar :virtualListProps="{height:858}" :max-height="858">
           <!-- TODO: 动态跟ContentDiv保持相同的高度 -->
           <a-list-item v-for="c in chapterList" :key="c.OrderNum" @click="CurChapter = c.Content ?? ''">
             <a-list-item-meta>

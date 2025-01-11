@@ -20,7 +20,7 @@
               </a-upload>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
-              <BookClassical :title-show="'直接录入'" :conver-color="'#212f30'" />
+              <BookClassical :title-show="'直接录入'" :conver-color="'#212f30'" @click="showAdd=true"/>
             </a-col>
           </a-row>
         </a-spin>
@@ -28,6 +28,7 @@
       <ImportWeb :visible="isShow" @cancel="toImportClose" @ok="toImportClose" @check="handleBeforeOk">
       </ImportWeb>
       <ImportText ref="textImportModal" @ok="handleImoprtSubmit"></ImportText>
+      <AddDirect :visible="showAdd" @close="showAdd = false"></AddDirect>
     </div>
   </div>
 </template>
@@ -40,8 +41,10 @@ import BookClassical from '@/components/book-cover/components/book-classical.vue
 import { addANewWebBook } from '@/api/book';
 import ImportWeb from './components/import-web.vue';
 import ImportText from './components/import-text.vue';
+import AddDirect from './components/add-direct.vue';
 
 const isShow = ref(false);
+const showAdd = ref(false);
 const textImportModal = ref() as any; // 模窗的引用
 const toImport = () => {
   isShow.value = true;

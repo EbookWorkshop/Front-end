@@ -1,6 +1,6 @@
 <template>
     <div class="chapter-opt">
-        <a-button-group :status="'warning'" style="width: 100%;">
+        <a-button-group :status="chapter.IsHasContent?'normal':'warning'" style="width: 100%;">
             <a-button long type="dashed" class="chapter-title" @click="onToggle">
                 <a-checkbox :model-value="isChecked">
                     {{ chapter.Title }}
@@ -12,7 +12,7 @@
                 </a-button>
                 <template #content>
                     <a-doption :disabled="chapter.IsHasContent ? false : true"
-                        @click="gotoChapter(chapter.IndexId)">阅读</a-doption>
+                        @click="gotoChapter(chapter.IndexId,true)">阅读</a-doption>
                     <a-doption>隐藏本章</a-doption>
                     <a-doption>打开来源网页</a-doption>
                     <a-doption>属性</a-doption>
@@ -45,8 +45,8 @@ defineExpose({
     handleCheckIt
 })
 
-function handleCheckIt(event: Event) {
-    isChecked.value = !isChecked.value;
+function handleCheckIt(checked:boolean) {
+    isChecked.value = checked;
 }
 
 //操作定义

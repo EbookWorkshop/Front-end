@@ -16,8 +16,14 @@ export default function useBookHelper() {
     router.push({ path: `/book/${bookId}` });
   };
 
-  const gotoChapter = (chapterid: number) => {
-    router.push({ path: `/book/${bookId}/chapter/${chapterid}` });
+  const gotoChapter = (chapterid: number, isNewWin = false) => {
+    if (!isNewWin) {
+      router.push({ path: `/book/${bookId}/chapter/${chapterid}` });
+    } else {
+      // const targetData = router.resolve({name:`/book/${bookId}/chapter/${chapterid}`});
+      window.open(`/book/${bookId}/chapter/${chapterid}`,'_blank');
+    }
+
   };
 
   return {

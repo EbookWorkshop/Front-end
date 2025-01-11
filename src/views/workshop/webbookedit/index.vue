@@ -1,19 +1,20 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.library', 'menu.workshop.webbook']" />
+    <Breadcrumb :items="['menu.library', 'menu.workshop.webbook',bookData.BookName]" />
     <div class="wrapper">
       <!-- <ProcessBar :bookid="bookId" :begin-percent="curDoingProcent" /> -->
       <a-spin :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%">
         <BookInfo :loading="loading" :bookId="bookId" :BookName="bookData.BookName" :convertImg="bookData.CoverImg"
           :Author="bookData.Author">
           <template #toolbar>
-            <Toolbar @check-all="onCheckAll"></Toolbar>
+            <Toolbar :Chapters="bookData.Index" :has-checked-num="chapterHasCheckedNum" @check-all="onCheckAll"
+              @check-empty="onCheckEmpty" @set-chapter="onSetChapter"></Toolbar>
           </template>
         </BookInfo>
 
         <ChapterList :loading="loading" :Chapters="bookData.Index">
           <template #content="{ item }">
-            <ChapterOpt :chapter="item" @toggle="OnToggle" :ref="chapterRefMap.get(item.IndexId)"/>
+            <ChapterOpt :chapter="item" @toggle="OnToggle" :ref="chapterRefMap.get(item.IndexId)" />
           </template>
         </ChapterList>
       </a-spin>
@@ -54,7 +55,7 @@ const queryBook = () => {
       ok();
     }).then(() => {
       // InitEditModelOption(rsl.data);
-      rsl.data.Index.forEach((iCpt:Chapter) => {
+      rsl.data.Index.forEach((iCpt: Chapter) => {
         chapterRefMap.set(iCpt.IndexId, ref(null));
       })
     });
@@ -87,11 +88,39 @@ function onCheckAll() {
     hasCheckChapter.set(c.IndexId, true);
     chapterHasCheckedNum.value++;
 
-    chapterRefMap.get(c.IndexId).value.handleCheckIt();
+    chapterRefMap.get(c.IndexId).value.handleCheckIt(true);
   });
-
 }
 
+/**
+ * 选空章节
+ */
+function onCheckEmpty() {
+  chapterHasCheckedNum.value = 0;
+  bookData.value.Index.forEach(c => {
+    let ctrl = chapterRefMap.get(c.IndexId);
+    if (c.IsHasContent) {
+      ctrl.value.handleCheckIt(false);
+      return;
+    }
+    hasCheckChapter.set(c.IndexId, true);
+    chapterHasCheckedNum.value++;
+
+    ctrl.value.handleCheckIt(true);
+  });
+}
+
+function onSetChapter(setResult: Number[]) {
+  if(chapterHasCheckedNum.value != 0) console.warn("已有选中章节，这会导致最终选中章节统计结果有误。")
+  chapterHasCheckedNum.value = 0;
+  //如果已有选中章节在这个范围内，将会导致选中章节统计数据出错
+  let chpUnfind = setResult.map(i => {
+    let ctrl = chapterRefMap.get(i);
+    if (!ctrl) return i;
+    ctrl.value.handleCheckIt(true);
+    chapterHasCheckedNum.value++;
+  });
+}
 </script>
 
 <style scoped lang="less"></style>

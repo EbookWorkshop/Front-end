@@ -21,12 +21,11 @@
       <a-input v-model="form.author" />
     </a-form-item>
   </a-form>
-  {{ form }}
 </template>
 
 <script lang="ts" setup>
 import { FileItem } from '@arco-design/web-vue';
-import { reactive, PropType } from 'vue';
+import { reactive, toRaw } from 'vue';
 
 const prop = defineProps({
   bookName: String,
@@ -44,7 +43,7 @@ const onFileChange = (fileList: FileItem[], curFile: FileItem) => {
 const handleSubmit = (data: any) => {
   console.log('提交', data);
 
-  return form;
+  return toRaw(form);
 };
 
 const init = (firstChapter: string) => {
