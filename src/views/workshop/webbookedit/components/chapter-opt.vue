@@ -1,6 +1,6 @@
 <template>
     <div class="chapter-opt">
-        <a-button-group :status="chapter.IsHasContent?'normal':'warning'" style="width: 100%;">
+        <a-button-group :status="chapter.IsHasContent ? 'normal' : 'warning'" style="width: 100%;">
             <a-button long type="dashed" class="chapter-title" @click="onToggle">
                 <a-checkbox :model-value="isChecked">
                     {{ chapter.Title }}
@@ -12,9 +12,9 @@
                 </a-button>
                 <template #content>
                     <a-doption :disabled="chapter.IsHasContent ? false : true"
-                        @click="gotoChapter(chapter.IndexId,true)">阅读</a-doption>
+                        @click="gotoChapter(chapter.IndexId, true)">阅读</a-doption>
                     <a-doption>隐藏本章</a-doption>
-                    <a-doption>打开来源网页</a-doption>
+                    <a-doption @click="OpenWin">打开来源网页</a-doption>
                     <a-doption>属性</a-doption>
                 </template>
             </a-dropdown>
@@ -24,12 +24,15 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { queryWebBookChapterSourcesById } from '@/api/book';
+import { openWindow } from '@/utils';
+
 //类型
 import { Chapter } from '@/types/book';
 
 //操作
 import useBookHelper from '@/hooks/book-helper';
-const { chapterId, gotoChapter } = useBookHelper();
+const { gotoChapter } = useBookHelper();
 
 //变量范围
 const isChecked = ref(false);
@@ -42,12 +45,9 @@ const props = defineProps<{
 }>();
 
 defineExpose({
-    handleCheckIt
+    handleCheckIt: (checked: boolean) => { isChecked.value = checked; },
 })
 
-function handleCheckIt(checked:boolean) {
-    isChecked.value = checked;
-}
 
 //操作定义
 function onToggle() {
@@ -55,7 +55,11 @@ function onToggle() {
     emit("toggle", isChecked.value, props.chapter.IndexId);
 }
 
-
+function OpenWin() {
+    queryWebBookChapterSourcesById(props.chapter.IndexId).then(data => {
+        openWindow(data.data[0]?.Path);
+    });
+}
 
 
 
