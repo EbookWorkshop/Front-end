@@ -5,6 +5,7 @@
                 <a-button-group type="primary">
                     <a-button shape="round" @click="emit('CheckAll')"> 全选 </a-button>
                     <a-button @click="emit('CheckEmpty')"> 选空章节 </a-button>
+                    <a-button @click="emit('CheckNotEmpty')"> 选非空章节 </a-button>
                     <a-button @click="isShow = true"> 区段选择 </a-button>
                     <a-button> 已隐藏章节 </a-button>
                     <!-- <a-button> <template #icon><icon-heart-fill /></template> </a-button>
@@ -62,7 +63,7 @@ const props = defineProps({
         type: Number
     }
 });
-const emit = defineEmits(["CheckAll", "CheckEmpty", "SetChapter"]);
+const emit = defineEmits(["CheckAll", "CheckEmpty", "CheckNotEmpty", "SetChapter"]);
 
 
 /**

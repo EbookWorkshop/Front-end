@@ -8,7 +8,7 @@
           :Author="bookData.Author">
           <template #toolbar>
             <Toolbar :Chapters="bookData.Index" :has-checked-num="chapterHasCheckedNum" @check-all="onCheckAll"
-              @check-empty="onCheckEmpty" @set-chapter="onSetChapter"></Toolbar>
+              @check-empty="onCheckEmpty" @check-not-empty="onCheckNotEmpty" @set-chapter="onSetChapter"></Toolbar>
           </template>
         </BookInfo>
 
@@ -100,6 +100,23 @@ function onCheckEmpty() {
   bookData.value.Index.forEach(c => {
     let ctrl = chapterRefMap.get(c.IndexId);
     if (c.IsHasContent) {
+      ctrl.value.handleCheckIt(false);
+      return;
+    }
+    hasCheckChapter.set(c.IndexId, true);
+    chapterHasCheckedNum.value++;
+
+    ctrl.value.handleCheckIt(true);
+  });
+}
+/**
+ * 选非空章节
+ */
+function onCheckNotEmpty() {
+  chapterHasCheckedNum.value = 0;
+  bookData.value.Index.forEach(c => {
+    let ctrl = chapterRefMap.get(c.IndexId);
+    if (!c.IsHasContent) {
       ctrl.value.handleCheckIt(false);
       return;
     }
