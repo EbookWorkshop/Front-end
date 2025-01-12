@@ -234,7 +234,8 @@
       @font-face {
         font-family: '${f.fontFamily}';
         src: url('${f.path}') format('truetype');
-        color:red;
+        font-weight: normal;
+        font-style: normal;
       }
     `;
     });

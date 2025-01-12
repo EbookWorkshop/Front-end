@@ -8,8 +8,7 @@
                     <a-button @click="isShow = true"> 区段选择 </a-button>
                     <a-button> 已隐藏章节 </a-button>
                     <!-- <a-button> <template #icon><icon-heart-fill /></template> </a-button>
-<a-button> <template #icon><icon-star-fill /></template> </a-button>
--->
+<a-button> <template #icon><icon-star-fill /></template> </a-button>-->
                     <a-button shape="round">来源管理</a-button>
                 </a-button-group>
             </a-space>
