@@ -1,7 +1,5 @@
 import axios from 'axios';
-import { Chapter } from "@/types/book";
-
-
+import { Chapter } from '@/types/book';
 
 if (import.meta.env.VITE_API_BASE_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -26,7 +24,7 @@ export function queryBookSourcesById(id: number) {
 /**
  * 拿到章节的来源地址
  * @param id 章节ID
- * @returns 
+ * @returns
  */
 export function queryWebBookChapterSourcesById(id: number) {
   return axios.get(`/library/webbook/chapter/sources?chapterid=${id}`);
@@ -44,10 +42,10 @@ export function queryChapterById(cid: number) {
 /**
  * 修改章节信息
  * @param chapter 章节
- * @returns 
+ * @returns
  */
 export function editChapter(chapter: Chapter) {
-  return axios.post("/library/book/chapter", chapter);
+  return axios.post('/library/book/chapter', chapter);
 }
 
 /**
@@ -75,7 +73,7 @@ export function addANewWebBook(url: string) {
  * @param id 书ID
  * @returns
  */
-export function mergeWebBookIndex(id: number) {
+export function mergeWebBookIndex(id: number | Number) {
   return axios.patch(`/library/webbook/mergeindex`, { bookId: id });
 }
 

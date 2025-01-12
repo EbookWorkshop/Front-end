@@ -15,7 +15,7 @@
             </a-space>
             <a-space>
                 <a-button-group type="primary">
-                    <a-button shape="round"> 更新目录 </a-button>
+                    <a-button :loading="isMerging" shape="round" @click="mergeIndex"> 更新目录 </a-button>
                     <a-button status="success">
                         <template #icon><icon-robot /></template>
                         <a-badge :count="hasCheckedNum" :max-count="99999" :offset="[15, -10]">
@@ -46,7 +46,11 @@
 <script setup lang="ts">
 import { defineEmits, ref, reactive } from 'vue';
 import { Chapter } from '@/types/book';
+import { mergeWebBookIndex } from '@/api/book';
 
+import { Message } from '@arco-design/web-vue';
+
+const isMerging = ref(false);       //合并章节状态
 const isShow = ref(false);
 const data = reactive<{
     cBegin: any,
@@ -55,6 +59,9 @@ const data = reactive<{
     cBegin: null, cEnd: null
 });
 const props = defineProps({
+    bookid: {
+        type: Number
+    },
     Chapters: {
         type: Array as () => Chapter[],
         default: []
@@ -87,5 +94,22 @@ function onSetChapter() {
     emit("SetChapter", result);
 }
 
-
+//事件定义
+/**
+ * 合并当前章节
+ * @param bookid
+ */
+function mergeIndex() {
+    Message.info('已启动章节更新合并');
+    isMerging.value = true;
+    return mergeWebBookIndex(props.bookid || -1)
+        .then((result) => {
+            isMerging.value = false;
+            Message.success('章节更新已完成');
+        })
+        .catch((err) => {
+            isMerging.value = false;
+            Message.error(`合并、更新章节失败${err}`)
+        });
+}
 </script>

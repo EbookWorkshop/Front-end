@@ -7,7 +7,7 @@
         <BookInfo :loading="loading" :bookId="bookId" :BookName="bookData.BookName" :convertImg="bookData.CoverImg"
           :Author="bookData.Author">
           <template #toolbar>
-            <Toolbar :Chapters="bookData.Index" :has-checked-num="chapterHasCheckedNum" @check-all="onCheckAll"
+            <Toolbar :bookid="bookData.BookId" :Chapters="bookData.Index" :has-checked-num="chapterHasCheckedNum" @check-all="onCheckAll"
               @check-empty="onCheckEmpty" @check-not-empty="onCheckNotEmpty" @set-chapter="onSetChapter"></Toolbar>
           </template>
         </BookInfo>
@@ -127,6 +127,10 @@ function onCheckNotEmpty() {
   });
 }
 
+/**
+ * 设置范围内的章节为选中
+ * @param setResult 需要选中的章节范围
+ */
 function onSetChapter(setResult: Number[]) {
   if(chapterHasCheckedNum.value != 0) console.warn("已有选中章节，这会导致最终选中章节统计结果有误。")
   chapterHasCheckedNum.value = 0;
@@ -138,6 +142,7 @@ function onSetChapter(setResult: Number[]) {
     chapterHasCheckedNum.value++;
   });
 }
+
 </script>
 
 <style scoped lang="less"></style>
