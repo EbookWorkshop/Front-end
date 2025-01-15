@@ -15,7 +15,7 @@
               </a-form-item>
               <a-form-item v-for="(book, index) of emailForm.bookList" :key="index">
                 <a-form-item label="书">
-                  <a-select v-model="book.bookid" placeholder="请选择" @change="OnAddABook">
+                  <a-select v-model="book.bookid" placeholder="请选择" @change="OnAddABook" allow-search>
                     <a-option v-for="item of allBookList" :value="item.BookId" :label="item.BookName" />
                   </a-select>
                   <a-radio-group style="width:180px;" v-model:model-value="book.filetype">
@@ -25,15 +25,15 @@
                 </a-form-item>
               </a-form-item>
               <a-form-item label="上传书籍">
-                <a-upload v-model="emailForm.bookList" :show-file-list="true" :auto-upload="false" :multiple="true">
-                  <template #start-icon></template>
+                <a-upload v-model:file-list="emailForm.fileList" :show-file-list="true" :auto-upload="false"
+                  :multiple="true" class="fileUpload">
                 </a-upload>
               </a-form-item>
 
               <a-form-item>
                 <a-button html-type="submit" status="success" type="primary">{{
                   $t('workshop.mailto.send')
-                  }}</a-button>
+                }}</a-button>
               </a-form-item>
             </a-form>
           </a-col>
@@ -48,9 +48,9 @@ import { reactive, ref } from 'vue';
 import { queryBookList } from '@/api/library'
 import { getSMTPServer, getKindleInbox } from '@/api/system';
 import useRequest from '@/hooks/request';
+import { FileItem } from '@arco-design/web-vue';
 
 import { Book } from '@/types/book'
-import TabItem from '@/components/tab-bar/tab-item.vue';
 
 const dataLoading = ref(false);
 
@@ -74,7 +74,7 @@ const emailForm = reactive({
     bookid: '请选择' as string | number,
     filetype: "pdf"
   }],
-  fileList: undefined as File | undefined
+  fileList: [] as FileItem[]
 })
 
 function OnAddABook() {
@@ -87,8 +87,17 @@ function OnAddABook() {
  * 发邮件
  */
 function handleSubmit() {
+
 }
 
 </script>
 
-<style scoped lang="less"></style>
+<style lang="less">
+.fileUpload {
+  div.arco-upload-list {
+    .arco-upload-progress {
+      display: none;/* 文件进度条上的开始按钮 不做独立上传，不要开始按钮 */
+    }
+  }
+}
+</style>

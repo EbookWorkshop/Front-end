@@ -3,7 +3,8 @@
         <a-space direction="vertical">
             <a-space>
                 <a-button-group type="primary">
-                    <a-button shape="round" @click="onCheckAll"> 全选 </a-button>
+                    <a-button shape="round" @click="onCheckAll(true)"> 全选 </a-button>
+                    <a-button shape="round" @click="onCheckAll(false)"> 清空 </a-button>
                     <a-button @click="onCheckEmpty"> 选空章节 </a-button>
                     <a-button @click="onCheckNotEmpty"> 选非空章节 </a-button>
                     <a-button @click="isShow = true"> 区段选择 </a-button>
@@ -32,11 +33,11 @@
         <a-form :model="data" layout="vertical">
             <a-form-item field="cBegin" label="开始章节:">
                 <a-select v-model="data.cBegin" :options="Chapters" :field-names="{ value: 'IndexId', label: 'Title' }"
-                    :virtual-list-props="{ height: 200 }" />
+                    :virtual-list-props="{ height: 200 }" allow-search/>
             </a-form-item>
             <a-form-item field="cEnd" label="结束章节:">
                 <a-select v-model="data.cEnd" :options="[...Chapters].reverse()"
-                    :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }" />
+                    :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }" allow-search/>
             </a-form-item>
         </a-form>
     </a-modal>
@@ -90,7 +91,7 @@ function onSetChapter() {
         let curIndex = props.Chapters[i].IndexId;
         if ((!hasBegin && curIndex === data.cBegin) || hasBegin) {
             hasBegin = true;
-            
+
             let ctrl = props.ChapterOptMap.get(curIndex) as any;
             if (!ctrl) break;
             result.push(curIndex);
@@ -126,6 +127,11 @@ function UpdateChapter() {
         if (value) hasCheckChapter.push(key as number)
     });
 
+    if (hasCheckChapter.length == 0) {
+        Message.error("没有选中章节");
+        return;
+    }
+
     updateChapter(props.bookid as number, hasCheckChapter, false).then((res: any) => {
         if (res?.code == 20000) Message.info("已启动下载。");
         else Message.error("启动失败，原因：" + res.msg)
@@ -137,12 +143,12 @@ function UpdateChapter() {
 /**
  * 全选
  */
-function onCheckAll() {
+function onCheckAll(isCheck: boolean) {
     chapterHasCheckedNum.value = 0;
     props.Chapters.forEach(c => {
-        props.ChapterStatus.set(c.IndexId, true);
-        chapterHasCheckedNum.value++;
-        emit("ToggleCheck", c.IndexId, true);
+        props.ChapterStatus.set(c.IndexId, isCheck);
+        if (isCheck) chapterHasCheckedNum.value++;
+        emit("ToggleCheck", c.IndexId, isCheck);
     });
 }
 
