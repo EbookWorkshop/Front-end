@@ -3,9 +3,9 @@
         <a-space direction="vertical">
             <a-space>
                 <a-button-group type="primary">
-                    <a-button shape="round" @click="emit('CheckAll')"> 全选 </a-button>
-                    <a-button @click="emit('CheckEmpty')"> 选空章节 </a-button>
-                    <a-button @click="emit('CheckNotEmpty')"> 选非空章节 </a-button>
+                    <a-button shape="round" @click="onCheckAll"> 全选 </a-button>
+                    <a-button @click="onCheckEmpty"> 选空章节 </a-button>
+                    <a-button @click="onCheckNotEmpty"> 选非空章节 </a-button>
                     <a-button @click="isShow = true"> 区段选择 </a-button>
                     <a-button> 已隐藏章节 </a-button>
                     <!-- <a-button> <template #icon><icon-heart-fill /></template> </a-button>
@@ -16,9 +16,9 @@
             <a-space>
                 <a-button-group type="primary">
                     <a-button :loading="isMerging" shape="round" @click="mergeIndex"> 更新目录 </a-button>
-                    <a-button status="success">
+                    <a-button status="success" @click="UpdateChapter">
                         <template #icon><icon-robot /></template>
-                        <a-badge :count="hasCheckedNum" :max-count="99999" :offset="[15, -10]">
+                        <a-badge :count="chapterHasCheckedNum" :max-count="99999" :offset="[15, -10]">
                             抓取选中章节
                         </a-badge>
                     </a-button>
@@ -46,18 +46,20 @@
 <script setup lang="ts">
 import { defineEmits, ref, reactive } from 'vue';
 import { Chapter } from '@/types/book';
-import { mergeWebBookIndex } from '@/api/book';
-
+import { mergeWebBookIndex, updateChapter } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
 
+const chapterHasCheckedNum = ref(0);    // 已选中的章节数
 const isMerging = ref(false);       //合并章节状态
 const isShow = ref(false);
+
 const data = reactive<{
     cBegin: any,
     cEnd: any
 }>({
     cBegin: null, cEnd: null
 });
+
 const props = defineProps({
     bookid: {
         type: Number
@@ -66,11 +68,16 @@ const props = defineProps({
         type: Array as () => Chapter[],
         default: []
     },
-    hasCheckedNum: {
-        type: Number
+    ChapterStatus: {
+        type: Map,
+        default: new Map()
+    },
+    ChapterOptMap: {
+        type: Map,
+        default: new Map()
     }
 });
-const emit = defineEmits(["CheckAll", "CheckEmpty", "CheckNotEmpty", "SetChapter"]);
+const emit = defineEmits(["ToggleCheck"]);
 
 
 /**
@@ -80,21 +87,20 @@ function onSetChapter() {
     let hasBegin = false;
     let result = [];
     for (let i = 0; i < props.Chapters.length; i++) {
-        if (!hasBegin) {
-            if (props.Chapters[i].IndexId === data.cBegin) {
-                hasBegin = true;
-                result.push(props.Chapters[i].IndexId);
-            }
-            continue;
+        let curIndex = props.Chapters[i].IndexId;
+        if ((!hasBegin && curIndex === data.cBegin) || hasBegin) {
+            hasBegin = true;
+            
+            let ctrl = props.ChapterOptMap.get(curIndex) as any;
+            if (!ctrl) break;
+            result.push(curIndex);
+            ctrl.value.handleCheckIt(true);
+            if (curIndex === data.cEnd) break;
         }
-        result.push(props.Chapters[i].IndexId);
-        if (props.Chapters[i].IndexId === data.cEnd) break;
     }
-
-    emit("SetChapter", result);
+    chapterHasCheckedNum.value = result.length;
 }
 
-//事件定义
 /**
  * 合并当前章节
  * @param bookid
@@ -112,4 +118,69 @@ function mergeIndex() {
             Message.error(`合并、更新章节失败${err}`)
         });
 }
+
+function UpdateChapter() {
+    // console.log(props.CheckedChapter);
+    let hasCheckChapter = [] as Array<number>;
+    props.ChapterStatus?.forEach((value, key) => {
+        if (value) hasCheckChapter.push(key as number)
+    });
+
+    updateChapter(props.bookid as number, hasCheckChapter, false).then((res: any) => {
+        if (res?.code == 20000) Message.info("已启动下载。");
+        else Message.error("启动失败，原因：" + res.msg)
+    });
+
+}
+
+
+/**
+ * 全选
+ */
+function onCheckAll() {
+    chapterHasCheckedNum.value = 0;
+    props.Chapters.forEach(c => {
+        props.ChapterStatus.set(c.IndexId, true);
+        chapterHasCheckedNum.value++;
+        emit("ToggleCheck", c.IndexId, true);
+    });
+}
+
+/**
+ * 选非空章节
+ */
+function onCheckNotEmpty() {
+    chapterHasCheckedNum.value = 0;
+    props.Chapters.forEach(c => {
+        let ctrl = props.ChapterOptMap.get(c.IndexId) as any;
+        if (!c.IsHasContent) {
+            ctrl.value.handleCheckIt(false);
+            return;
+        }
+        props.ChapterStatus.set(c.IndexId, true);
+        chapterHasCheckedNum.value++;
+
+        ctrl.value.handleCheckIt(true);
+    });
+}
+
+
+/**
+ * 选空章节
+ */
+function onCheckEmpty() {
+    chapterHasCheckedNum.value = 0;
+    props.Chapters.forEach(c => {
+        let ctrl = props.ChapterOptMap.get(c.IndexId) as any;
+        if (c.IsHasContent) {
+            ctrl.value.handleCheckIt(false);
+            return;
+        }
+        props.ChapterStatus.set(c.IndexId, true);
+        chapterHasCheckedNum.value++;
+
+        ctrl.value.handleCheckIt(true);
+    });
+}
+
 </script>

@@ -1,3 +1,11 @@
+// 全局的接口返回格式
+export interface HttpResponse<T = unknown> {
+  status: number;
+  msg: string;
+  code: number;
+  data: T;
+}
+
 export interface AnyObject {
   [key: string]: unknown;
 }
