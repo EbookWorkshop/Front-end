@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.library', 'menu.library.list', renderData.Title]" />
+    <Breadcrumb :items="['menu.library', 'menu.library.list',renderData.Book?.BookName, renderData.Title]" />
     <div class="wrapper" :style="{ backgroundColor: bgColor }">
       <!-- loading用的骨架页 -->
       <a-row v-if="loading" :gutter="[0, 32]">

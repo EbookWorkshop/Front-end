@@ -1,12 +1,24 @@
 import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
 
 
+export interface Book {
+    BookId: number;
+    BookName: string;
+    CoverImg: string;
+    Author: string;
+    FontFamily: string;
+    FontSize: number;
+    Index: Chapter[];
+    data?: DescData[];
+}
+
 export interface Chapter {
     Title: string;
     OrderNum: number;
     IndexId: number;
     Content?: string;
     IsHasContent?: boolean;
+    Book?:Book;
 }
 
 /**
@@ -25,15 +37,6 @@ export interface ChapterStatus {
      * 是否更新失败了
      */
     isError: boolean;
-}
-
-export interface Book {
-    BookId: number;
-    BookName: string;
-    CoverImg: string;
-    Author: string;
-    Index: Chapter[];
-    data?: DescData[];
 }
 
 

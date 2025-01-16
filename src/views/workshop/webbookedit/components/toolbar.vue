@@ -45,7 +45,7 @@
 
 </template>
 <script setup lang="ts">
-import { defineEmits, ref, reactive } from 'vue';
+import { ref, reactive } from 'vue';
 import { Chapter } from '@/types/book';
 import { mergeWebBookIndex, updateChapter } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
