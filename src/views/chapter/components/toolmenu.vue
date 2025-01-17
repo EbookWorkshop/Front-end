@@ -1,7 +1,9 @@
 <template>
     <a-trigger :trigger="['click', 'hover']" clickToClose position="top" v-model:popupVisible="popupOver">
         <a-button shape="round" type="primary" size="large" class="tool-bt" title="阅读偏好">
-            <template #icon><icon-command /></template>
+            <template #icon>
+                <a-progress type="circle" :percent="scrollProgress" :stroke-width="10" :show-text="false" />
+            </template>
         </a-button>
         <template #content>
             <a-menu :style="{ marginBottom: '-8px' }" mode="popButton" :tooltipProps="{ position: 'left' }"
@@ -61,9 +63,11 @@
     </a-trigger>
 </template>
 <script type="ts" setup>
-import { ref, toRaw } from 'vue';
+import { ref, toRaw, onMounted, onBeforeUnmount } from 'vue';
 import { queryFontList, ASSETS_HOST, } from '@/api/font';
 
+
+const scrollProgress = ref(0);
 const selectedFont = ref(null);
 const popupOver = ref(false);
 const bgColor = ref("#fff");
@@ -73,17 +77,34 @@ let fontData = null;
 
 let emit = defineEmits(['togglePdfModel', 'changeFontColor', 'changeFontSize', 'changeBgColor', 'changeFontFamily']);
 
+//字体加载、切换部分
 let fontDataMap = new Map();
 async function InitFont() {
     fontData = await queryFontList();
-    fontDataMap = new Map(fontData.map(t=>[t.name,t]));
+    fontDataMap = new Map(fontData.map(t => [t.name, t]));
 }
 InitFont();
-
-
-function onChangeFont(){
+function onChangeFont() {
     emit('changeFontFamily', fontDataMap.get(selectedFont.value));
 }
+
+
+//阅读进度条逻辑相关
+const handleScroll = () => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = document.documentElement.clientHeight;
+    scrollProgress.value = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100) / 100;
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', handleScroll);
+});
+
 </script>
 <style scoped>
 .tool-bt {

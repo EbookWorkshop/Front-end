@@ -25,24 +25,27 @@
         </a-card>
       </template>
       <template #second>
-        <a-list :size="chapterList.length > 30 ? 'small' : 'large'" scrollbar :virtualListProps="{height:858}" :max-height="858">
+        <a-list :size="chapterList.length > 30 ? 'small' : 'large'" scrollbar :virtualListProps="{ height: 858 }"
+          :data="chapterList">
           <!-- TODO: 动态跟ContentDiv保持相同的高度 -->
-          <a-list-item v-for="c in chapterList" :key="c.OrderNum" @click="CurChapter = c.Content ?? ''">
-            <a-list-item-meta>
-              <template #title>
-                <a-input v-if="c.isEditing" :default-value="c.Title" @blur="c.isEditing = false"
-                  @change="c.Title = $event as string" />
-                <span v-else @click="c.isEditing = true">{{ c.Title }}</span>
+          <template #item="{ item, index }">
+            <a-list-item :key="index" @click="CurChapter = item.Content ?? ''">
+              <a-list-item-meta>
+                <template #title>
+                  <a-input v-if="item.isEditing" :default-value="item.Title" @blur="item.isEditing = false"
+                    @change="item.Title = $event as string" />
+                  <span v-else @click="item.isEditing = true">{{ item.Title }}</span>
+                </template>
+                <template #avatar>
+                  <a-avatar shape="circle">{{ item.OrderNum }}</a-avatar>
+                </template>
+              </a-list-item-meta>
+              <template #actions>
+                <icon-edit @click="item.isEditing = !item.isEditing" />
+                <icon-delete @click="chapterList.splice(chapterList.indexOf(item), 1)" />
               </template>
-              <template #avatar>
-                <a-avatar shape="circle">{{ c.OrderNum }}</a-avatar>
-              </template>
-            </a-list-item-meta>
-            <template #actions>
-              <icon-edit @click="c.isEditing = !c.isEditing" />
-              <icon-delete @click="chapterList.splice(chapterList.indexOf(c), 1)" />
-            </template>
-          </a-list-item>
+            </a-list-item>
+          </template>
         </a-list>
       </template>
     </a-split>

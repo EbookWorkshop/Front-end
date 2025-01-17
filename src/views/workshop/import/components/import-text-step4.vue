@@ -47,7 +47,8 @@ const handleSubmit = (data: any) => {
 };
 
 const init = (firstChapter: string) => {
-  let author = firstChapter.match(/(?:作者[：:]+(?:\s+)?(.+?))|(?:\s+(\S+)著)\r?\n/);
+  let author = firstChapter.match(/(?:作者[：:\s]+(?:\s+)?([^\n]+))|(?:\s+(\S+)著)\r?\n/);
+  console.log(author)
   form.author = author ? (author[1] || author[2]) : '????';
   form.bookName = form.bookName?.replace(/[《》]/g, "");
 }
