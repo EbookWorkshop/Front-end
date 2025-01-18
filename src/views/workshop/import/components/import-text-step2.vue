@@ -38,7 +38,9 @@
               <a-form-item field="removeRule" label="删除规则" tooltip="按正则解释输入的规则，命中的内容替换为空。用于删除一些广告之类的文案。">
                 <a-input-tag v-model="form.removeRule" placeholder="按回车设置一条规则，使用Global模式的正则表达式" allow-clear />
               </a-form-item>
-              <a-form-item field="titleRule" label="章节标题" tooltip="章节分割规则，通过命中章节标题分割章节。如果留空则不进行任何分割！">
+              <a-form-item field="titleRule" label="章节标题" tooltip="章节分割规则，通过命中章节标题分割章节。如果留空则不进行任何分割！"
+              :rules="[{ match: /\(+.*?\)+/, message: '标题规则为正则表达式，需要用英文括号提取标题部分。' }]"              
+              >
                 <a-textarea v-model="form.titleRule"  :auto-size="{ minRows: 2 }"
                   placeholder="使用正则表达式语法，启用全局匹配模式，所以切勿使用$标记行尾；需要用提取符()将章节标题完整取出。" />
               </a-form-item>
@@ -53,6 +55,7 @@
                   </a-optgroup>
                   <a-optgroup label="无章节标题">
                     <a-option value="((第\S+?章)|后记)\r?\n">第x章或后记-独立分行</a-option>
+                    <a-option value="\n\s?(\S.{1,4})\s?\r?\n">任意内容5字以内的-独立分行</a-option>
                   </a-optgroup>
                 </a-select>
                 <a-button status="warning" @click="testCutRule">测试分割章节规则</a-button>
