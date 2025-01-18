@@ -2,7 +2,7 @@
     <a-trigger :trigger="['click', 'hover']" clickToClose position="top" v-model:popupVisible="popupOver">
         <a-button shape="round" type="primary" size="large" class="tool-bt" title="阅读偏好">
             <template #icon>
-                <a-progress type="circle" :percent="scrollProgress" :stroke-width="10" :show-text="false" />
+                <a-progress type="circle" :percent="scrollProgress" :stroke-width="10" :show-text="false" :track-color="'var(--color-neutral-3)'"/>
             </template>
         </a-button>
         <template #content>

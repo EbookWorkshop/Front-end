@@ -65,10 +65,10 @@ const ASSETS_HOST = import.meta.env.VITE_API_BASE_URL;
 
 //变量
 const pdfModel = ref(false);//在PDF模式查看
-const ftColor = ref("#000");
+const ftColor = ref("var(--color-neutral-8)");
 const ftSize = ref(20);
 const ftFamily = ref("");
-const bgColor = ref("#fff");
+const bgColor = ref("var(--color-bg-2)");
 const { chapterId, gotoChapter, gotoIndex } = useBookHelper();
 const { loading, response: renderData } = useRequest<Chapter>(
   queryChapterById.bind(null, chapterId)
