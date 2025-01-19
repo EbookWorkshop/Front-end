@@ -103,3 +103,9 @@ git commit --no-verify -m "提交说明"
 ```bash
 npx lint-staged
 ```
+
+## GitHub超时解决方案
+GitHub 推送不了时
+* 在这里找到最新的github.com解释ip地址：https://www.ipaddress.com/website/github.com/
+* 修改本地host文件，在`C:\Windows\System32\drivers\etc`
+* 运行 `ipconfig /flushdns` 刷新DNS

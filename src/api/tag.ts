@@ -36,3 +36,10 @@ export function removeTagForBook(bookId: number, tagId: number) {
     params: { bookid: bookId, tagid: tagId },
   });
 }
+
+/**
+ * 取得有书的标签
+ */
+export function getTagHasBook() {
+  return axios.get('/library/tag/list');
+}

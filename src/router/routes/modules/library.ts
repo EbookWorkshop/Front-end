@@ -14,7 +14,7 @@ const LIBRARY: AppRouteRecordRaw = {
   },
   children: [
     {
-      path: 'booklist',
+      path: 'booklist/:tagid?',
       name: 'BookList',
       component: () => import('@/views/library/list/index.vue'),
       meta: {

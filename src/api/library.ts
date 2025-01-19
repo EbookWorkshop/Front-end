@@ -1,24 +1,20 @@
-import axios from 'axios';
-import { AxiosResponse } from 'axios';
-import { HttpResponse } from '@/api/interceptor';
+import axios, { AxiosResponse } from 'axios';
 
-// import qs from 'query-string';
-// import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
+import { HttpResponse } from '@/types/global';
+import { Book } from '@/types/book';
 
-export interface Book {
-  BookId: number;
-  BookName: string;
-  CoverImg: string;
-}
-
-export type ListQueryApi = () => Promise<AxiosResponse<HttpResponse<Book[]>>>;
+export type ListQueryApi = (
+  tagId: number | undefined
+) => Promise<AxiosResponse<HttpResponse<Book[]>>>;
 
 if (import.meta.env.VITE_API_BASE_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 }
 
-export function queryBookList() {
-  return axios.get('/library/booklist');
+export function queryBookList(tagId: number | undefined) {
+  return axios.get('/library/booklist', {
+    params: { tagid: tagId },
+  });
 }
 
 export function queryWebBookList() {
