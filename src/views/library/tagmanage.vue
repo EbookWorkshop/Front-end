@@ -4,7 +4,7 @@
         <Breadcrumb :items="['menu.library', 'menu.library.tagmanage']" />
         <div class="wrapper">
           <a-space>
-            <a-button status="success" @click="">添加</a-button>
+            <a-button status="success" @click="createNewRule">添加</a-button>
           </a-space>
           <a-table :data="renderData" :loading="tableLoading">
             <template #columns>
@@ -18,7 +18,7 @@
                 <a-table-column title="引用次数" data-index="Count" :width="220"></a-table-column>
                 <a-table-column title="操作" :width="250">
                     <template #cell="{ record }">
-                        <a-button @click="">编辑</a-button>
+                        <a-button @click="editRow(record)">编辑</a-button>
                         <a-popconfirm
                             content="确认删除？此操作将无法恢复！"
                             @ok="handlerDeleteTag(record.id)"
@@ -32,8 +32,8 @@
         </div>
         <a-modal
           v-model:visible="visible"
-          title="添加标签"
-          @before-ok=""
+          title="标签"
+          @before-ok="handleBeforeOk"
         >
           <a-form :model="form">
             <input type="hidden" :value="form.id" />
@@ -64,16 +64,15 @@
       color: '',
     });
   
-    // /**
-    //  * 添加新规则
-    //  */
-    // const createNewRule = () => {
-    //   form.id = '';
-    //   form.name = '';
-    //   form.rule = '';
-    //   form.replace = '';
-    //   visible.value = true;
-    // };
+    /**
+     * 添加新规则
+     */
+    const createNewRule = () => {
+      form.id = '';
+      form.text = '';
+      form.color = '';
+      visible.value = true;
+    };
     /**
      * 重新加载表格信息
      */
@@ -88,20 +87,20 @@
         });
     };
   
-    // /**
-    //  * 保存提交
-    //  */
-    // const handleBeforeOk = (callback: any) => {
-    //   updateReviewRule(form)
-    //     .then(() => {
-    //       callback(true);
-    //       TableReload();
-    //     })
-    //     .catch((err) => {
-    //       Message.error(`保存失败：${err}`);
-    //       callback(false);
-    //     });
-    // };
+    /**
+     * 保存提交
+     */
+    const handleBeforeOk = (callback: any) => {
+      // updateReviewRule(form)
+      //   .then(() => {
+      //     callback(true);
+      //     TableReload();
+      //   })
+      //   .catch((err) => {
+      //     Message.error(`保存失败：${err}`);
+      //     callback(false);
+      //   });
+    };
     /**
      * 删除规则
      */
@@ -115,12 +114,11 @@
         });
     };
   
-    // const editRow = (data: any) => {
-    //   visible.value = true;
-    //   form.id = data.id;
-    //   form.name = data.Name;
-    //   form.rule = data.Rule;
-    //   form.replace = data.Replace;
-    // };
+    const editRow = (data: any) => {
+      visible.value = true;
+      form.id = data.id;
+      form.text = data.Text;
+      form.color = data.Color;
+    };
   </script>
   
