@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-export interface Tag { id: number, Text: string, Color: string, Count: number }
+export interface Tag {
+  id: number;
+  Text: string;
+  Color: string;
+  Count: number;
+}
 
 /**
  * 拿到书的标签
@@ -44,16 +49,16 @@ export function getTagHasBook() {
 
 /**
  * 获取所有的标签
- * @returns 
+ * @returns
  */
 export function getAllTag() {
   return axios.get('/library/tag/list');
 }
 /**
  * 删除标签
- * @param tagId 
- * @returns 
+ * @param tagId
+ * @returns
  */
 export function deleteTag(tagId: number) {
-  return axios.delete('/library/tag?tagid=' + tagId);
+  return axios.delete(`/library/tag?tagid=${tagId}`);
 }
