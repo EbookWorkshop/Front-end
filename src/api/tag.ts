@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-// if (import.meta.env.VITE_API_BASE_URL) {
-//   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-// }
+export interface Tag { id: number, Text: string, Color: string, Count: number }
 
 /**
  * 拿到书的标签
@@ -32,7 +30,7 @@ export function addTagForBook(bookid: number, text: string) {
  * @param tagId 要删除的标签Id
  */
 export function removeTagForBook(bookId: number, tagId: number) {
-  return axios.delete('/library/tag', {
+  return axios.delete('/library/tagonbook', {
     params: { bookid: bookId, tagid: tagId },
   });
 }
@@ -41,5 +39,21 @@ export function removeTagForBook(bookId: number, tagId: number) {
  * 取得有书的标签
  */
 export function getTagHasBook() {
+  return axios.get('/library/tag/list?hasbook=1');
+}
+
+/**
+ * 获取所有的标签
+ * @returns 
+ */
+export function getAllTag() {
   return axios.get('/library/tag/list');
+}
+/**
+ * 删除标签
+ * @param tagId 
+ * @returns 
+ */
+export function deleteTag(tagId: number) {
+  return axios.delete('/library/tag?tagid=' + tagId);
 }

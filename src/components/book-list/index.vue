@@ -5,11 +5,18 @@
       <a-col :span="24">
         <a-space direction="horizontal" wrap :v-if="tagsData.length > 0">
           标签：
-          <a-tag v-for="t of tagsData" :color="t.Color" :key="t.id" :style="{ cursor: 'pointer' }"
-            @click="CheckTag(t.id)">
-            {{ t.Text }}
-          </a-tag>
-          <a-tag v-if="tagId" @click="CheckTag(undefined)"><template #icon><icon-close /></template> </a-tag>
+          <template v-if="tagId ?? 0 > 0">
+            <a-tag :color="curTag?.Color" :style="{ cursor: 'pointer' }">
+              {{ curTag?.Text }}({{ curTag?.Count }})
+            </a-tag>
+            <a-tag @click="CheckTag(undefined)"><template #icon><icon-close /></template> </a-tag>
+          </template>
+          <template v-else>
+            <a-tag v-for="t of tagsData" :color="t.Color" :key="t.id" :style="{ cursor: 'pointer' }"
+              @click="CheckTag(t.id)">
+              {{ t.Text }}({{ t.Count }})
+            </a-tag>
+          </template>
         </a-space>
       </a-col>
       <a-col :span="24">
@@ -34,7 +41,7 @@
 import { PropType, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ListQueryApi } from '@/api/library';
-import { getTagHasBook } from '@/api/tag';
+import { getTagHasBook, Tag } from '@/api/tag';
 import { Book } from '@/types/book';
 import useRequest from '../../hooks/request';
 import BookCover from '../book-cover/index.vue';
@@ -51,6 +58,7 @@ const props = defineProps({
   }
 });
 const tagId = ref(props.tagid);
+const curTag = ref<Tag>();
 const defaultValue: Book[] = new Array().fill({});
 
 /**
@@ -61,7 +69,7 @@ const { loading, response: renderData } = useRequest<Book[]>(
   defaultValue
 );
 
-const { response: tagsData } = useRequest<{ id: number, Text: string, Color: string, Count: number }[]>(getTagHasBook);
+const { response: tagsData } = useRequest<Tag[]>(getTagHasBook);
 
 const router = useRouter();
 const goto = (bookid: number) => {
@@ -76,6 +84,7 @@ function CheckTag(id: number | undefined) {
   props.Api(id).then(result => {
     loading.value = false;
     renderData.value = result.data as any;
+    curTag.value = tagsData.value.filter(t => t.id === tagId.value)[0];
   })
 }
 </script>
