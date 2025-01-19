@@ -11,7 +11,7 @@
             <a-step description="完善书籍信息并保存">保存</a-step>
           </a-steps>
           <keep-alive>
-            <step1 v-if="step == 1" :status="fileStatus" @set-file="onSetFile" />
+            <Step1 v-if="step == 1" :status="fileStatus" @set-file="onSetFile" />
             <Step2 v-else-if="step == 2" ref="Step2Ref" :files="fileList" />
             <Step3 v-else-if="step == 3" ref="Step3Ref" />
             <Step4 v-else-if="step == 4" ref="Step4Ref" :book-name="fileList[0]?.name?.replace(/\.\w+$/, '')" />
@@ -48,7 +48,7 @@
 
 <script lang="ts" setup>
 import { ref, reactive } from 'vue';
-import { FileItem, Message, Step } from '@arco-design/web-vue';
+import { FileItem, Message } from '@arco-design/web-vue';
 import useLoading from '@/hooks/loading';
 import { addABook } from '@/api/library';
 import Step1 from './import-text-step1.vue';
@@ -132,7 +132,7 @@ const changeStep = (direction: number) => {
  */
 const handleSubmit = async () => {
   setLoading(true);
-  const data = Step4Ref.value?.submit();
+  const data = await Step4Ref.value?.submit();
   const formData = {
     ...data,
     chapterList,

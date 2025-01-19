@@ -29,3 +29,16 @@ export function queryWebBookList() {
 export function addABook(book: any) {
   return axios.post(`/library/book`, book);
 }
+
+/**
+ * 添加一本空书入书库
+ * @param book
+ * @returns
+ */
+export function addEmptyBook(book: {
+  bookName: string;
+  author: string;
+  conver: string;
+}) {
+  return axios.post(`/library/emptybook`, book);
+}

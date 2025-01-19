@@ -1,5 +1,5 @@
 <template>
-  <a-form :model="form" @submit="handleSubmit">
+  <a-form ref="formRef" :model="form" @submit="handleSubmit">
     <a-form-item field="bookCover" tooltip="" label="封面">
       <a-upload v-model="form.bookCover" :show-file-list="false" :auto-upload="false" @change="onFileChange">
         <template #upload-button>
@@ -24,6 +24,7 @@
 </template>
 
 <script lang="ts" setup>
+import {ref} from 'vue';
 import { FileItem } from '@arco-design/web-vue';
 import { reactive, toRaw } from 'vue';
 
@@ -35,13 +36,15 @@ const form = reactive({
   author: '',
   bookCover: undefined as File | undefined,
 });
+const formRef = ref();
 
 const onFileChange = (fileList: FileItem[], curFile: FileItem) => {
   form.bookCover = curFile.file;
 };
 
-const handleSubmit = (data: any) => {
-  console.log('提交', data);
+const handleSubmit =async (data: any) => {
+  let result = await formRef.value.validate();
+  if(result?.bookName?.isRequiredError) return false;
 
   return toRaw(form);
 };
@@ -52,5 +55,6 @@ const init = (firstChapter: string) => {
   form.author = author ? (author[1] || author[2]) : '????';
   form.bookName = form.bookName?.replace(/[《》]/g, "");
 }
+
 defineExpose({ submit: handleSubmit, init });
 </script>

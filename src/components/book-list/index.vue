@@ -2,7 +2,7 @@
   <a-empty v-if="renderData != null && renderData.length == 0" />
   <a-spin :loading="loading">
     <a-row :gutter="20" align="stretch" style="overflow-x: hidden">
-      <a-col :span="24">
+      <a-col :span="24" v-if="renderData.length > 0">
         <a-space direction="horizontal" wrap :v-if="tagsData.length > 0">
           标签：
           <template v-if="tagId ?? 0 > 0">
