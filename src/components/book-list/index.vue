@@ -4,7 +4,7 @@
     <a-row :gutter="20" align="stretch" style="overflow-x: hidden">
       <a-col :span="24" v-if="renderData.length > 0">
         <a-space direction="horizontal" wrap :v-if="tagsData.length > 0">
-          标签：
+          <span :style="{color:'var(--color-neutral-8)'}">标签：</span>
           <template v-if="tagId ?? 0 > 0">
             <a-tag :color="curTag?.Color" :style="{ cursor: 'pointer' }">
               {{ curTag?.Text }}({{ curTag?.Count }})
