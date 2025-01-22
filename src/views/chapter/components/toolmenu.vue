@@ -2,7 +2,8 @@
     <a-trigger :trigger="['click', 'hover']" clickToClose position="top" v-model:popupVisible="popupOver">
         <a-button shape="round" type="primary" size="large" class="tool-bt" title="阅读偏好">
             <template #icon>
-                <a-progress type="circle" :percent="scrollProgress" :stroke-width="10" :show-text="false" :track-color="'var(--color-neutral-3)'"/>
+                <a-progress type="circle" :percent="scrollProgress" :stroke-width="10" :show-text="false"
+                    :track-color="'var(--color-neutral-3)'" />
             </template>
         </a-button>
         <template #content>
@@ -64,6 +65,7 @@
 </template>
 <script type="ts" setup>
 import { ref, toRaw, onMounted, onBeforeUnmount } from 'vue';
+import { addBookmarkForChapter } from '@/api/bookmark'
 import { queryFontList, ASSETS_HOST, } from '@/api/font';
 
 
@@ -104,6 +106,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
     window.removeEventListener('scroll', handleScroll);
 });
+
+
 
 </script>
 <style scoped>
