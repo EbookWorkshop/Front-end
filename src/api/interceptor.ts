@@ -12,7 +12,7 @@ import { getToken } from '@/utils/auth';
 if (import.meta.env.VITE_API_BASE_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 }
-
+// 请求拦截器 —— 统一加Token的逻辑
 axios.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // let each request carry token
@@ -34,7 +34,7 @@ axios.interceptors.request.use(
   }
 );
 
-// add response interceptors
+// 返回拦截器，统一响应结果
 axios.interceptors.response.use(
   (response: AxiosResponse<HttpResponse | any, any>) => {
     const res = response.data;

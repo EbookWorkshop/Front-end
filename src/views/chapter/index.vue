@@ -44,7 +44,7 @@
             @click="gotoChapter(adjChap?.next?.id)">下一章</a-button></a-col>
       </a-row>
       <ToolMenu @toggle-pdf-model="togglePDF" @change-font-color="ftChange" @change-font-size="ftSizeChange"
-        @change-font-family="ftFamilyChange" @change-bg-color="bgChange"></ToolMenu>
+        @change-font-family="ftFamilyChange" @change-bg-color="bgChange" :chapterId="chapterId"></ToolMenu>
     </div>
   </div>
 </template>

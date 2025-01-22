@@ -9,7 +9,7 @@
         <template #content>
             <a-menu :style="{ marginBottom: '-8px' }" mode="popButton" :tooltipProps="{ position: 'left' }"
                 showCollapseButton>
-                <a-menu-item key="1">
+                <a-menu-item key="1" @click="handleAddBookmark">
                     <template #icon>
                         <icon-subscribe-add style="color:rgb(var(--orange-7))" />
                     </template>
@@ -63,21 +63,30 @@
         </template>
     </a-trigger>
 </template>
-<script type="ts" setup>
+<script lang="ts" setup>
 import { ref, toRaw, onMounted, onBeforeUnmount } from 'vue';
+import { ApiResultCode, HttpResponse } from '@/types/global'
 import { addBookmarkForChapter } from '@/api/bookmark'
 import { queryFontList, ASSETS_HOST, } from '@/api/font';
 
+import { Message } from '@arco-design/web-vue';
+
 
 const scrollProgress = ref(0);
-const selectedFont = ref(null);
+const selectedFont = ref("");
 const popupOver = ref(false);
 const bgColor = ref("#fff");
 const fontColor = ref("#000");
 const fontSize = ref(20);
-let fontData = null;
+let fontData: Array<any> = [];
 
-let emit = defineEmits(['togglePdfModel', 'changeFontColor', 'changeFontSize', 'changeBgColor', 'changeFontFamily']);
+const emit = defineEmits(['togglePdfModel', 'changeFontColor', 'changeFontSize', 'changeBgColor', 'changeFontFamily']);
+const props = defineProps({
+    chapterId: {
+        type: Number,
+        required: true
+    }
+});
 
 //字体加载、切换部分
 let fontDataMap = new Map();
@@ -98,15 +107,23 @@ const handleScroll = () => {
     const clientHeight = document.documentElement.clientHeight;
     scrollProgress.value = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100) / 100;
 };
-
 onMounted(() => {
     window.addEventListener('scroll', handleScroll);
 });
-
 onBeforeUnmount(() => {
     window.removeEventListener('scroll', handleScroll);
 });
 
+//书签相关功能
+function handleAddBookmark() {
+    addBookmarkForChapter(props.chapterId).then((result: HttpResponse<any>) => {
+        if (result.code == ApiResultCode.Success) {
+            Message.success("已添加书签");
+        } else {
+            Message.error("添加书签失败：" + result.msg);
+        }
+    })
+}
 
 
 </script>

@@ -55,7 +55,7 @@
     import {  getAllTag,deleteTag,Tag } from '@/api/tag';
     import { Message } from '@arco-design/web-vue';
   
-    const { loading: tableLoading, response: renderData } =      useRequest<Tag[]>(getAllTag);
+    const { loading: tableLoading, response: renderData } = useRequest<Tag[]>(getAllTag);
   
     const visible = ref(false);
     const form = reactive({

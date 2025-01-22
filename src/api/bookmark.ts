@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { HttpResponse } from '@/types/global';
 
 /**
  * 拿到书签列表
@@ -15,7 +16,7 @@ export function queryBookmark(id: number | undefined) {
  * @returns
  */
 export function addBookmarkForChapter(chapterid: number) {
-  return axios.post(`/library/bookmark`, {
-    chapterid: chapterid
+  return axios.post<HttpResponse<any>>(`/library/bookmark`, {
+    chapterid,
   });
 }
