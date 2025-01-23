@@ -38,7 +38,7 @@ const LIBRARY: AppRouteRecordRaw = {
     {
       path: 'bookmark',
       name: 'Bookmark',
-      component: () => import('@/views/not-found/index.vue'),
+      component: () => import('@/views/library/bookmark.vue'),
       meta: {
         locale: 'menu.library.bookmark',
         requiresAuth: true,

@@ -6,7 +6,7 @@ import type { HttpResponse } from '@/types/global';
  * @param id 书的ID，为空则取所有书签
  * @returns
  */
-export function queryBookmark(id: number | undefined) {
+export function queryBookmark(id?: number | undefined) {
   return axios.get(`/library/bookmark?bookid=${id}`);
 }
 
