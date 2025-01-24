@@ -17,6 +17,11 @@ declare module 'axios' {
       data?: any,
       config?: AxiosRequestConfig
     ): Promise<HttpResponse>;
+    patch<HttpResponse>(
+      url: string,
+      data?: any,
+      config?: AxiosRequestConfig
+    ): Promise<HttpResponse>;
     put<HttpResponse = any>(
       url: string,
       data?: any,

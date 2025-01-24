@@ -1,3 +1,4 @@
+import { HttpResponse } from '@/types/global';
 import axios from 'axios';
 
 export interface Tag {
@@ -61,4 +62,29 @@ export function getAllTag() {
  */
 export function deleteTag(tagId: number) {
   return axios.delete(`/library/tag?tagid=${tagId}`);
+}
+
+/**
+ * 更新标签
+ * @param tagId 标签Id
+ * @param tagText 标签文本
+ * @param color 标签颜色
+ * @returns
+ */
+export function updateTag(tagId: number, tagText: string, color?: string) {
+  return axios.patch<HttpResponse<number>>(`/library/tag`, {
+    tagId,
+    tagText,
+    color,
+  });
+}
+
+/**
+ * 新增一个标签
+ * @param tagText
+ * @param color
+ * @returns {Tag} 创建的标签
+ */
+export function addTag(tagText: string, color?: string) {
+  return axios.post<HttpResponse<Tag>>(`/library/tag`, { tagText, color });
 }
