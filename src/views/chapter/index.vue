@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.library', 'menu.library.list',renderData.Book?.BookName, renderData.Title]" />
+    <Breadcrumb :items="['menu.library', 'menu.library.list', renderData.Book?.BookName, renderData.Title]" />
     <div class="wrapper" :style="{ backgroundColor: bgColor }">
       <!-- loading用的骨架页 -->
       <a-row v-if="loading" :gutter="[0, 32]">
@@ -20,7 +20,7 @@
       </a-row>
 
       <a-row class="grid-chapter" :gutter="[0, 120]">
-        <a-col v-if="!pdfModel" :span="20" class="content" :offset="2" >
+        <a-col v-if="!pdfModel" :span="20" class="content" :offset="2">
           <a-typography :style="{ marginTop: '-40px', color: ftColor }">
             <a-typography-title class="title">{{ renderData.Title }}
             </a-typography-title>
@@ -116,11 +116,12 @@ function togglePDF() { pdfModel.value = !pdfModel.value; }
   color: var(--color-neutral-10);
   font-size: var(--font-size-body-3);
 }
-.toolbar{
+
+.toolbar {
   margin-top: 48px;
 }
 
-.pdfFrame{
+.pdfFrame {
   border-radius: 8px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease-in-out;

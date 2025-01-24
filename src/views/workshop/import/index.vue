@@ -15,12 +15,12 @@
             <a-col :span="8" flex="auto" class="col-align-center">
               <a-upload action="/upload/importBook/pdf">
                 <template #upload-button>
-                  <BookClassical :title-show="'不可编辑格式导入：PDF，Mobi、EPUB等'" conver-color="#cb1f2f"/>
+                  <BookClassical :title-show="'不可编辑格式导入：PDF，Mobi、EPUB等'" conver-color="#cb1f2f" />
                 </template>
               </a-upload>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
-              <BookClassical :title-show="'直接录入'" :conver-color="'#212f30'" @click="showAdd=true"/>
+              <BookClassical :title-show="'直接录入'" :conver-color="'#212f30'" @click="showAdd = true" />
             </a-col>
           </a-row>
         </a-spin>
@@ -61,8 +61,8 @@ const handleBeforeOk = (url: string) => {
   isShow.value = false;
 
   addANewWebBook(url)
-    .then((result) => {
-      Message.success(`${result.data}`);
+    .then((data) => {
+      Message.success(`${data}`);
     })
     .catch((err) => {
       Message.error(`添加书失败：${err.message}`);

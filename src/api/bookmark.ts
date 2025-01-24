@@ -20,3 +20,12 @@ export function addBookmarkForChapter(chapterid: number) {
     chapterid,
   });
 }
+
+/**
+ * 删除书签
+ * @param id 书签ID
+ * @returns
+ */
+export function deleteBookmark(id?: number | undefined) {
+  return axios.delete(`/library/bookmark?id=${id}`);
+}

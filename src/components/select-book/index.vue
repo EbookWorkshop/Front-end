@@ -13,7 +13,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { queryBookList, Book } from '@/api/library';
+  import type { Book } from '@/types/book';
+  import { queryBookList } from '@/api/library';
   import useRequest from '@/hooks/request';
 
   const { loading, response: renderData } = useRequest<Book[]>(queryBookList);

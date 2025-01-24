@@ -58,6 +58,16 @@ const LIBRARY: AppRouteRecordRaw = {
     },
     {
       path: '/book/:id(\\d+)/chapter/:cid(\\d+)',
+      name: 'Book_Chapter',
+      component: () => import('@/views/chapter/index.vue'),
+      meta: {
+        requiresAuth: true,
+        hideInMenu: true,
+        roles: ['*'],
+      },
+    },
+    {
+      path: '/chapter/:cid(\\d+)',
       name: 'Chapter',
       component: () => import('@/views/chapter/index.vue'),
       meta: {

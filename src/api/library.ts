@@ -11,10 +11,10 @@ if (import.meta.env.VITE_API_BASE_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 }
 
-export function queryBookList(tagId: number | undefined) {
-  return axios.get('/library/booklist', {
-    params: { tagid: tagId },
-  });
+export function queryBookList(tagId?: number) {
+  let param = {};
+  if (tagId) param = { params: { tagid: tagId } };
+  return axios.get('/library/booklist', param);
 }
 
 export function queryWebBookList() {
