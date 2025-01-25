@@ -7,8 +7,8 @@
         <BookInfo :loading="loading" :bookId="bookId" :BookName="bookData.BookName" :convertImg="bookData.CoverImg"
           :Author="bookData.Author">
           <template #toolbar>
-            <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Chapters="bookData.Index" :ChapterOptMap="chapterRefMap"
-              @toggle-check="onToggleToolbar"></Toolbar>
+            <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Chapters="bookData.Index"
+              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar"></Toolbar>
           </template>
         </BookInfo>
 
@@ -24,17 +24,19 @@
 
 <script lang="ts" setup>
 //类型引入
-import { Book, BookSources, Chapter } from '@/types/book';
+import type { Book, BookSources, Chapter } from '@/types/book';
 
 import { ref, reactive } from 'vue';
 import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
+import { useSocket } from '@/hooks/socket';
 
 //控件
 import BookInfo from '@/components/book-info/index.vue';
 import Toolbar from './components/toolbar.vue';
 import ChapterList from '@/components/chapter-list/index.vue';
 import ChapterOpt from './components/chapter-opt.vue';
+import { Notification } from '@arco-design/web-vue';
 
 import { queryBookById, } from '@/api/book';
 
@@ -62,8 +64,7 @@ const queryBook = () => {
 };
 const { bookId } = useBookHelper();
 const { loading, response: bookData } = useRequest<Book>(queryBook);
-
-
+const { io: socket } = useSocket();
 
 //操作定义
 /**
@@ -77,8 +78,38 @@ function OnToggleChapter(isChecked: boolean, chapterId: number) {
   hasCheckChapter.set(chapterId, isChecked);
 }
 
-
+/**
+ * 接收章节选中信号的切换
+ * 按信号设置章节按钮的选中状态
+ * @param chapterId 章节ID
+ * @param isChecked 是否已选中
+ */
 function onToggleToolbar(chapterId: number, isChecked: boolean) { chapterRefMap.get(chapterId).value.handleCheckIt(isChecked); }
+
+//接收信息
+socket.on('WebBook.UpdateOneChapter.Error',   //章节更新错误
+  ({
+    bookid: _bookid,    //出错的书ID
+    chapterId,          //出错的章节ID
+    err,                //错误信息
+  }: {
+    bookid: number;
+    chapterId: number;
+    err: Error;
+  }) => {
+    if (bookId !== _bookid) return;   //不是这本书的
+    const curChapter = chapterRefMap.get(chapterId);
+    if (!curChapter) return;
+    curChapter.status = "error";
+
+    console.log(curChapter);
+
+    Notification.error({
+      title: err.name,
+      content: `${curChapter.Title}：${err.message}`,
+      showIcon: true,
+    });
+  });
 
 </script>
 

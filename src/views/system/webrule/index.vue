@@ -77,6 +77,8 @@
                         <a-textarea v-model="rule.getContentAction" placeholder="获取内容的表达式" />
                         <template #content>
                           <p>[attr]：如<a-tag color="green">attr/innerText</a-tag>代表从命中节点对象的innerText属性获取内容。</p>
+                          <p>[cache]：如<a-tag color="green">cache/src</a-tag>代表从src的前面加上“cache::”字符串，目前看没什么特殊逻辑在。</p>
+                          <p style="text-decoration: line-through red wavy;">[fun]：如<a-tag color="red">fun/action</a-tag>代表从命中节点对象执行方法action()。</p>
                         </template>
                       </a-popover>
                     </a-form-item>
@@ -85,6 +87,8 @@
                         <a-textarea v-model="rule.getUrlAction" placeholder="获取超链接地址的表达式" />
                         <template #content>
                           <p>[attr]：如<a-tag color="green">attr/innerText</a-tag>代表从命中节点对象的innerText属性获取内容。</p>
+                          <p>[cache]：如<a-tag color="green">cache/src</a-tag>代表从src的前面加上“cache::”字符串，目前看没什么特殊逻辑在。</p>
+                          <p style="text-decoration: line-through red wavy;">[fun]：如<a-tag color="red">fun/action</a-tag>代表从命中节点对象执行方法action()。</p>
                         </template>
                       </a-popover>
                     </a-form-item>

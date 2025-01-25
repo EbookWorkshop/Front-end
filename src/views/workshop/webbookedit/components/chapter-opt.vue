@@ -1,6 +1,6 @@
 <template>
     <div class="chapter-opt">
-        <a-button-group :status="chapter.IsHasContent ? 'normal' : 'warning'" style="width: 100%;">
+        <a-button-group :status="getShowStatus()" style="width: 100%;">
             <a-button long type="dashed" class="chapter-title" @click="onToggle">
                 <a-checkbox :model-value="isChecked">
                     {{ chapter.Title }}
@@ -42,6 +42,7 @@ const emit = defineEmits(['toggle']);
 //入参定义
 const props = defineProps<{
     chapter: Chapter;
+    status?: "normal" | "success" | "warning" | "danger" | undefined;
 }>();
 
 defineExpose({
@@ -61,7 +62,13 @@ function OpenWin() {
     });
 }
 
-
+/**
+ * 计算实际显示的状态
+ */
+function getShowStatus() {
+    if (props.status != undefined) return props.status;
+    return props.chapter.IsHasContent ? 'normal' : 'warning';
+}
 
 
 </script>

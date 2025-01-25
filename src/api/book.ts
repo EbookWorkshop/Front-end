@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Chapter } from '@/types/book';
+import { HttpResponse } from '@/types/global';
 
 if (import.meta.env.VITE_API_BASE_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -63,7 +64,7 @@ export function queryAdjacentChapterInfo(cid: number) {
  * @returns
  */
 export function addANewWebBook(url: string) {
-  return axios.post(`/library/webbook`, url, {
+  return axios.post<HttpResponse<string>>(`/library/webbook`, url, {
     headers: { 'Content-Type': 'text/plan' },
   });
 }

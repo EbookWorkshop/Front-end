@@ -35,7 +35,7 @@
 
 <script lang="ts" setup>
 import { ref, reactive } from 'vue';
-import { Message, Modal } from '@arco-design/web-vue';
+import { Message } from '@arco-design/web-vue';
 // import { useRouter, useRoute } from 'vue-router';
 import BookClassical from '@/components/book-cover/components/book-classical.vue';
 import { addANewWebBook } from '@/api/book';
@@ -61,8 +61,8 @@ const handleBeforeOk = (url: string) => {
   isShow.value = false;
 
   addANewWebBook(url)
-    .then((data) => {
-      Message.success(`${data}`);
+    .then((result) => {
+      Message.success(`${result.data}`);
     })
     .catch((err) => {
       Message.error(`添加书失败：${err.message}`);

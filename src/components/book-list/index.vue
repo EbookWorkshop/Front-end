@@ -69,15 +69,8 @@ const { loading, response: renderData } = useRequest<Book[]>(
   defaultValue
 );
 
+//标签相关逻辑
 const { response: tagsData } = useRequest<Tag[]>(getTagHasBook);
-
-const router = useRouter();
-const goto = (bookid: number) => {
-  router.push({
-    path: `/${props.nextRouter}/${bookid}`,
-  });
-};
-
 function CheckTag(id: number | undefined) {
   tagId.value = id;
   loading.value = true;
@@ -87,6 +80,13 @@ function CheckTag(id: number | undefined) {
     curTag.value = tagsData.value.filter(t => t.id === tagId.value)[0];
   })
 }
+
+const router = useRouter();
+const goto = (bookid: number) => {
+  router.push({
+    path: `/${props.nextRouter}/${bookid}`,
+  });
+};
 </script>
 
 <style scoped lang="less">
