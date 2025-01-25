@@ -9,8 +9,6 @@
                     <a-button @click="onCheckNotEmpty"> 选非空章节 </a-button>
                     <a-button @click="isShow = true"> 区段选择 </a-button>
                     <a-button> 已隐藏章节 </a-button>
-                    <!-- <a-button> <template #icon><icon-heart-fill /></template> </a-button>
-<a-button> <template #icon><icon-star-fill /></template> </a-button>-->
                     <a-button shape="round">来源管理</a-button>
                 </a-button-group>
             </a-space>
@@ -31,11 +29,16 @@
 
     <a-modal v-model:visible="isShow" title="区段选择" @ok="onSetChapter">
         <a-form :model="data" layout="vertical">
-            <a-form-item field="cBegin" label="开始章节:">
+            <a-form-item field="cBegin" label="开始章节:" required>
                 <a-select v-model="data.cBegin" :options="Chapters" :field-names="{ value: 'IndexId', label: 'Title' }"
                     :virtual-list-props="{ height: 200 }" allow-search/>
             </a-form-item>
-            <a-form-item field="cEnd" label="结束章节:">
+            <a-form-item field="cLength" label="按数量选：">
+                <a-select placeholder="需要先选择【开始章节】" allow-create @change="onSetChapterLength">
+                    <a-option v-for="item of [10,50,250,500,1000]" :value="item" :key=item :label="`${item}`" />
+                </a-select>    
+            </a-form-item>
+            <a-form-item field="cEnd" label="结束章节:" required>
                 <a-select v-model="data.cEnd" :options="[...Chapters].reverse()"
                     :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }" allow-search/>
             </a-form-item>
@@ -102,11 +105,32 @@ function onSetChapter() {
             let ctrl = props.ChapterOptMap.get(curIndex) as any;
             if (!ctrl) break;
             result.push(curIndex);
-            ctrl.value.handleCheckIt(true);
+            emit("ToggleCheck", curIndex, true);
             if (curIndex === data.cEnd) break;
         }
     }
     chapterHasCheckedNum.value = result.length;
+}
+
+/**
+ * 设置章节区段
+ */
+function onSetChapterLength(value:any){
+    if(!data.cBegin) {
+        Message.error("需要先选择【开始章节】");
+        return false;
+    }
+    let hasBegin = false;
+    let curIndex = 0;
+    for (let i = 0; i < props.Chapters.length && value > 0; i++) {
+        curIndex = props.Chapters[i].IndexId;
+        if ((!hasBegin && curIndex === data.cBegin) || hasBegin) {
+            hasBegin = true;
+            value--;
+            curIndex = props.Chapters[i].IndexId;
+        }
+    }
+    data.cEnd = curIndex;
 }
 
 /**
@@ -172,13 +196,13 @@ function onCheckNotEmpty() {
     props.Chapters.forEach(c => {
         let ctrl = props.ChapterOptMap.get(c.IndexId) as any;
         if (!c.IsHasContent) {
-            ctrl.value.handleCheckIt(false);
+            emit("ToggleCheck", c.IndexId, false);
             return;
         }
         props.ChapterStatus.set(c.IndexId, true);
         chapterHasCheckedNum.value++;
 
-        ctrl.value.handleCheckIt(true);
+        emit("ToggleCheck", c.IndexId, true);
     });
 }
 
@@ -191,13 +215,13 @@ function onCheckEmpty() {
     props.Chapters.forEach(c => {
         let ctrl = props.ChapterOptMap.get(c.IndexId) as any;
         if (c.IsHasContent) {
-            ctrl.value.handleCheckIt(false);
+            emit("ToggleCheck", c.IndexId, false);
             return;
         }
         props.ChapterStatus.set(c.IndexId, true);
         chapterHasCheckedNum.value++;
 
-        ctrl.value.handleCheckIt(true);
+        emit("ToggleCheck", c.IndexId, true);
     });
 }
 

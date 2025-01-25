@@ -5,6 +5,7 @@
       status="success"
       :percent="percent"
       size="large"
+      :animation="true"
     />
   </a-affix>
 </template>
@@ -36,7 +37,7 @@
       isShow.value = true;
       percent.value = Math.floor(rate * 1000) / 1000;
 
-      console.log('更新进度：', rate, chapterId, ok, fail, all);
+      // console.log('更新进度：', rate, chapterId, ok, fail, all);
 
       if (rate >= 1)
         setTimeout(() => {

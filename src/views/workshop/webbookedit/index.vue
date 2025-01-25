@@ -8,7 +8,8 @@
           :Author="bookData.Author">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Chapters="bookData.Index"
-              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar" @-start-update-chapter="curDoingProcent" ref="toolbarRef"></Toolbar>
+              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar" @-start-update-chapter="curDoingProcent"
+              ref="toolbarRef"></Toolbar>
           </template>
         </BookInfo>
 
@@ -24,7 +25,7 @@
 
 <script lang="ts" setup>
 //类型引入
-import type { Book, BookSources, Chapter } from '@/types/book';
+import type { Book, Chapter } from '@/types/book';
 import { WebBookStatus } from './data'
 import type { OneChapterStatus } from './data'
 
@@ -89,7 +90,10 @@ function OnToggleChapter(isChecked: boolean, chapterId: number) {
  * @param chapterId 章节ID
  * @param isChecked 是否已选中
  */
-function onToggleToolbar(chapterId: number, isChecked: boolean) { chapterRefMap.get(chapterId).value.handleCheckIt(isChecked); }
+function onToggleToolbar(chapterId: number, isChecked: boolean) {
+  hasCheckChapter.set(chapterId, isChecked);
+  chapterRefMap.get(chapterId).value.handleCheckIt(isChecked);
+}
 
 // 监听广播消息
 if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //防止重复监听
