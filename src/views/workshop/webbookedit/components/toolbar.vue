@@ -80,6 +80,13 @@ const props = defineProps({
 });
 const emit = defineEmits(["ToggleCheck"]);
 
+//定义回调函数
+defineExpose({
+    updateChecked: () => {
+        chapterHasCheckedNum.value = 0;
+        props.ChapterStatus?.forEach((value,key)=>{if(value)chapterHasCheckedNum.value++;});
+    },
+});
 
 /**
  * 设置选中的区段
@@ -120,6 +127,9 @@ function mergeIndex() {
         });
 }
 
+/**
+ * 启动更新选中的章节
+ */
 function UpdateChapter() {
     // console.log(props.CheckedChapter);
     let hasCheckChapter = [] as Array<number>;

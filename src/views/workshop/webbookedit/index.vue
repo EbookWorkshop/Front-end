@@ -8,7 +8,7 @@
           :Author="bookData.Author">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Chapters="bookData.Index"
-              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar"></Toolbar>
+              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar" ref="toolbarRef"></Toolbar>
           </template>
         </BookInfo>
 
@@ -49,6 +49,7 @@ import { queryBookById, } from '@/api/book';
 const curDoingProcent = ref(-1);        //进度条状态
 const hasCheckChapter = reactive(new Map());      //已选中的章节
 const chapterRefMap = reactive(new Map());        //所有章节控件的引用
+const toolbarRef = ref<any>(null);       //工具栏对象
 
 //数据请求
 const queryBook = () => {
@@ -72,18 +73,19 @@ const { io: socket } = useSocket();
 //操作定义
 /**
  * 操作按钮选中切换
+ * ## 信号由 【章节按钮】 发送出
  * @param isChecked 是否选中
  * @param chapterId 章节id
  */
 function OnToggleChapter(isChecked: boolean, chapterId: number) {
-  // chapterHasCheckedNum.value += (isChecked ? 1 : -1);
-  // Message.info(`已选中的章节数量：${chapterHasCheckedNum.value}`);
   hasCheckChapter.set(chapterId, isChecked);
+  toolbarRef.value.updateChecked();
 }
 
 /**
  * 接收章节选中信号的切换
  * 按信号设置章节按钮的选中状态
+ * ## 信号由 【工具栏】 发送出
  * @param chapterId 章节ID
  * @param isChecked 是否已选中
  */
@@ -111,6 +113,8 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
     const curChapter = chapterRefMap.get(chaptOne.chapterId);
     console.log(curChapter);
     if (!curChapter) return;
+    let thisCpt = bookData.value.Index.filter(c => c.IndexId == chaptOne.chapterId);
+    if (thisCpt.length > 0) thisCpt[0].IsHasContent = true;
     curChapter.value.handleChangeStatus("success");
   });
   //全部任务完成
