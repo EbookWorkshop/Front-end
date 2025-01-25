@@ -73,8 +73,9 @@ let fTitle = '';
 let sTitle = '';
 const isHasSubTitle = computed<boolean>(() => {
   if (props.titleShow.length <= 13) return false;
-  if (props.titleShow.match(/[:—：]+/) !== null) {
-    const rsl = props.titleShow.split(/[:—：]+/);
+  const titleSplitReg = /[:—：、，]+/;   //书名分割符号
+  if (props.titleShow.match(titleSplitReg) !== null) {
+    const rsl = props.titleShow.split(titleSplitReg);
     [fTitle, sTitle] = rsl;
     return true;
   }

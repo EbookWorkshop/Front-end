@@ -25,6 +25,8 @@
 <script lang="ts" setup>
 //类型引入
 import type { Book, BookSources, Chapter } from '@/types/book';
+import { WebBookStatus } from './data'
+import type { OneChapterStatus } from './data'
 
 import { ref, reactive } from 'vue';
 import useRequest from '@/hooks/request';
@@ -39,6 +41,7 @@ import ChapterOpt from './components/chapter-opt.vue';
 import { Notification } from '@arco-design/web-vue';
 
 import { queryBookById, } from '@/api/book';
+
 
 
 
@@ -87,29 +90,43 @@ function OnToggleChapter(isChecked: boolean, chapterId: number) {
 function onToggleToolbar(chapterId: number, isChecked: boolean) { chapterRefMap.get(chapterId).value.handleCheckIt(isChecked); }
 
 //接收信息
-socket.on('WebBook.UpdateOneChapter.Error',   //章节更新错误
-  ({
-    bookid: _bookid,    //出错的书ID
-    chapterId,          //出错的章节ID
-    err,                //错误信息
-  }: {
-    bookid: number;
-    chapterId: number;
-    err: Error;
-  }) => {
-    if (bookId !== _bookid) return;   //不是这本书的
-    const curChapter = chapterRefMap.get(chapterId);
-    if (!curChapter) return;
-    curChapter.status = "error";
+socket.on(WebBookStatus.Error, ({   //章节更新错误
+  bookid: _bookid,    //出错的书ID
+  chapterId,          //出错的章节ID
+  err,                //错误信息
+}: OneChapterStatus) => {
+  if (bookId !== _bookid) return;   //不是这本书的
+  const curChapter = chapterRefMap.get(chapterId);
+  if (!curChapter) return;
+  curChapter.status = "error";
 
-    console.log(curChapter);
+  console.log(curChapter);
 
-    Notification.error({
-      title: err.name,
-      content: `${curChapter.Title}：${err.message}`,
-      showIcon: true,
-    });
+  Notification.error({
+    title: err?.name,
+    content: `${curChapter.Title}：${err?.message}`,
+    showIcon: true,
   });
+});
+//单一章节更新成功
+socket.on(WebBookStatus.Success, (chaptOne: OneChapterStatus) => {
+  if (chaptOne.bookid != bookId) return;
+  const curChapter = chapterRefMap.get(chaptOne.chapterId);
+  if (!curChapter) return;
+  curChapter.status = "success";
+
+});
+//全部任务完成
+socket.on(WebBookStatus.AllSuccess, ({bookid: _bookid, chapterIndexArray, doneNum, failNum}):any => {
+  if (bookId !== _bookid) return;
+  Notification.success({
+    title: `已尝试任务${chapterIndexArray.length}个`,
+    content: `其中成功：${doneNum}，失败：${failNum}`,
+    showIcon: true,
+    duration: 0,
+    closable: true,
+  });
+});
 
 </script>
 
