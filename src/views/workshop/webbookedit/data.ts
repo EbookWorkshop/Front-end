@@ -17,11 +17,20 @@ export enum WebBookStatus {
     AllSuccess = "WebBook.UpdateChapter.Finish",
 }
 
+/**
+ * 用于 Scoket 发过来的消息
+ */
 export interface OneChapterStatus {
-    //出错的书ID
+    /**
+     * 属于书的ID
+     */
     bookid: number,
-    //出错的章节ID
+    /**
+     * 属于书的章节ID
+     */
     chapterId: number,
-    //错误信息
+    /**
+     * 出错消息
+     */
     err?: Error,
 }

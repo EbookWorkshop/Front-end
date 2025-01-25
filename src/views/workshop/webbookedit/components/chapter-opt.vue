@@ -1,6 +1,6 @@
 <template>
     <div class="chapter-opt">
-        <a-button-group :status="getShowStatus()" style="width: 100%;">
+        <a-button-group :status="updateStatus" style="width: 100%;">
             <a-button long type="dashed" class="chapter-title" @click="onToggle">
                 <a-checkbox :model-value="isChecked">
                     {{ chapter.Title }}
@@ -28,7 +28,7 @@ import { queryWebBookChapterSourcesById } from '@/api/book';
 import { openWindow } from '@/utils';
 
 //类型
-import { Chapter } from '@/types/book';
+import type { Chapter } from '@/types/book';
 
 //操作
 import useBookHelper from '@/hooks/book-helper';
@@ -47,8 +47,11 @@ const props = defineProps<{
 
 defineExpose({
     handleCheckIt: (checked: boolean) => { isChecked.value = checked; },
+    handleChangeStatus:(status:"normal" | "success" | "warning" | "danger" | undefined)=>{updateStatus.value=status;},
+    getTitle:()=>{return props.chapter.Title;}
 })
 
+let updateStatus = ref<"normal" | "success" | "warning" | "danger" | undefined>(props.chapter.IsHasContent ? 'normal' : 'warning');
 
 //操作定义
 function onToggle() {
@@ -62,16 +65,8 @@ function OpenWin() {
     });
 }
 
-/**
- * 计算实际显示的状态
- */
-function getShowStatus() {
-    if (props.status != undefined) return props.status;
-    return props.chapter.IsHasContent ? 'normal' : 'warning';
-}
-
-
 </script>
+
 <style lang="css" scoped>
 .chapter-opt {
     overflow: hidden;

@@ -89,44 +89,41 @@ function OnToggleChapter(isChecked: boolean, chapterId: number) {
  */
 function onToggleToolbar(chapterId: number, isChecked: boolean) { chapterRefMap.get(chapterId).value.handleCheckIt(isChecked); }
 
-//接收信息
-socket.on(WebBookStatus.Error, ({   //章节更新错误
-  bookid: _bookid,    //出错的书ID
-  chapterId,          //出错的章节ID
-  err,                //错误信息
-}: OneChapterStatus) => {
-  if (bookId !== _bookid) return;   //不是这本书的
-  const curChapter = chapterRefMap.get(chapterId);
-  if (!curChapter) return;
-  curChapter.status = "error";
+// 监听广播消息
+if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //防止重复监听
+  socket.on(WebBookStatus.Error + `.${bookId}`, ({   //章节更新错误
+    bookid: _bookid,    //出错的书ID
+    chapterId,          //出错的章节ID
+    err,                //错误信息
+  }: OneChapterStatus) => {
+    const curChapter = chapterRefMap.get(chapterId);
+    if (!curChapter) return;
+    curChapter.value.handleChangeStatus("danger");
 
-  console.log(curChapter);
-
-  Notification.error({
-    title: err?.name,
-    content: `${curChapter.Title}：${err?.message}`,
-    showIcon: true,
+    Notification.error({
+      title: `获取章节出错：${err?.name || ""}`,
+      content: `章节-${curChapter.value.getTitle()}：${err?.message || "未知错误"}`,
+      showIcon: true,
+    });
   });
-});
-//单一章节更新成功
-socket.on(WebBookStatus.Success, (chaptOne: OneChapterStatus) => {
-  if (chaptOne.bookid != bookId) return;
-  const curChapter = chapterRefMap.get(chaptOne.chapterId);
-  if (!curChapter) return;
-  curChapter.status = "success";
-
-});
-//全部任务完成
-socket.on(WebBookStatus.AllSuccess, ({bookid: _bookid, chapterIndexArray, doneNum, failNum}):any => {
-  if (bookId !== _bookid) return;
-  Notification.success({
-    title: `已尝试任务${chapterIndexArray.length}个`,
-    content: `其中成功：${doneNum}，失败：${failNum}`,
-    showIcon: true,
-    duration: 0,
-    closable: true,
+  //单一章节更新成功
+  socket.on(WebBookStatus.Success + `.${bookId}`, (chaptOne: OneChapterStatus) => {
+    const curChapter = chapterRefMap.get(chaptOne.chapterId);
+    console.log(curChapter);
+    if (!curChapter) return;
+    curChapter.value.handleChangeStatus("success");
   });
-});
+  //全部任务完成
+  socket.on(WebBookStatus.AllSuccess + `.${bookId}`, ({ bookid: _bookid, chapterIndexArray, doneNum, failNum }): any => {
+    Notification.success({
+      title: `已尝试任务${chapterIndexArray.length}个`,
+      content: `其中成功：${doneNum}，失败：${failNum}`,
+      showIcon: true,
+      duration: 0,
+      closable: true,
+    });
+  });
+}
 
 </script>
 

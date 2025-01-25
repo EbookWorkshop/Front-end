@@ -7,8 +7,8 @@ export const state = reactive({
 });
 
 const socket = io(URL);
-const connectedCallback=null;
-const disconnectedCallback=null;
+// const connectedCallback=null;
+// const disconnectedCallback=null;
 
 console.log('socket 初始化');
 
@@ -22,17 +22,13 @@ socket.on('disconnect', () => {
   // console.log('断开连接');
 });
 
-// socket.on("foo", (...args) => {
-//   state.fooEvents.push(args);
-// });
-
-// socket.on("bar", (...args) => {
-//   state.barEvents.push(args);
-// });
-
+/**
+ * 获取通用的 Socket 连接
+ * # 注意：Socket 的监听是全局的，不同页面注册的监听器都会汇总到一起
+ * @returns 
+ */
 export function useSocket() {
   if (!socket.connected) socket.connect();
-  console.log('获取socket对象');
 
   return {
     io: socket,
