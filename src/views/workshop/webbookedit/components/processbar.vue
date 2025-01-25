@@ -12,6 +12,7 @@
 <script lang="ts" setup>
   import { ref } from 'vue';
   import { useSocket } from '@/hooks/socket';
+  import { WebBookStatus } from "./../data"
 
   // 入参
   const props = defineProps({
@@ -29,9 +30,8 @@
   if ((props.beginPercent ?? -1) > 0) percent.value = props.beginPercent ?? 0;
 
   const { io: socket } = useSocket();
-  socket.on(
-    'WebBook.UpdateChapter.Process',
-    ({ bookid, rate, chapterId, ok, fail, all }: { bookid: number; rate: number; chapterId: number; ok: boolean; fail: boolean; all: any }) => {
+  if (socket.listeners(WebBookStatus.Update+`.${props.bookid}`).length === 0)
+  socket.on( WebBookStatus.Update+`.${props.bookid}`,({ bookid, rate, chapterId, ok, fail, all }: { bookid: number; rate: number; chapterId: number; ok: boolean; fail: boolean; all: any }) => {
       if (bookid !== props.bookid) return;
       isShow.value = true;
       percent.value = Math.floor(rate * 1000) / 1000;

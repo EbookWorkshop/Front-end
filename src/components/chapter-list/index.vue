@@ -14,9 +14,10 @@
                 :row-gap="16">
                 <!-- 阅读视图 阅读时的章节列表 -->
                 <a-grid-item v-for="item in Chapters" :key="item.IndexId" class="reading-index">
-                    <a-tooltip :content="item.Title">
+                    <a-tooltip v-if="item.Title.length > 13" :content="item.Title">
                         <slot name="content" :item="item"></slot>
                     </a-tooltip>
+                    <slot v-else name="content" :item="item"></slot>
                 </a-grid-item>
                 <a-grid-item>
                     <slot name="addChapterTool"></slot>

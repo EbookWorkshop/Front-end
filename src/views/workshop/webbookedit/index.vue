@@ -2,13 +2,13 @@
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.workshop.webbook', bookData.BookName]" />
     <div class="wrapper">
-      <!-- <ProcessBar :bookid="bookId" :begin-percent="curDoingProcent" /> -->
+      <ProcessBar :bookid="bookId" :begin-percent="curDoingProcent" />
       <a-spin :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%">
         <BookInfo :loading="loading" :bookId="bookId" :BookName="bookData.BookName" :convertImg="bookData.CoverImg"
           :Author="bookData.Author">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Chapters="bookData.Index"
-              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar" ref="toolbarRef"></Toolbar>
+              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar" @-start-update-chapter="curDoingProcent" ref="toolbarRef"></Toolbar>
           </template>
         </BookInfo>
 
@@ -28,7 +28,7 @@ import type { Book, BookSources, Chapter } from '@/types/book';
 import { WebBookStatus } from './data'
 import type { OneChapterStatus } from './data'
 
-import { ref, reactive } from 'vue';
+import { ref, reactive, nextTick } from 'vue';
 import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
 import { useSocket } from '@/hooks/socket';
@@ -38,6 +38,7 @@ import BookInfo from '@/components/book-info/index.vue';
 import Toolbar from './components/toolbar.vue';
 import ChapterList from '@/components/chapter-list/index.vue';
 import ChapterOpt from './components/chapter-opt.vue';
+import ProcessBar from './components/processbar.vue';
 import { Notification } from '@arco-design/web-vue';
 
 import { queryBookById, } from '@/api/book';
@@ -58,7 +59,6 @@ const queryBook = () => {
     new Promise((ok: any) => {
       ok();
     }).then(() => {
-      // InitEditModelOption(rsl.data);
       rsl.data.Index.forEach((iCpt: Chapter) => {
         chapterRefMap.set(iCpt.IndexId, ref(null));
       })
@@ -126,6 +126,9 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       duration: 0,
       closable: true,
     });
+    nextTick(() => {
+      curDoingProcent.value = -1;
+    })
   });
 }
 

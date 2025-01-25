@@ -78,7 +78,7 @@ const props = defineProps({
         default: new Map()
     }
 });
-const emit = defineEmits(["ToggleCheck"]);
+const emit = defineEmits(["ToggleCheck","StartUpdateChapter"]);
 
 //定义回调函数
 defineExpose({
@@ -143,8 +143,10 @@ function UpdateChapter() {
     }
 
     updateChapter(props.bookid as number, hasCheckChapter, false).then((res: any) => {
-        if (res?.code == 20000) Message.info("已启动下载。");
-        else Message.error("启动失败，原因：" + res.msg)
+        if (res?.code == 20000){
+             Message.info("已启动下载。");
+             emit("StartUpdateChapter");
+        } else Message.error("启动失败，原因：" + res.msg)
     });
 
 }

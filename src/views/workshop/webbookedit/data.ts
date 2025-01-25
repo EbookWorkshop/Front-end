@@ -15,6 +15,11 @@ export enum WebBookStatus {
      * WebBook.UpdateChapter.Finish
      */
     AllSuccess = "WebBook.UpdateChapter.Finish",
+
+    /**
+     * 章节进度更新
+     */
+    Update = "WebBook.UpdateChapter.Process",
 }
 
 /**
