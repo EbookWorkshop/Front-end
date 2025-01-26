@@ -3,12 +3,19 @@
     <Breadcrumb :items="['menu.workplace', 'menu.workplace.revise', renderData.BookName]" />
     <div class="wrapper">
       <BookInfo :loading="loading" :bookId="bookId" :BookName="renderData.BookName" :convertImg="renderData.CoverImg"
-        :Author="renderData.Author" />
+        :Author="renderData.Author" >
+        <template #toolbar>
+            <Toolbar @EditChapterOrdering="onChangeOrdering"></Toolbar>
+          </template>
+    </BookInfo>
       <ChapterList :loading="loading" :Chapters="renderData.Index">
         <template #content="{ item }">
-          <a-button long class="chapter" @click="onClickChapter(item.IndexId)">
+          <a-button v-if="!isOrdering" long class="chapter" @click="onClickChapter(item.IndexId)">
             {{ item.Title }}
           </a-button>
+          <a-button-group v-else style="width:100%;overflow:hidden;">
+            <a-button>{{item.OrderNum}}</a-button><a-button long>{{item.Title}}</a-button>
+          </a-button-group>
         </template>
         <template #addChapterTool>
           <a-button long class="chapter" type="outline" @click="onClickChapter(-1)">
@@ -48,13 +55,13 @@ import {
 import { AxiosResponse } from 'axios';
 
 //组件
-import { Message, Modal } from '@arco-design/web-vue';
+import { Message, } from '@arco-design/web-vue';
 import BookInfo from "@/components/book-info/index.vue";
 import ChapterList from '@/components/chapter-list/index.vue';
+import Toolbar from "./components/toolbar.vue";
 
 import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
-import { fromPairs } from "lodash";
 
 const { bookId, gotoChapter, gotoIndex } = useBookHelper();
 const { loading, response: renderData } = useRequest<Book>(queryBookById.bind(null, bookId));
@@ -64,11 +71,13 @@ const form = reactive({
   content: '',
 });
 
+//状态区
 const curChapId = ref(0);
 let defTitle: String = ""
 let defContent: String = "";
-
 const isEdit = ref(false);
+const isOrdering = ref(false);
+
 
 /**
  * 点击章节列表
@@ -78,7 +87,6 @@ const onClickChapter = (cid: number) => {
   curChapId.value = cid;
   isEdit.value = true;
 
-  // const { loading, response: renderData } = useRequest<Chapter>(queryChapterById.bind(null, curChapId.value));
   if (cid == -1) {
     form.chapTitle = "";
     form.content = "";
@@ -121,9 +129,10 @@ const onSubmit = () => {
     });
     return;
   }
-
-
 }
 
+function onChangeOrdering(ordering:boolean){
+  isOrdering.value = ordering
+}
 
 </script>

@@ -1,4 +1,5 @@
 export default {
+  'menu.system.workerpool': 'Worker Pool',
   'menu.system.smtp': 'Email Setting',
   'menu.system.email_kindle': 'Kindle/EMail',
   'menu.system.webrule': 'WebBot Rule',

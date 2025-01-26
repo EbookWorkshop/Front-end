@@ -14,7 +14,11 @@
             </a-space>
             <a-space>
                 <a-button-group type="primary">
-                    <a-button :loading="isMerging" shape="round" @click="mergeIndex"> 更新目录 </a-button>
+                    <a-button shape="round"> <icon-eye title="查看目录页面"/> </a-button>
+                    <a-button :loading="isMerging" @click="mergeIndex"> 更新目录 </a-button>
+                    <a-button status="success" @click="isMustUpdate = !isMustUpdate">
+                        <a-checkbox :model-value="isMustUpdate">强制更新</a-checkbox>
+                    </a-button>
                     <a-button status="success" @click="UpdateChapter">
                         <template #icon><icon-robot /></template>
                         <a-badge :count="chapterHasCheckedNum" :max-count="99999" :offset="[15, -10]">
@@ -50,12 +54,14 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { Chapter } from '@/types/book';
+import { ApiResultCode } from '@/types/global';
 import { mergeWebBookIndex, updateChapter } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
 
 const chapterHasCheckedNum = ref(0);    // 已选中的章节数
 const isMerging = ref(false);       //合并章节状态
 const isShow = ref(false);
+const isMustUpdate = ref(false);    //强制更新-覆盖更新
 
 const data = reactive<{
     cBegin: any,
@@ -166,8 +172,8 @@ function UpdateChapter() {
         return;
     }
 
-    updateChapter(props.bookid as number, hasCheckChapter, false).then((res: any) => {
-        if (res?.code == 20000){
+    updateChapter(props.bookid as number, hasCheckChapter, isMustUpdate.value).then((res: any) => {
+        if (res?.code == ApiResultCode.Success){
              Message.info("已启动下载。");
              emit("StartUpdateChapter");
         } else Message.error("启动失败，原因：" + res.msg)
@@ -194,7 +200,7 @@ function onCheckAll(isCheck: boolean) {
 function onCheckNotEmpty() {
     chapterHasCheckedNum.value = 0;
     props.Chapters.forEach(c => {
-        let ctrl = props.ChapterOptMap.get(c.IndexId) as any;
+        // let ctrl = props.ChapterOptMap.get(c.IndexId) as any;
         if (!c.IsHasContent) {
             emit("ToggleCheck", c.IndexId, false);
             return;
@@ -213,7 +219,7 @@ function onCheckNotEmpty() {
 function onCheckEmpty() {
     chapterHasCheckedNum.value = 0;
     props.Chapters.forEach(c => {
-        let ctrl = props.ChapterOptMap.get(c.IndexId) as any;
+        // let ctrl = props.ChapterOptMap.get(c.IndexId) as any;
         if (c.IsHasContent) {
             emit("ToggleCheck", c.IndexId, false);
             return;

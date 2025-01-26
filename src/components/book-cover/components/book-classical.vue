@@ -72,7 +72,7 @@ const props = defineProps({
 let fTitle = '';
 let sTitle = '';
 const isHasSubTitle = computed<boolean>(() => {
-  if (props.titleShow.length <= 13) return false;
+  if (props.titleShow.length < 11) return false;
   const titleSplitReg = /[:—：、，]+/;   //书名分割符号
   if (props.titleShow.match(titleSplitReg) !== null) {
     const rsl = props.titleShow.split(titleSplitReg);

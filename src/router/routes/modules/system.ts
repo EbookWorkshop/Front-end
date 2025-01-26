@@ -13,6 +13,17 @@ const SYSTEM: AppRouteRecordRaw = {
   },
   children: [
     {
+      path: 'workerpool',
+      name: 'workerpool',
+      component: () => import('@/views/system/workerpool.vue'),
+      meta: {
+        locale: 'menu.system.workerpool',
+        icon: 'icon-dashboard',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
+    {
       path: 'smtp',
       name: 'smtp',
       component: () => import('@/views/system/smtpsetting.vue'),
