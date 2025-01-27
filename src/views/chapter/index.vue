@@ -36,12 +36,13 @@
         </a-col>
       </a-row>
 
-      <a-row :gutter="[8, 120]" class="toolbar">
-        <a-col :span="2" :offset="9"><a-button long :disabled="!adjChap.pre"
-            @click="gotoChapter(adjChap?.pre?.id)">上一章</a-button></a-col>
-        <a-col :span="2"><a-button long @click="gotoIndex">目录</a-button></a-col>
-        <a-col :span="2"><a-button long :disabled="!adjChap.next"
-            @click="gotoChapter(adjChap?.next?.id)">下一章</a-button></a-col>
+      <a-row :gutter="{ xs: 0, lg: 0 }" class="toolbar" :wrap="true">
+        <a-col :xs="{ span: 20, offset: 2 }" :md="{ span: 2, offset: 6 }" :lg="{ span: 2, offset: 8 }">
+          <a-button long :disabled="!adjChap.pre" @click="gotoChapter(adjChap?.pre?.id)">上一章</a-button></a-col>
+        <a-col :xs="{ span: 20, offset: 2 }" :md="{ span: 2, offset: 1 }" :lg="{ span: 2, offset: 1 }">
+          <a-button long @click="gotoIndex">目录</a-button></a-col>
+        <a-col :xs="{ span: 20, offset: 2 }" :md="{ span: 2, offset: 1 }" :lg="{ span: 2, offset: 1 }">
+          <a-button long :disabled="!adjChap.next" @click="gotoChapter(adjChap?.next?.id)">下一章</a-button></a-col>
       </a-row>
       <ToolMenu @toggle-pdf-model="togglePDF" @change-font-color="ftChange" @change-font-size="ftSizeChange"
         @change-font-family="ftFamilyChange" @change-bg-color="bgChange" :chapterId="chapterId"></ToolMenu>

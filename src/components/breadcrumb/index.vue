@@ -1,5 +1,5 @@
 <template>
-  <a-breadcrumb class="container-breadcrumb">
+  <a-breadcrumb class="container-breadcrumb" v-show="appStore.device !== 'mobile'">
     <a-breadcrumb-item>
       <icon-apps />
     </a-breadcrumb-item>
@@ -11,6 +11,8 @@
 
 <script lang="ts" setup>
   import { PropType } from 'vue';
+  import { useAppStore, useUserStore } from '@/store';
+  const appStore = useAppStore();
 
   defineProps({
     items: {

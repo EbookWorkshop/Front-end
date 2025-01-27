@@ -67,6 +67,10 @@ body {
 }
 .wrapper {
   padding: 24px 150px;
+
+  @media (max-width: 576px) {
+    padding: 0; /* 适配手机 */
+  }
   background-color: var(--color-bg-2);
   border-radius: 4px;
   overflow: hidden;

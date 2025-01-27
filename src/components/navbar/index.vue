@@ -9,7 +9,8 @@
         />
         <a-typography-title
           :style="{ margin: 0, fontSize: '18px' }"
-          :heading="5"
+            :heading="5"
+            v-show="appStore.device !== 'mobile'"
         >
           Ebook Workshop
         </a-typography-title>
