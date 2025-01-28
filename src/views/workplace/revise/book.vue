@@ -3,18 +3,18 @@
     <Breadcrumb :items="['menu.workplace', 'menu.workplace.revise', renderData.BookName]" />
     <div class="wrapper">
       <BookInfo :loading="loading" :bookId="bookId" :BookName="renderData.BookName" :convertImg="renderData.CoverImg"
-        :Author="renderData.Author" >
+        :Author="renderData.Author">
         <template #toolbar>
-            <Toolbar @EditChapterOrdering="onChangeOrdering"></Toolbar>
-          </template>
-    </BookInfo>
+          <Toolbar @EditChapterOrdering="onChangeOrdering"></Toolbar>
+        </template>
+      </BookInfo>
       <ChapterList :loading="loading" :Chapters="renderData.Index">
         <template #content="{ item }">
           <a-button v-if="!isOrdering" long class="chapter" @click="onClickChapter(item.IndexId)">
             {{ item.Title }}
           </a-button>
           <a-button-group v-else style="width:100%;overflow:hidden;">
-            <a-button>{{item.OrderNum}}</a-button><a-button long>{{item.Title}}</a-button>
+            <a-button>{{ item.OrderNum }}</a-button><a-button long>{{ item.Title }}</a-button>
           </a-button-group>
         </template>
         <template #addChapterTool>
@@ -90,6 +90,8 @@ const onClickChapter = (cid: number) => {
   if (cid == -1) {
     form.chapTitle = "";
     form.content = "";
+    defTitle = "";
+    defContent = "";
     return;
   }
 
@@ -107,17 +109,21 @@ const onClickChapter = (cid: number) => {
  * 提交修改
  */
 const onSubmit = () => {
-  if (curChapId.value == -1) return;//TODO: 新增章节未接入
-
   let result = {} as Chapter;
   let change = false;
+  let reload = false;
   if (defTitle !== form.chapTitle) {
     change = true;
     result.Title = form.chapTitle;
+    reload = true;
   }
   if (defContent !== form.content) {
     change = true;
     result.Content = form.content;
+  }
+  if (curChapId.value == -1) {
+    result.BookId = bookId;
+    reload = true;
   }
 
   if (change) {
@@ -126,12 +132,18 @@ const onSubmit = () => {
       // console.log(rsl);
       Message.success("更新成功！");
       isEdit.value = false;
+
+      if (reload) {
+        queryBookById(bookId).then((result: AxiosResponse<Book>) => {
+          renderData.value = result.data;
+        });
+      }
     });
     return;
   }
 }
 
-function onChangeOrdering(ordering:boolean){
+function onChangeOrdering(ordering: boolean) {
   isOrdering.value = ordering
 }
 

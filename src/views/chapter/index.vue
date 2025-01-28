@@ -119,7 +119,7 @@ function togglePDF() { pdfModel.value = !pdfModel.value; }
 }
 
 .toolbar {
-  margin-top: 48px;
+  margin: 48px auto;
 }
 
 .pdfFrame {

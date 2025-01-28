@@ -19,6 +19,7 @@ export interface Chapter {
     Content?: string;
     IsHasContent?: boolean;
     Book?:Book;
+    BookId?:number;
 }
 
 /**
