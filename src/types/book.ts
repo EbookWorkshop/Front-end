@@ -1,4 +1,4 @@
-import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
+// import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
 
 
 export interface Book {
@@ -9,7 +9,7 @@ export interface Book {
     FontFamily: string;
     FontSize: number;
     Index: Chapter[];
-    data?: DescData[];
+    // data?: DescData[];
 }
 
 export interface Chapter {

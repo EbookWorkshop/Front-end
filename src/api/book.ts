@@ -108,7 +108,7 @@ export function createPDF(
   chapterIds: number[],
   isSendEmail: boolean
 ) {
-  return axios.post(`/library/pdf`, {
+  return axios.post(`/export/pdf`, {
     bookId: bookid,
     chapterIds,
     sendByEmail: isSendEmail,
