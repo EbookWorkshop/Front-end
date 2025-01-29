@@ -7,7 +7,7 @@ if (import.meta.env.VITE_API_BASE_URL) {
 }
 
 /**
- * 拿到书目
+ * 拿到书 目录
  * @param id
  * @returns
  */
@@ -98,7 +98,7 @@ export function updateChapter(
 }
 
 /**
- * 制作pdf——并且发到默认邮箱
+ * 制作pdf——可发到默认邮箱
  * @param bookid
  * @param chapterIds
  * @returns
@@ -109,6 +109,25 @@ export function createPDF(
   isSendEmail: boolean
 ) {
   return axios.post(`/export/pdf`, {
+    bookId: bookid,
+    chapterIds,
+    sendByEmail: isSendEmail,
+  });
+}
+
+/**
+ * 制作txt——可发到默认邮箱
+ * @param bookid 
+ * @param chapterIds 
+ * @param isSendEmail 
+ * @returns 
+ */
+export function createTXT(
+  bookid: number,
+  chapterIds: number[],
+  isSendEmail: boolean
+) {
+  return axios.post(`/export/txt`, {
     bookId: bookid,
     chapterIds,
     sendByEmail: isSendEmail,

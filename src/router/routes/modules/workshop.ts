@@ -26,7 +26,7 @@ const WORKSHOP: AppRouteRecordRaw = {
     {
       path: 'export',
       name: 'export',
-      component: import('@/layout/page-layout.vue'),
+      component: () => import('@/layout/page-layout.vue'),
       meta: {
         locale: 'menu.workshop.export',
         requiresAuth: true,
@@ -34,6 +34,17 @@ const WORKSHOP: AppRouteRecordRaw = {
         roles: ['*'],
       },
       children: [
+        {
+          path: 'exportguide',
+          name: 'exportguide',
+          component: () => import('@/views/workshop/export/index.vue'),
+          meta: {
+            icon: 'icon-select-all',
+            locale: 'menu.workshop.export.guide',
+            requiresAuth: true,
+            roles: ['*'],
+          },
+        },
         {
           path: 'productsmanagement',
           name: 'ProductsManagement',
@@ -66,7 +77,7 @@ const WORKSHOP: AppRouteRecordRaw = {
         locale: 'menu.workshop.webbook',
         requiresAuth: true,
         roles: ['*'],
-        hideInMenu:true
+        hideInMenu: true
       },
     },
     {
