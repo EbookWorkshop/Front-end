@@ -9,6 +9,7 @@
               <a-step>选一本书</a-step>
               <a-step>选章节范围</a-step>
               <a-step>生成文件</a-step>
+              <a-step>结果</a-step>
             </a-steps>
           </div>
           <div class="frame-main">
@@ -45,6 +46,10 @@
                 </a-form-item>
               </div>
             </a-form>
+            <div class="main-content" v-if="current == 4">
+              <a-result :status="resultData.result" :title="resultData.result == 'success' ? '导出成功' : '导出失败'"
+                :subtitle="resultData.msg" />
+            </div>
             <div class="main-bottom">
               <a-button :disabled="current === 1" @click="onPrev">
                 <icon-left />
@@ -68,13 +73,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, h } from 'vue';
 import { FormInstance } from '@arco-design/web-vue/es/form';
 import SelectBook from '@/components/select-book/index.vue'
-import { Message } from '@arco-design/web-vue';
 
 import { queryBookById, createTXT, createPDF } from '@/api/book';
-import { ApiResultCode, HttpResponse } from '@/types/global'
+import { ApiResultCode } from '@/types/global'
 
 const saving = ref(false);
 const formRef = ref<FormInstance>();
@@ -90,6 +94,7 @@ const form = ref({
 const current = ref(1);
 const Chapters = ref<Array<any>>([]);
 
+const resultData = ref({} as any);
 
 function getBookIndex() {
   if (!form.value.bookId || form.value.isCheckAll) return;
@@ -115,7 +120,7 @@ const onNext = async () => {
     return;
   }
 
-  current.value = Math.min(3, current.value + 1);
+  current.value = Math.min(4, current.value + 1);
 };
 
 const onSubmit = () => {
@@ -131,20 +136,30 @@ const onSubmit = () => {
   let api = form.value.fileType === 'pdf' ? createPDF : createTXT;
 
   saving.value = true;
-  
+
   api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail).then((res: any) => {
     saving.value = false;
+    current.value = 4;
     if (res.code === ApiResultCode.Success) {
+      resultData.value.result = 'success';
       if (form.value.isSendEmail) {
-        Message.success('导出成功，已发送到邮箱');
+        resultData.value.msg = '已发送到您的邮箱';
       } else {
         //goto download page
         //Message.success('导出成功');
+        resultData.value.msg = "正在准备下载..."
+        window.open(`${import.meta.env.VITE_API_BASE_URL}/assets/download/${encodeURIComponent(res.data.download)}`);
       }
     } else {
-      Message.error('导出失败');
+      resultData.value.result = 'error';
+      resultData.value.msg = res.msg;
     }
-  })
+  }).catch(err => {
+    current.value = 4;
+    saving.value = false;
+    resultData.value.result = 'error';
+    resultData.value.msg = err;
+  });
 }
 </script>
 

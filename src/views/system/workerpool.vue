@@ -76,8 +76,8 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useSocket } from '@/hooks/socket';
 const { io: socket } = useSocket();
 
-const workerData = ref<any[]>([]);    // 进程信息
-const WorkerPool = ref<any[]>([]);    // 进程池
+const workerData = ref<any[]>([]);    // 线程信息
+const WorkerPool = ref<any[]>([]);    // 线程池
 const WaitingTask = ref<any[]>([]);    // 等待的任务
 
 onMounted(() => {
