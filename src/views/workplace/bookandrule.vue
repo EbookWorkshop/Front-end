@@ -29,6 +29,7 @@
           </template>
           <template #optional="{ record }">
             <a-button @click="editRow(record)">编辑</a-button>
+            <a-button @click="testRule(record)">验证</a-button>
             <a-popconfirm content="确认删除？此操作将无法恢复！" @ok="deleteRule(record.id)">
               <a-button status="danger">删除</a-button>
             </a-popconfirm>
@@ -48,6 +49,20 @@
           </a-form-item>
         </a-form>
       </a-modal>
+      <a-modal v-model:visible="isTest" title="验证规则" @before-ok="handleTestRule">
+        <a-form :model="testForm">
+          <a-form-item field="book" label="书">
+            {{ testForm.bookName }}
+          </a-form-item>
+          <a-form-item field="chapter" label="章节">
+            <a-select v-model="testForm.chapterId" :options="Chapters" :field-names="{ value: 'IndexId', label: 'Title' }"
+                    :virtual-list-props="{ height: 200 }" allow-search/>
+          </a-form-item>
+          <a-form-item field="name" label="校正规则">
+            {{ testForm.ruleName }}
+          </a-form-item>
+        </a-form>
+      </a-modal>
     </div>
   </div>
 </template>
@@ -56,7 +71,9 @@
 import { reactive, ref, h, computed } from 'vue';
 import { IconSearch } from '@arco-design/web-vue/es/icon';
 import useRequest from '@/hooks/request';
+import type { TableColumnData } from '@arco-design/web-vue';
 
+import { queryBookById, } from '@/api/book';
 import {
   // api
   queryReviewRuleUsingList,
@@ -92,8 +109,10 @@ const columns = [
   {
     title: '操作',
     slotName: 'optional',
+    width: 250,
+    align: 'center',
   },
-] as any[];
+] as TableColumnData[];
 
 // 获取使用情况列表数据
 const { loading: tableLoading, response: renderData } = useRequest<RuleAndBook[]>(queryReviewRuleUsingList);
@@ -108,13 +127,22 @@ const uniqueRenderData = computed(() => {
 });
 
 // 获取可用规则列表
-const { loading: ruleLoading, response: ruleListData } =
-  useRequest<RuleListType>(queryReviewRuleList);
+const { loading: ruleLoading, response: ruleListData } = useRequest<RuleListType>(queryReviewRuleList);
 
 const visible = ref(false);
+const isTest = ref(false);
+const Chapters = ref([]);
 const form = reactive({
   bookId: '',
   ruleId: '',
+});
+const testForm = reactive({
+  bookName: '',
+  bookId: '',
+  chapterId: '',
+  ruleId: '',
+  ruleName: '',
+  regexp: '',
 });
 
 /**
@@ -173,5 +201,26 @@ const editRow = (data: any) => {
   visible.value = true;
   form.bookId = data.bookId;
   form.ruleId = data.ruleId;
+};
+
+/**
+ * 测试规则
+ * @param data
+ */
+const testRule = (data: any) => {
+  isTest.value = true;
+  testForm.bookName = data.bookName;
+  testForm.bookId = data.bookId;
+  testForm.ruleName = data.ruleName;
+  testForm.ruleId = data.ruleId;
+  queryBookById(data.bookId).then((rsl: any) => {
+    Chapters.value = rsl.data.Index;
+  });
+  console.log(data);
+};
+
+const handleTestRule = (callback: any) => {
+  console.log(testForm);
+  callback(true);
 };
 </script>
