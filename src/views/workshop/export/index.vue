@@ -41,6 +41,13 @@
                     <a-radio value="txt">TXT</a-radio>
                   </a-radio-group>
                 </a-form-item>
+                <a-form-item v-if="form.fileType == 'pdf'" label="选择字体">
+                  <a-select v-model="form.fontFamily">
+                    <a-option v-for="font in fontData" :key="font.name" :value="font.name">
+                      {{ font.name }}
+                    </a-option>
+                  </a-select>
+                </a-form-item>
                 <a-form-item label="发送到默认邮箱">
                   <a-switch v-model="form.isSendEmail" />
                 </a-form-item>
@@ -78,6 +85,7 @@ import { FormInstance } from '@arco-design/web-vue/es/form';
 import SelectBook from '@/components/select-book/index.vue'
 
 import { queryBookById, createTXT, createPDF } from '@/api/book';
+import { queryFontList, } from '@/api/font';
 import { ApiResultCode } from '@/types/global'
 
 const saving = ref(false);
@@ -86,6 +94,7 @@ const form = ref({
   bookId: undefined as number | undefined,
   isCheckAll: true,
   chapterRange: '',
+  fontFamily: '',
   cBegin: undefined as number | undefined,
   cEnd: undefined as number | undefined,
   fileType: undefined,
@@ -93,7 +102,7 @@ const form = ref({
 });
 const current = ref(1);
 const Chapters = ref<Array<any>>([]);
-
+let fontData: Array<any> = [];
 const resultData = ref({} as any);
 
 function getBookIndex() {
@@ -123,6 +132,15 @@ const onNext = async () => {
   current.value = Math.min(4, current.value + 1);
 };
 
+//字体加载、切换部分
+let fontDataMap = new Map();
+async function InitFont() {
+  fontData = await queryFontList();
+  fontDataMap = new Map(fontData.map(t => [t.name, t]));
+}
+InitFont();
+
+
 const onSubmit = () => {
   let chapterIds = [] as any;
   if (form.value.isCheckAll) {
@@ -137,7 +155,7 @@ const onSubmit = () => {
 
   saving.value = true;
 
-  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail).then((res: any) => {
+  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail,form.value.fontFamily).then((res: any) => {
     saving.value = false;
     current.value = 4;
     if (res.code === ApiResultCode.Success) {
@@ -189,7 +207,6 @@ const onSubmit = () => {
 .main-content {
   margin-top: 40px;
   text-align: center;
-  line-height: 200px;
   min-height: 220px;
   color: var(--color-text-2);
 }

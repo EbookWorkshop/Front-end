@@ -101,17 +101,22 @@ export function updateChapter(
  * 制作pdf——可发到默认邮箱
  * @param bookid
  * @param chapterIds
+ * @param isSendEmail 是否发到默认邮箱
+ * @param fontFamliy 创建PDF时的字体
  * @returns
  */
 export function createPDF(
   bookid: number,
   chapterIds: number[],
-  isSendEmail: boolean
+  isSendEmail: boolean,
+  fontFamliy: string
 ) {
+  console.log('fontFamliy', fontFamliy);
   return axios.post(`/export/pdf`, {
     bookId: bookid,
     chapterIds,
     sendByEmail: isSendEmail,
+    fontFamliy,
   });
 }
 
@@ -120,12 +125,14 @@ export function createPDF(
  * @param bookid 
  * @param chapterIds 
  * @param isSendEmail 
+ * @param fontFamliy 没用，对齐API用
  * @returns 
  */
 export function createTXT(
   bookid: number,
   chapterIds: number[],
-  isSendEmail: boolean
+  isSendEmail: boolean,
+  fontFamliy: string
 ) {
   return axios.post(`/export/txt`, {
     bookId: bookid,

@@ -7,6 +7,7 @@
           :Author="renderData.Author">
           <template #toolbar>
             <a-row align="end" justify="start" style="height: 150px;">
+              <a-col :span="24" :offset="2">
               <a-space direction="horizontal" wrap>
                 <a-tag v-for="t of tagsData" :color="t.Color" :key="t.id" :style="{ cursor: 'pointer' }"
                   :closable="delTagAble" @close="handleCloseTag(t.id)">
@@ -35,6 +36,7 @@
                 </span>
                 <!-- 添加标签工具 -->
               </a-space>
+              </a-col>
             </a-row>
           </template>
         </BookInfo>
