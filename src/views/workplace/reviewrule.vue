@@ -94,6 +94,11 @@ import { number } from 'echarts';
       dataIndex: 'Replace',
     },
     {
+      title: '已用次数',
+      dataIndex: 'Count',
+      align:"center"
+    },
+    {
       title: '操作',
       slotName: 'optional',
       width: 250,
