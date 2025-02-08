@@ -28,6 +28,19 @@ export function updateReviewRule(rule: any) {
 export function deleteReviewRule(id: number) {
   return axios.delete(`/review/rule?id=${id}`);
 }
+/**
+ * 测试一个规则
+ * @param id 
+ * @param chapterId 
+ * @returns 
+ */
+export function tryARule(id: number, chapterId: number) {
+  return axios.post(`/review/rule/test`, {
+    "ruleId": id,
+    "chapterId": chapterId,
+  });
+}
+
 
 /**
  * 每本书和规则的情况

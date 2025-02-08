@@ -12,7 +12,8 @@ import App from './App.vue';
 // https://arco.design/docs/designlab/use-theme-package
 import '@/assets/style/global.less';
 import '@/api/interceptor';
-// import VueSocketIO from 'vue-socket.io'
+
+import VueDiff from "vue-diff";
 
 //禁用显示“水合不匹配信息”
 window.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = false;
@@ -21,17 +22,13 @@ const app = createApp(App);
 
 app.use(ArcoVue, {});
 app.use(ArcoVueIcon);
+app.use(VueDiff);//注册比较组件
 
 app.use(router);
 app.use(store);
 app.use(i18n);
 app.use(globalComponents);
 app.use(directive);
-// app.use(
-//     new VueSocketIO({
-//         debug: true,
-//         connection: import.meta.env.VITE_API_BASE_URL
-//     })
-// )
+
 
 app.mount('#app');

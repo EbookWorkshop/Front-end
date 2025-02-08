@@ -13,50 +13,52 @@
             </a-steps>
           </div>
           <div class="frame-main">
-            <a-form :model="form" ref="formRef" auto-label-width>
-              <div v-if="current == 1" class="main-content">
-                <a-form-item label="选择书籍" required>
-                  <SelectBook v-model="form.bookId" :rules="[{ required: true, message: '必须设置文本编码' }]" />
-                </a-form-item>
-              </div>
-              <div v-if="current == 2" class="main-content">
-                <a-form-item label="全部章节">
-                  <a-switch :default-checked="true" v-model="form.isCheckAll" @change="getBookIndex" />
-                </a-form-item>
-                <a-form-item field="cBegin" label="开始章节:" required v-if="!form.isCheckAll">
-                  <a-select v-model="form.cBegin" :options="Chapters"
-                    :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
-                    allow-search />
-                </a-form-item>
-                <a-form-item field="cEnd" label="结束章节:" required v-if="!form.isCheckAll">
-                  <a-select v-model="form.cEnd" :options="[...Chapters].reverse()"
-                    :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
-                    allow-search />
-                </a-form-item>
-              </div>
-              <div v-if="current == 3" class="main-content">
-                <a-form-item label="文件类型" required>
-                  <a-radio-group v-model="form.fileType">
-                    <a-radio value="pdf">PDF</a-radio>
-                    <a-radio value="txt">TXT</a-radio>
-                  </a-radio-group>
-                </a-form-item>
-                <a-form-item v-if="form.fileType == 'pdf'" label="选择字体">
-                  <a-select v-model="form.fontFamily">
-                    <a-option v-for="font in fontData" :key="font.name" :value="font.name">
-                      {{ font.name }}
-                    </a-option>
-                  </a-select>
-                </a-form-item>
-                <a-form-item label="发送到默认邮箱">
-                  <a-switch v-model="form.isSendEmail" />
-                </a-form-item>
-              </div>
-            </a-form>
-            <div class="main-content" v-if="current == 4">
-              <a-result :status="resultData.result" :title="resultData.result == 'success' ? '导出成功' : '导出失败'"
-                :subtitle="resultData.msg" />
-            </div>
+            <keep-alive>
+              <a-form :model="form" ref="formRef" auto-label-width>
+                <div v-if="current == 1" class="main-content">
+                  <a-form-item label="选择书籍" required>
+                    <SelectBook v-model="form.bookId" :rules="[{ required: true, message: '必须设置文本编码' }]" />
+                  </a-form-item>
+                </div>
+                <div v-if="current == 2" class="main-content">
+                  <a-form-item label="全部章节">
+                    <a-switch :default-checked="true" v-model="form.isCheckAll" @change="getBookIndex" />
+                  </a-form-item>
+                  <a-form-item field="cBegin" label="开始章节:" required v-if="!form.isCheckAll">
+                    <a-select v-model="form.cBegin" :options="Chapters"
+                      :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
+                      allow-search />
+                  </a-form-item>
+                  <a-form-item field="cEnd" label="结束章节:" required v-if="!form.isCheckAll">
+                    <a-select v-model="form.cEnd" :options="[...Chapters].reverse()"
+                      :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
+                      allow-search />
+                  </a-form-item>
+                </div>
+                <div v-if="current == 3" class="main-content">
+                  <a-form-item label="文件类型" required>
+                    <a-radio-group v-model="form.fileType">
+                      <a-radio value="pdf">PDF</a-radio>
+                      <a-radio value="txt">TXT</a-radio>
+                    </a-radio-group>
+                  </a-form-item>
+                  <a-form-item v-if="form.fileType == 'pdf'" label="选择字体">
+                    <a-select v-model="form.fontFamily">
+                      <a-option v-for="font in fontData" :key="font.name" :value="font.name">
+                        {{ font.name }}
+                      </a-option>
+                    </a-select>
+                  </a-form-item>
+                  <a-form-item label="发送到默认邮箱">
+                    <a-switch v-model="form.isSendEmail" />
+                  </a-form-item>
+                </div>
+                <div v-if="current == 4" class="main-content">
+                  <a-result :status="resultData.result" :title="resultData.result == 'success' ? '导出成功' : '导出失败'"
+                    :subtitle="resultData.msg" />
+                </div>
+              </a-form>
+            </keep-alive>
             <div class="main-bottom">
               <a-button :disabled="current === 1" @click="onPrev">
                 <icon-left />

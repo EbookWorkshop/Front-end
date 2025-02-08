@@ -61,11 +61,18 @@
           </a-form-item>
         </a-form>
       </a-modal>
+
+      <a-modal :visible="testResult" fullscreen title="验证结果" unmount-on-close :footer="false"
+        @cancel="testResult = false">
+        <Diff mode="split" theme="light" language="text" :prev="diffLeft" :current="diffRight"
+          style="height: 100%; width: 100%; overflow: scroll" />
+      </a-modal>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+  import "vue-diff/dist/index.css";
   import { reactive, ref } from 'vue';
   import useRequest from '@/hooks/request';
   import { queryBookById, } from '@/api/book';
@@ -74,6 +81,7 @@
     updateReviewRule,
     deleteReviewRule,
     Rule,
+    tryARule,
   } from '@/api/workplace';
   import type { TableColumnData } from '@arco-design/web-vue';
   import { Message } from '@arco-design/web-vue';
@@ -111,6 +119,7 @@ import { number } from 'echarts';
   const Chapters = ref([]);
   const visible = ref(false);
   const isTest = ref(false);
+  const testResult = ref(false);
   const form = reactive({
     id: '',
     name: '',
@@ -124,6 +133,11 @@ import { number } from 'echarts';
     ruleName: '',
     regexp: '',
   });
+
+  const diffLeft = ref("");
+  const diffRight = ref("");
+
+  
   /**
    * 添加新规则
    */
@@ -189,15 +203,21 @@ import { number } from 'echarts';
    */
   const testRule = (data: any) => {
     isTest.value = true;
+    testForm.ruleId = data.id;
     testForm.bookId = data.BookId;
     testForm.chapterId = '';
     testForm.ruleName = data.Name;
     testForm.regexp = data.Rule;
     Chapters.value=[];
-    console.log(data);
   };
   const handleTestRule = (callback: any) => {
-    callback(true);
-    isTest.value = false;
+    tryARule(testForm.ruleId, testForm.chapterId).then((tryRsl) => {
+      let { source, result } = tryRsl.data;
+      callback(true);
+      diffLeft.value = source;
+      diffRight.value = result;
+      testResult.value = true;
+    }).catch(err => callback(false));
+
   };
 </script>

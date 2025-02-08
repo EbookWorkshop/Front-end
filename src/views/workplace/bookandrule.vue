@@ -55,21 +55,28 @@
             {{ testForm.bookName }}
           </a-form-item>
           <a-form-item field="chapter" label="章节">
-            <a-select v-model="testForm.chapterId" :options="Chapters" :field-names="{ value: 'IndexId', label: 'Title' }"
-                    :virtual-list-props="{ height: 200 }" allow-search/>
+            <a-select v-model="testForm.chapterId" :options="Chapters"
+              :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }" allow-search />
           </a-form-item>
           <a-form-item field="name" label="校正规则">
             {{ testForm.ruleName }}
           </a-form-item>
         </a-form>
       </a-modal>
+      <a-modal :visible="testResult" fullscreen title="验证结果" unmount-on-close :footer="false"
+        @cancel="testResult = false">
+        <Diff mode="split" theme="light" language="text" :prev="diffLeft" :current="diffRight"
+          style="height: 100%; width: 100%; overflow: scroll" />
+      </a-modal>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import "vue-diff/dist/index.css";
 import { reactive, ref, h, computed } from 'vue';
 import { IconSearch } from '@arco-design/web-vue/es/icon';
+
 import useRequest from '@/hooks/request';
 import type { TableColumnData } from '@arco-design/web-vue';
 
@@ -80,12 +87,12 @@ import {
   queryReviewRuleList,
   updateReviewRuleForBook,
   deleteReviewRuleForBook,
+  tryARule,
 
   // type
   RuleAndBook,
   RuleListType,
 } from '@/api/workplace';
-// import { Rule } from '@/api/workplace';
 
 // 插件
 import SelectBook from '@/components/select-book/index.vue';
@@ -131,6 +138,7 @@ const { loading: ruleLoading, response: ruleListData } = useRequest<RuleListType
 
 const visible = ref(false);
 const isTest = ref(false);
+const testResult = ref(false);
 const Chapters = ref([]);
 const form = reactive({
   bookId: '',
@@ -144,6 +152,8 @@ const testForm = reactive({
   ruleName: '',
   regexp: '',
 });
+const diffLeft = ref("");
+const diffRight = ref("");
 
 /**
  * 添加新规则
@@ -216,11 +226,17 @@ const testRule = (data: any) => {
   queryBookById(data.bookId).then((rsl: any) => {
     Chapters.value = rsl.data.Index;
   });
-  console.log(data);
 };
 
 const handleTestRule = (callback: any) => {
-  console.log(testForm);
-  callback(true);
+  tryARule(testForm.ruleId, testForm.chapterId).then((tryRsl) => {
+    let { source, result } = tryRsl.data;
+    callback(true);
+    diffLeft.value = source;
+    diffRight.value = result;
+    testResult.value = true;
+  }).catch(err => callback(false));
+
+
 };
 </script>
