@@ -66,8 +66,8 @@ function ShowOutdatedVersion({ current, wanted, latest }: VersionCompare) {
     { content: "可升级版本", version: wanted, style: "rgb(var(--green-5))" },
     { content: "最新版本", version: latest, style: "rgb(var(--red-5))" },
   ];
-  const renderVersion = (version: string, color: string, tips: string) => h(Tooltip, { content: tips }, h("span", { style: "color:" + color }, version));
-  return h(Space, versions.map(t => renderVersion(t.version, t.style, t.content)));
+  const renderVersion = (version: string, color: string, tips: string) => h(Tooltip, { content: tips }, ()=>h("span", { style: "color:" + color }, version));
+  return h(Space, ()=>versions.map(t => renderVersion(t.version, t.style, t.content)));
 }
 
 
