@@ -34,7 +34,7 @@
         </a-col>
         <a-col v-else-if="viewModel == 'pdf'" :span="6">
           <a-form-item field="showFont" label="字体" label-col-flex="100px">
-            <a-select id="showFont" v-model="font" :default-value="fontData[0]?.name">
+            <a-select id="showFont" v-model="font" :default-value="fontData[0]?.name" allow-search>
               <a-option v-for="t in fontData" :key="t.name" :value="t.name">{{
                 t.name
               }}</a-option>

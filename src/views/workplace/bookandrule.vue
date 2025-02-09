@@ -142,13 +142,13 @@ const testResult = ref(false);
 const Chapters = ref([]);
 const form = reactive({
   bookId: '',
-  ruleId: '',
+  ruleId: 0,
 });
 const testForm = reactive({
   bookName: '',
   bookId: '',
-  chapterId: '',
-  ruleId: '',
+  chapterId: null as number | null,
+  ruleId: 0,
   ruleName: '',
   regexp: '',
 });
@@ -160,7 +160,7 @@ const diffRight = ref("");
  */
 const createNewRule = () => {
   form.bookId = '';
-  form.ruleId = '';
+  form.ruleId = 0;
   visible.value = true;
 };
 /**
@@ -229,14 +229,21 @@ const testRule = (data: any) => {
 };
 
 const handleTestRule = (callback: any) => {
-  tryARule(testForm.ruleId, testForm.chapterId).then((tryRsl) => {
+  tryARule(testForm.ruleId, testForm.chapterId ?? -1).then((tryRsl: any) => {
     let { source, result } = tryRsl.data;
     callback(true);
     diffLeft.value = source;
     diffRight.value = result;
     testResult.value = true;
   }).catch(err => callback(false));
-
-
 };
 </script>
+<style lang="less">
+.vue-diff-viewer {
+  background-color: var(--color-bg-4);
+
+  .hljs {
+    color: var(--color-text-2);
+  }
+}
+</style>
