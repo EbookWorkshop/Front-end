@@ -65,7 +65,7 @@
       </a-modal>
       <a-modal :visible="testResult" fullscreen title="验证结果" unmount-on-close :footer="false"
         @cancel="testResult = false">
-        <Diff mode="split" theme="light" language="text" :prev="diffLeft" :current="diffRight"
+        <Diff mode="split" :theme="theme" language="text" :prev="diffLeft" :current="diffRight"
           style="height: 100%; width: 100%; overflow: scroll" />
       </a-modal>
     </div>
@@ -76,6 +76,7 @@
 import "vue-diff/dist/index.css";
 import { reactive, ref, h, computed } from 'vue';
 import { IconSearch } from '@arco-design/web-vue/es/icon';
+import { useAppStore } from '@/store';
 
 import useRequest from '@/hooks/request';
 import type { TableColumnData } from '@arco-design/web-vue';
@@ -97,6 +98,11 @@ import {
 // 插件
 import SelectBook from '@/components/select-book/index.vue';
 import { Message } from '@arco-design/web-vue';
+
+const appStore = useAppStore();
+const theme = computed(() => {
+  return appStore.theme;
+});
 
 const columns = [
   {
@@ -224,7 +230,7 @@ const testRule = (data: any) => {
   testForm.ruleName = data.ruleName;
   testForm.ruleId = data.ruleId;
   queryBookById(data.bookId).then((rsl: any) => {
-    Chapters.value = rsl.data.Index;
+    Chapters.value = rsl.data.Index.filter((i: any) => i.IsHasContent);
   });
 };
 
@@ -238,12 +244,3 @@ const handleTestRule = (callback: any) => {
   }).catch(err => callback(false));
 };
 </script>
-<style lang="less">
-.vue-diff-viewer {
-  background-color: var(--color-bg-4);
-
-  .hljs {
-    color: var(--color-text-2);
-  }
-}
-</style>
