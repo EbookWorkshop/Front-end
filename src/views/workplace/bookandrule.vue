@@ -42,7 +42,7 @@
             <SelectBook v-model="form.bookId" />
           </a-form-item>
           <a-form-item field="name" label="校正规则">
-            <a-select v-model="form.ruleId" :style="{ width: '100%' }" size="large" placeholder="请选校阅规则"
+            <a-select v-model="form.ruleId as number" :style="{ width: '100%' }" size="large" placeholder="请选校阅规则"
               :loading="ruleLoading" allow-search>
               <a-option v-for="r in ruleListData" :key="r.id" :value="r.id" :title="r.Rule">{{ r.Name }}</a-option>
             </a-select>
@@ -148,7 +148,7 @@ const testResult = ref(false);
 const Chapters = ref([]);
 const form = reactive({
   bookId: '',
-  ruleId: 0,
+  ruleId: 0 as number | null,
 });
 const testForm = reactive({
   bookName: '',
@@ -166,7 +166,7 @@ const diffRight = ref("");
  */
 const createNewRule = () => {
   form.bookId = '';
-  form.ruleId = 0;
+  form.ruleId = null;
   visible.value = true;
 };
 /**
