@@ -13,8 +13,9 @@
           <a-button v-if="!isOrdering" long class="chapter" @click="onClickChapter(item.IndexId)">
             {{ item.Title }}
           </a-button>
-          <a-button-group v-else style="width:100%;overflow:hidden;">
-            <a-button>{{ item.OrderNum }}</a-button><a-button long>{{ item.Title }}</a-button>
+          <a-button-group v-else style="width:100%;overflow:hidden;"><!-- 排序中的按钮 -->
+            <a-button class="drag-sortable-list">{{ item.OrderNum }}</a-button><a-button long>{{ item.Title
+              }}</a-button>
           </a-button-group>
         </template>
         <template #addChapterTool>
@@ -45,6 +46,7 @@
 
 <script lang="ts" setup>
 import { Book, Chapter } from "@/types/book";
+import Sortable from 'sortablejs';
 
 import { ref, reactive } from "vue";
 import {
@@ -77,7 +79,7 @@ let defTitle: String = ""
 let defContent: String = "";
 const isEdit = ref(false);
 const isOrdering = ref(false);
-
+let sortChapterList = null as any;
 
 /**
  * 点击章节列表
@@ -143,8 +145,43 @@ const onSubmit = () => {
   }
 }
 
+/**
+ * 切换章节排序
+ * @param ordering 
+ */
 function onChangeOrdering(ordering: boolean) {
   isOrdering.value = ordering
+
+  if (ordering) {
+    if (sortChapterList) {
+      sortChapterList.option("disabled", false);
+      return;
+    }
+    const el = document.querySelector('.chapter-list') as any;
+    sortChapterList = new Sortable(el, {
+      animation: 150,
+      ghostClass: 'blue-background-class',
+      onEnd: (event) => {
+        console.log("Sort End")
+        // const { oldIndex, newIndex } = event;
+        // const [removed] = list.value.splice(oldIndex, 1);
+        // list.value.splice(newIndex, 0, removed);
+      },
+    });
+  } else {
+    if (sortChapterList) sortChapterList.option("disabled", true);
+  }
 }
 
 </script>
+
+<style>
+.drag-sortable-list {
+  cursor: move;
+}
+
+.blue-background-class {
+  background-color: lightblue !important;
+  border: 1px solid red;
+}
+</style>
