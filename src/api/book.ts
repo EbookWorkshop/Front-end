@@ -109,7 +109,8 @@ export function createPDF(
   bookid: number,
   chapterIds: number[],
   isSendEmail: boolean,
-  fontFamliy: string
+  fontFamliy: string,
+  embedTitle: boolean
 ) {
   console.log('fontFamliy', fontFamliy);
   return axios.post(`/export/pdf`, {
@@ -117,6 +118,7 @@ export function createPDF(
     chapterIds,
     sendByEmail: isSendEmail,
     fontFamliy,
+    embedTitle
   });
 }
 
@@ -126,13 +128,15 @@ export function createPDF(
  * @param chapterIds 
  * @param isSendEmail 
  * @param fontFamliy 没用，对齐API用
+ * @param embedTitle 没用，对齐API用
  * @returns 
  */
 export function createTXT(
   bookid: number,
   chapterIds: number[],
   isSendEmail: boolean,
-  fontFamliy: string
+  fontFamliy: string,
+  embedTitle: boolean
 ) {
   return axios.post(`/export/txt`, {
     bookId: bookid,

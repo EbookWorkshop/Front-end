@@ -49,6 +49,9 @@
                       </a-option>
                     </a-select>
                   </a-form-item>
+                  <a-form-item v-if="form.fileType == 'pdf'" label="嵌入章节标题">
+                    <a-switch v-model="form.isEmbedTitle" />
+                  </a-form-item>
                   <a-form-item label="发送到默认邮箱">
                     <a-switch v-model="form.isSendEmail" />
                   </a-form-item>
@@ -100,7 +103,8 @@ const form = ref({
   cBegin: undefined as number | undefined,
   cEnd: undefined as number | undefined,
   fileType: undefined,
-  isSendEmail: true,
+  isSendEmail: false,
+  isEmbedTitle: true,
 });
 const current = ref(1);
 const Chapters = ref<Array<any>>([]);
@@ -157,7 +161,7 @@ const onSubmit = () => {
 
   saving.value = true;
 
-  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily).then((res: any) => {
+  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily,form.value.isEmbedTitle).then((res: any) => {
     saving.value = false;
     current.value = 4;
     if (res.code === ApiResultCode.Success) {
