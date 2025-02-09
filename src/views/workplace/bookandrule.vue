@@ -55,7 +55,7 @@
             {{ testForm.bookName }}
           </a-form-item>
           <a-form-item field="chapter" label="章节">
-            <a-select v-model="testForm.chapterId" :options="Chapters"
+            <a-select v-model="testForm.chapterId as any" :options="Chapters"
               :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }" allow-search />
           </a-form-item>
           <a-form-item field="name" label="校正规则">
