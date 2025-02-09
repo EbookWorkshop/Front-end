@@ -44,7 +44,8 @@
         <a-col :span="3" style="text-align: center">
           <a-upload :action="ASSETS_HOST + '/services/font/add'" accept=".ttf,.fon,.otf,.woff,.woff2" :multiple="true"
             :show-file-list="false" @success="() => {
-                Message.success('添加成功，请刷新页面。');
+                Message.success('添加成功。');
+                Init();
               }
               " />
         </a-col>
@@ -138,6 +139,7 @@ const onDeleteFont = async (fontName: any) => {
   try {
     await deleteFont(fontName);
     Message.success('删除成功！');
+    Init();
   } catch (err: any) {
     Message.error(`删除失败：${err?.response?.data?.msg}`);
   }
@@ -145,7 +147,7 @@ const onDeleteFont = async (fontName: any) => {
 
 async function Init() {
   const data = (await queryFontList()) as FontFace[];
-
+  fontData.length = 0;
   // 初始化到CSS
   let fontFace = '';
   let i = 0;
