@@ -6,7 +6,7 @@
   >
     <span
       class="arco-tag arco-tag-size-medium arco-tag-checked"
-      :class="{ 'link-activated': itemData.fullPath === $route.fullPath }"
+      :class="{ 'link-activated': itemData.fullPath === route.fullPath }"
       @click="goto(itemData)"
     >
       <span class="tag-link">

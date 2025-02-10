@@ -13,7 +13,6 @@ import App from './App.vue';
 import '@/assets/style/global.less';
 import '@/api/interceptor';
 
-import VueDiff from "vue-diff";
 
 //禁用显示“水合不匹配信息”
 window.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = false;
@@ -22,7 +21,6 @@ const app = createApp(App);
 
 app.use(ArcoVue, {});
 app.use(ArcoVueIcon);
-app.use(VueDiff);//注册比较组件
 
 app.use(router);
 app.use(store);

@@ -81,7 +81,7 @@ import SelectBook from '@/components/select-book/index.vue';
 import { useAppStore } from '@/store';
 
 const appStore = useAppStore();
-const theme = computed(() => {
+const theme = computed<any>(() => {
   return appStore.theme;
 });
 

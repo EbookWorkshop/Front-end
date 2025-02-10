@@ -100,7 +100,7 @@ import SelectBook from '@/components/select-book/index.vue';
 import { Message } from '@arco-design/web-vue';
 
 const appStore = useAppStore();
-const theme = computed(() => {
+const theme = computed<any>(() => {
   return appStore.theme;
 });
 
