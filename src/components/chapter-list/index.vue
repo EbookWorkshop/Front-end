@@ -10,8 +10,7 @@
                 </a-col>
             </a-row>
 
-            <a-grid v-else :cols="Chapters.length < 50 ? 4 : { xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }" :col-gap="12"
-                :row-gap="16" class="chapter-list">
+            <a-grid v-else :cols="computedCols" :col-gap="12" :row-gap="16" class="chapter-list">
                 <!-- 阅读视图 阅读时的章节列表 -->
                 <a-grid-item v-for="item in Chapters" :key="item.IndexId" class="reading-index">
                     <a-tooltip v-if="item.Title.length > 13" :content="item.Title">
@@ -28,6 +27,7 @@
 
 </template>
 <script lang="ts" setup>
+import { computed } from "vue";
 //类型引入
 import { Chapter } from '@/types/book';
 
@@ -42,4 +42,7 @@ const props = defineProps({
     }
 });
 
+const computedCols = computed(() => {
+    return props.Chapters.length < 50 ? 4 : { xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 };
+});
 </script>

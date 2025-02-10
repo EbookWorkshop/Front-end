@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Chapter } from '@/types/book';
+import type { Chapter, ChapterOrderSetting } from '@/types/book';
 import { HttpResponse } from '@/types/global';
 
 if (import.meta.env.VITE_API_BASE_URL) {
@@ -47,6 +47,15 @@ export function queryChapterById(cid: number) {
  */
 export function editChapter(chapter: Chapter) {
   return axios.post('/library/book/chapter', chapter);
+}
+
+/**
+ * 修改章节信息
+ * @param chapter 章节
+ * @returns
+ */
+export function updateChapterOrder(chapterOrderList: Array<ChapterOrderSetting>) {
+  return axios.patch('/library/book/chapterOrder', chapterOrderList);
 }
 
 /**

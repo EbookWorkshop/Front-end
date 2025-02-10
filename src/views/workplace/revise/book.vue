@@ -8,26 +8,24 @@
           <Toolbar @EditChapterOrdering="onChangeOrdering"></Toolbar>
         </template>
       </BookInfo>
-      <ChapterList :loading="loading" :Chapters="renderData.Index">
-        <template #content="{ item }">
-          <a-button v-if="!isOrdering" long class="chapter" @click="onClickChapter(item.IndexId)">
-            {{ item.Title }}
-          </a-button>
-          <a-button-group v-else style="width:100%;overflow:hidden;"><!-- 排序中的按钮 -->
-            <a-button class="drag-sortable-list">{{ item.OrderNum }}</a-button><a-button long>{{ item.Title
-              }}</a-button>
-          </a-button-group>
-        </template>
-        <template #addChapterTool>
-          <a-button long class="chapter" type="outline" @click="onClickChapter(-1)">
-            <template #icon>
-              <icon-plus />
-            </template>
-            添加一章
-          </a-button>
-        </template>
-      </ChapterList>
-
+      <keep-alive>
+        <ChapterList :loading="loading" :Chapters="renderData.Index">
+          <template #content="{ item }">
+            <a-button v-if="!isOrdering" long class="chapter" @click="onClickChapter(item.IndexId)">
+              {{ item.Title }}
+            </a-button>
+            <a-button v-else long class="chapter">{{ item.Title }}</a-button>
+          </template>
+          <template #addChapterTool>
+            <a-button v-if="!isOrdering" long class="chapter" type="outline" @click="onClickChapter(-1)">
+              <template #icon>
+                <icon-plus />
+              </template>
+              添加一章
+            </a-button>
+          </template>
+        </ChapterList>
+      </keep-alive>
       <!-- 编辑章节内容的弹出窗口 -->
       <a-modal fullscreen :visible="isEdit" @cancel="() => isEdit = false"
         :title="curChapId == -1 ? '新增章节' : form.chapTitle" @ok="onSubmit">
@@ -52,6 +50,7 @@ import { ref, reactive } from "vue";
 import {
   queryChapterById,
   queryBookById,
+  updateChapterOrder,
   editChapter,
 } from '@/api/book';
 import { AxiosResponse } from 'axios';
@@ -65,7 +64,7 @@ import Toolbar from "./components/toolbar.vue";
 import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
 
-const { bookId, gotoChapter, gotoIndex } = useBookHelper();
+const { bookId } = useBookHelper();
 const { loading, response: renderData } = useRequest<Book>(queryBookById.bind(null, bookId));
 
 const form = reactive({
@@ -80,6 +79,7 @@ let defContent: String = "";
 const isEdit = ref(false);
 const isOrdering = ref(false);
 let sortChapterList = null as any;
+const orderList = [] as Array<any>;
 
 /**
  * 点击章节列表
@@ -150,9 +150,11 @@ const onSubmit = () => {
  * @param ordering 
  */
 function onChangeOrdering(ordering: boolean) {
-  isOrdering.value = ordering
-
+  console.log("onChangeOrdering::", ordering);
+  isOrdering.value = ordering;
   if (ordering) {
+    orderList.length = 0;
+    orderList.push(...renderData.value.Index.map((t) => { return { order: t.OrderNum, indexId: t.IndexId } }));
     if (sortChapterList) {
       sortChapterList.option("disabled", false);
       return;
@@ -162,20 +164,53 @@ function onChangeOrdering(ordering: boolean) {
       animation: 150,
       ghostClass: 'blue-background-class',
       onEnd: (event) => {
-        console.log("Sort End")
-        // const { oldIndex, newIndex } = event;
-        // const [removed] = list.value.splice(oldIndex, 1);
-        // list.value.splice(newIndex, 0, removed);
+        const { oldIndex, newIndex } = event;
+        // console.log("Sort End", oldIndex, newIndex, event);
+        const [removed] = orderList.splice(oldIndex ?? 0, 1);
+        orderList.splice(newIndex ?? 0, 0, removed);
       },
     });
   } else {
     if (sortChapterList) sortChapterList.option("disabled", true);
+    for (var i = 0; i < orderList.length; i++) {
+      orderList[i].newOrder = i + 1;
+    }
+    let edit = orderList.filter(t => t.order != t.newOrder);
+    if (edit.length <= 0) return;
+
+    loading.value = true;
+    updateChapterOrder(edit).then(result => {
+      console.log(result);
+    }).catch(err => {
+      console.log(err);
+    }).finally(() => {
+      orderList.length = 0;
+      loading.value = false;
+    })
   }
+}
+
+function test() {
+  const el = document.querySelector('.chapter-list') as any;
+  sortChapterList = new Sortable(el, {
+    animation: 150,
+    ghostClass: 'blue-background-class',
+    onEnd: (event) => {
+      const { oldIndex, newIndex } = event;
+      // console.log("Sort End", oldIndex, newIndex, event);
+      const [removed] = orderList.splice(oldIndex ?? 0, 1);
+      orderList.splice(newIndex ?? 0, 0, removed);
+    },
+  });
 }
 
 </script>
 
 <style>
+.chapter {
+  overflow: hidden;
+}
+
 .drag-sortable-list {
   cursor: move;
 }

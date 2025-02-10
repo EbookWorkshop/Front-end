@@ -26,5 +26,7 @@ module.exports = {
         ignorePseudoClasses: ['deep'],
       },
     ],
+    'media-query-no-invalid': null,
+    'selector-anb-no-unmatchable': null,
   },
 };

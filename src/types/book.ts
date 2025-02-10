@@ -18,8 +18,8 @@ export interface Chapter {
     IndexId: number;
     Content?: string;
     IsHasContent?: boolean;
-    Book?:Book;
-    BookId?:number;
+    Book?: Book;
+    BookId?: number;
 }
 
 /**
@@ -48,3 +48,10 @@ export interface BookSources {
     Path: string;
 }
 
+/**
+ * 章节排序设置
+ */
+export interface ChapterOrderSetting {
+    indexId:number,
+    newOrder:number
+}
