@@ -121,7 +121,6 @@ export function createPDF(
   fontFamliy: string,
   embedTitle: boolean
 ) {
-  console.log('fontFamliy', fontFamliy);
   return axios.post(`/export/pdf`, {
     bookId: bookid,
     chapterIds,

@@ -1,15 +1,15 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.workplace', 'menu.workplace.revise', renderData.BookName]" />
+    <Breadcrumb :items="['menu.workplace', 'menu.workplace.revise', renderData?.BookName]" />
     <div class="wrapper">
-      <BookInfo :loading="loading" :bookId="bookId" :BookName="renderData.BookName" :convertImg="renderData.CoverImg"
-        :Author="renderData.Author">
+      <BookInfo :loading="loading" :bookId="bookId" :BookName="renderData?.BookName" :convertImg="renderData?.CoverImg"
+        :Author="renderData?.Author">
         <template #toolbar>
           <Toolbar @EditChapterOrdering="onChangeOrdering"></Toolbar>
         </template>
       </BookInfo>
       <keep-alive>
-        <ChapterList :loading="loading" :Chapters="renderData.Index">
+        <ChapterList :loading="loading" :Chapters="renderData?.Index">
           <template #content="{ item }">
             <a-button v-if="!isOrdering" long class="chapter" @click="onClickChapter(item.IndexId)">
               {{ item.Title }}
@@ -46,7 +46,7 @@
 import { Book, Chapter } from "@/types/book";
 import Sortable from 'sortablejs';
 
-import { ref, reactive } from "vue";
+import { ref, reactive, nextTick } from "vue";
 import {
   queryChapterById,
   queryBookById,
@@ -61,11 +61,22 @@ import BookInfo from "@/components/book-info/index.vue";
 import ChapterList from '@/components/chapter-list/index.vue';
 import Toolbar from "./components/toolbar.vue";
 
-import useRequest from '@/hooks/request';
+// import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
 
 const { bookId } = useBookHelper();
-const { loading, response: renderData } = useRequest<Book>(queryBookById.bind(null, bookId));
+
+const loading = ref(true);
+const renderData = ref<Book | null>(null);
+
+nextTick(() => {
+  loading.value = true;
+  queryBookById(bookId).then((result: AxiosResponse<Book>) => {
+    renderData.value = result.data;
+  }).finally(() => {
+    loading.value = false;
+  });
+});
 
 const form = reactive({
   chapTitle: '',
@@ -154,7 +165,9 @@ function onChangeOrdering(ordering: boolean) {
   isOrdering.value = ordering;
   if (ordering) {
     orderList.length = 0;
-    orderList.push(...renderData.value.Index.map((t) => { return { order: t.OrderNum, indexId: t.IndexId } }));
+    if (renderData.value) {
+      orderList.push(...renderData.value.Index.map((t) => { return { order: t.OrderNum, indexId: t.IndexId } }));
+    }
     if (sortChapterList) {
       sortChapterList.option("disabled", false);
       return;
@@ -176,13 +189,19 @@ function onChangeOrdering(ordering: boolean) {
       orderList[i].newOrder = i + 1;
     }
     let edit = orderList.filter(t => t.order != t.newOrder);
-    if (edit.length <= 0) return;
+    if (edit.length <= 0) {
+      console.log("无需修改排序，新顺序结果：", edit);
+      return;
+    }
 
     loading.value = true;
     updateChapterOrder(edit).then(result => {
-      console.log(result);
+      console.log("修改排序结果", result);
+      queryBookById(bookId).then((result: AxiosResponse<Book>) => {
+        renderData.value = result.data;
+      });
     }).catch(err => {
-      console.log(err);
+      console.log("修改排序出错", err);
     }).finally(() => {
       orderList.length = 0;
       loading.value = false;
