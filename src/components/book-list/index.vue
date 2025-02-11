@@ -1,7 +1,9 @@
 <template>
-  <a-empty v-if="renderData != null && renderData.length == 0" />
-  <a-spin :loading="loading">
+  <a-empty v-if="renderData != null && renderData.length == 0 && !loading" />
+  
+  <a-spin v-else :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%;min-height: 200px;">
     <a-row :gutter="20" align="stretch" style="overflow-x: hidden">
+      <!-- 标签工具栏 -->
       <a-col :span="24" v-if="renderData.length > 0">
         <a-space direction="horizontal" wrap :v-if="tagsData.length > 0">
           <span :style="{color:'var(--color-neutral-8)'}">标签：</span>
@@ -19,6 +21,7 @@
           </template>
         </a-space>
       </a-col>
+      <a-divider />
       <a-col :span="24">
         <a-card class="general-card">
           <div class="book-list-wrap">

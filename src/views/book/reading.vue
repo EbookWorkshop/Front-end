@@ -40,6 +40,7 @@
             </a-row>
           </template>
         </BookInfo>
+        <a-divider />
         <ChapterList :loading="loading" :Chapters="renderData.Index">
           <template #content="{ item }">
             <a-button long @click="gotoChapter(item.IndexId)" :type="item.IsHasContent ? 'secondary' : 'secondary'"

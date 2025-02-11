@@ -8,6 +8,7 @@
           <Toolbar @EditChapterOrdering="onChangeOrdering"></Toolbar>
         </template>
       </BookInfo>
+      <a-divider />
       <keep-alive>
         <ChapterList :loading="loading" :Chapters="renderData?.Index">
           <template #content="{ item }">

@@ -12,7 +12,7 @@
               ref="toolbarRef"></Toolbar>
           </template>
         </BookInfo>
-
+        <a-divider />
         <ChapterList :loading="loading" :Chapters="bookData.Index">
           <template #content="{ item }">
             <ChapterOpt :chapter="item" @toggle="OnToggleChapter" :ref="chapterRefMap.get(item.IndexId)" />
