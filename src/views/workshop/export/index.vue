@@ -152,8 +152,11 @@ const onSubmit = () => {
   if (form.value.isCheckAll) {
     chapterIds = null;
   } else {
+    let isStart = false;
     for (let i = 0; i < Chapters.value.length; i++) {
-      if (Chapters.value[i].IndexId >= (form.value.cBegin ?? 0) && Chapters.value[i].IndexId <= (form.value.cEnd ?? 0)) chapterIds.push(Chapters.value[i].IndexId);
+      if (Chapters.value[i].IndexId == (form.value.cBegin ?? 0)) isStart = true;
+      if (isStart) chapterIds.push(Chapters.value[i].IndexId);
+      if (Chapters.value[i].IndexId == (form.value.cEnd ?? 0)) break;
     }
   };
 
@@ -161,7 +164,7 @@ const onSubmit = () => {
 
   saving.value = true;
 
-  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily,form.value.isEmbedTitle).then((res: any) => {
+  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle).then((res: any) => {
     saving.value = false;
     current.value = 4;
     if (res.code === ApiResultCode.Success) {
