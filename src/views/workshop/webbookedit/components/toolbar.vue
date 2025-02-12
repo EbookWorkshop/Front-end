@@ -175,7 +175,7 @@ function UpdateChapter() {
     updateChapter(props.bookid as number, hasCheckChapter, isMustUpdate.value).then((res: any) => {
         if (res?.code == ApiResultCode.Success){
              Message.info("已启动下载。");
-             emit("StartUpdateChapter");
+             emit("StartUpdateChapter",0);
         } else Message.error("启动失败，原因：" + res.msg)
     });
 

@@ -8,7 +8,7 @@
           :Author="bookData.Author">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Chapters="bookData.Index"
-              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar" @-start-update-chapter="curDoingProcent"
+              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar" @-start-update-chapter="(rsl:any)=>curDoingProcent = rsl"
               ref="toolbarRef"></Toolbar>
           </template>
         </BookInfo>
