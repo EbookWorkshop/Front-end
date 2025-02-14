@@ -136,7 +136,7 @@ export function createPDF(
  * @param chapterIds 
  * @param isSendEmail 
  * @param fontFamliy 没用，对齐API用
- * @param embedTitle 没用，对齐API用
+ * @param embedTitle 是否嵌入章节标题
  * @returns 
  */
 export function createTXT(
@@ -150,5 +150,6 @@ export function createTXT(
     bookId: bookid,
     chapterIds,
     sendByEmail: isSendEmail,
+    embedTitle,
   });
 }

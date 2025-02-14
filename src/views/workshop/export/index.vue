@@ -49,7 +49,7 @@
                       </a-option>
                     </a-select>
                   </a-form-item>
-                  <a-form-item v-if="form.fileType == 'pdf'" label="嵌入章节标题">
+                  <a-form-item label="嵌入章节标题">
                     <a-switch v-model="form.isEmbedTitle" />
                   </a-form-item>
                   <a-form-item label="发送到默认邮箱">
