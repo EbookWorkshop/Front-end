@@ -149,7 +149,7 @@ function mergeIndex() {
     return mergeWebBookIndex(props.bookid || -1)
         .then((result) => {
             isMerging.value = false;
-            Message.success('章节更新已完成');
+            Message.normal('已启动章节合并任务，请稍后');
         })
         .catch((err) => {
             isMerging.value = false;
