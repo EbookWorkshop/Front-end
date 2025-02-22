@@ -18,7 +18,7 @@
                   <a-select v-model="book.bookid" placeholder="请选择" @change="OnAddABook" allow-search>
                     <a-option v-for="item of allBookList" :value="item.BookId" :label="item.BookName" />
                   </a-select>
-                  <a-radio-group style="width:280px;" v-model:model-value="book.filetype">
+                  <a-radio-group style="width:280px;text-align: center;" v-model:model-value="book.filetype">
                     <a-radio value="pdf">PDF</a-radio>
                     <a-radio value="txt">TXT</a-radio>
                     <a-radio value="epub">Epub</a-radio>

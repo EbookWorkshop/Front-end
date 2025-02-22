@@ -15,7 +15,13 @@
             <a-button v-if="!isOrdering" long class="chapter" @click="onClickChapter(item.IndexId)">
               {{ item.Title }}
             </a-button>
-            <a-button v-else long class="chapter">{{ item.Title }}</a-button>
+            <a-dropdown v-else trigger="contextMenu" alignPoint :style="{ display: 'block' }">
+              <a-button long class="chapter">{{ item.Title }}</a-button>
+              <template #content>
+                <a-doption @click="moveToTop(item)">移至开头</a-doption>
+                <a-doption @click="moveToBottom(item)">移至结尾</a-doption>
+              </template>
+            </a-dropdown>
           </template>
           <template #addChapterTool>
             <a-button v-if="!isOrdering" long class="chapter" type="outline" @click="onClickChapter(-1)">
@@ -68,7 +74,7 @@ import useBookHelper from '@/hooks/book-helper';
 const { bookId } = useBookHelper();
 
 const loading = ref(true);
-const renderData = ref<Book | null>(null);
+const renderData = ref<Book | null>(null);//完整的 - 书本信息
 
 nextTick(() => {
   loading.value = true;
@@ -120,7 +126,7 @@ const onClickChapter = (cid: number) => {
 }
 
 /**
- * 提交修改
+ * 提交修改-单独修改单独章节标题/内容
  */
 const onSubmit = () => {
   let result = {} as Chapter;
@@ -162,7 +168,6 @@ const onSubmit = () => {
  * @param ordering 
  */
 function onChangeOrdering(ordering: boolean) {
-  console.log("onChangeOrdering::", ordering);
   isOrdering.value = ordering;
   if (ordering) {
     orderList.length = 0;
@@ -210,18 +215,53 @@ function onChangeOrdering(ordering: boolean) {
   }
 }
 
-function test() {
-  const el = document.querySelector('.chapter-list') as any;
-  sortChapterList = new Sortable(el, {
-    animation: 150,
-    ghostClass: 'blue-background-class',
-    onEnd: (event) => {
-      const { oldIndex, newIndex } = event;
-      // console.log("Sort End", oldIndex, newIndex, event);
-      const [removed] = orderList.splice(oldIndex ?? 0, 1);
-      orderList.splice(newIndex ?? 0, 0, removed);
-    },
-  });
+/**
+ * 从目录中找到章节序号
+ * @param id 章节ID
+ */
+function FindBookChepter(id: number) {
+  let findIndex = -1;
+  let IndexList = renderData.value?.Index || [];
+  for (let i = 0; i < IndexList.length; i++) {
+    if (IndexList[i].IndexId === id) {
+      findIndex = i;
+      break;
+    }
+  }
+  return findIndex;
+}
+
+/**
+ * 移动到章节列表开始
+ * @param item 
+ */
+function moveToTop(item: any) {
+  let findIndex = FindBookChepter(item.IndexId);
+  let IndexList = renderData.value?.Index || [];
+  let [newItem] = IndexList.splice(findIndex, 1);
+  let maxOrder = IndexList[0].OrderNum - 1;
+  updateChapterOrder([{ newOrder: maxOrder, indexId: newItem.IndexId }]).then(result => {
+    orderList.length = 0;
+    IndexList.unshift(newItem as any);
+  }).catch(err => {
+    console.log("修改排序出错", err);
+  })
+}
+/**
+ * 移动到底部
+ */
+function moveToBottom(item: any) {
+  let findIndex = FindBookChepter(item.IndexId);
+  let IndexList = renderData.value?.Index || [];
+  let [newItem] = IndexList.splice(findIndex, 1);
+  let maxOrder = IndexList[IndexList.length - 1].OrderNum + 1;
+  // { order: t.OrderNum, indexId: t.IndexId }
+  updateChapterOrder([{ newOrder: maxOrder, indexId: newItem.IndexId }]).then(result => {
+    orderList.length = 0;
+    IndexList.push(newItem as any);
+  }).catch(err => {
+    console.log("修改排序出错", err);
+  })
 }
 
 </script>
