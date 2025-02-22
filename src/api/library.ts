@@ -42,3 +42,12 @@ export function addEmptyBook(book: {
 }) {
   return axios.post(`/library/emptybook`, book);
 }
+
+/**
+ * 删除一本书
+ * @param bookId 书本id
+ * @returns 
+ */
+export function deleteABook(bookId:number) {
+  return axios.delete(`/library/book?bookid=${bookId}`)
+}

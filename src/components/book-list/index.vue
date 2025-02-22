@@ -35,13 +35,14 @@
                   <template #content>
                     <a-doption>
                       <template #icon> <icon-delete /> </template>
-                      <template #default><a-button type="text" status="danger">删除书本</a-button></template>
+                      <template #default>
+                        <a-button type="text" status="danger" @click="DeleteABook(item.BookId)">删除书本</a-button>
+                      </template>
                     </a-doption>
                     <a-doption>
                       <template #icon> <icon-pen /> </template>
                       <template #default><a-button type="text">修改元数据</a-button></template>
                     </a-doption>
-
                   </template>
                 </a-dropdown>
               </a-col>
@@ -56,7 +57,7 @@
 <script lang="ts" setup>
 import { PropType, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { ListQueryApi } from '@/api/library';
+import { ListQueryApi, deleteABook } from '@/api/library';
 import { getTagHasBook, Tag } from '@/api/tag';
 import { Book } from '@/types/book';
 import useRequest from '../../hooks/request';
@@ -103,6 +104,22 @@ const goto = (bookid: number) => {
     path: `/${props.nextRouter}/${bookid}`,
   });
 };
+
+function DeleteABook(bookid: number) {
+  loading.value = true;
+  deleteABook(bookid).then((rsl) => {
+    for (let i = 0; i < renderData.value.length; i++) {
+      if (renderData.value[i].BookId == bookid) {
+        loading.value = false;
+        renderData.value.splice(i,1);
+        return;
+      }
+    }
+  }).catch((err) => {
+    // Message.error(`删除失败：${err}`);
+    loading.value = false;
+  });
+}
 </script>
 
 <style scoped lang="less">

@@ -93,7 +93,7 @@ function handleSubmit() {
   formData.append("bookList", JSON.stringify(emailForm.bookList.filter(f => f.bookid != "请选择")));
 
   sendAEMail(formData as any).then((rsl) => {
-    Message.success("已发送邮件：" + rsl);
+    Message.success("已发送邮件。");
   }).catch(err => {
     Message.error("发送邮件失败：" + err);
   });
