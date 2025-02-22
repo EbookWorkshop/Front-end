@@ -29,6 +29,23 @@ export function queryFontList() {
 export function deleteFont(fontName: string) {
   return axios.delete(`/services/font?fontName=${fontName}`);
 }
+/**
+ * 获取默认字体
+ * @returns 
+ */
+export function getDefaultFont() {
+  return axios.get(`/services/font/defaultFont`);
+}
+/**
+ * 设置默认字体
+ * @param fontName 
+ * @returns 
+ */
+export function setDefaultFont(fontName: string) {
+  return axios.post(`/services/font/setDefault`, { fontName });
+}
+
+
 
 /**
  * 样例文章

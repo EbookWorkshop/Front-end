@@ -59,8 +59,11 @@
                     <a-dropdown>
                       <a-button>更多</a-button>
                       <template #content>
-                        <a-doption @click="">设置为默认字体</a-doption>
-                        <a-doption @click="onDeleteFont(f.fontFile)">删除字体</a-doption>
+                        <a-doption
+                          @click="setDefaultFont(f.name).then((rsl: any) => defaultFont = rsl.data.Value)">设置为默认字体</a-doption>
+                        <a-popconfirm content="确认删除？此操作将无法恢复！" @ok="onDeleteFont(f.fontFile)">
+                          <a-button status="danger" long>删除字体</a-button>
+                        </a-popconfirm>
                       </template>
                     </a-dropdown>
                   </template>
@@ -106,6 +109,8 @@ import {
   queryFontList,
   queryDemoContent,
   deleteFont,
+  getDefaultFont,
+  setDefaultFont,
   ASSETS_HOST,
 } from '@/api/font';
 import { Message } from '@arco-design/web-vue';
@@ -128,6 +133,8 @@ const defaultFont = ref("无");//默认字体
 const pdfFrame = ref(null) as any;
 
 const viewModel = ref('web'); // 预览模式
+
+getDefaultFont().then(rsl => defaultFont.value = rsl.data);
 
 // 重新设置列数
 const ResetCol = () => {
@@ -188,10 +195,6 @@ Init();
 </script>
 
 <style lang="less" scoped>
-div.arco-tabs-content {
-  background-color: red;
-}
-
 .showContent p::before {
   content: '　　';
   /* 段落前缩进两格 */
