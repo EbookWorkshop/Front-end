@@ -153,3 +153,28 @@ export function createTXT(
     embedTitle,
   });
 }
+
+/**
+ * 制作epub——可发到默认邮箱
+ * @param bookid 
+ * @param chapterIds 
+ * @param isSendEmail 
+ * @param fontFamliy 没用，对齐API用
+ * @param embedTitle 是否嵌入章节标题
+ * @returns 
+ */
+export function createEPUB(
+  bookid: number,
+  chapterIds: number[],
+  isSendEmail: boolean,
+  fontFamliy: string,
+  embedTitle: boolean
+) {
+  return axios.post(`/export/epub`, {
+    bookId: bookid,
+    chapterIds,
+    sendByEmail: isSendEmail,
+    fontFamliy,
+    embedTitle,
+  });
+}

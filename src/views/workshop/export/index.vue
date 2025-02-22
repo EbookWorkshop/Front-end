@@ -38,6 +38,7 @@
                 <div v-if="current == 3" class="main-content">
                   <a-form-item label="文件类型" required>
                     <a-radio-group v-model="form.fileType">
+                      <a-radio value="epub">EPUB</a-radio>
                       <a-radio value="pdf">PDF</a-radio>
                       <a-radio value="txt">TXT</a-radio>
                     </a-radio-group>
@@ -89,7 +90,7 @@ import { ref, h } from 'vue';
 import { FormInstance } from '@arco-design/web-vue/es/form';
 import SelectBook from '@/components/select-book/index.vue'
 
-import { queryBookById, createTXT, createPDF } from '@/api/book';
+import { queryBookById, createTXT, createPDF,createEPUB } from '@/api/book';
 import { queryFontList, } from '@/api/font';
 import { ApiResultCode } from '@/types/global'
 
@@ -102,7 +103,7 @@ const form = ref({
   fontFamily: '',
   cBegin: undefined as number | undefined,
   cEnd: undefined as number | undefined,
-  fileType: undefined,
+  fileType: "epub",
   isSendEmail: false,
   isEmbedTitle: true,
 });
@@ -160,8 +161,18 @@ const onSubmit = () => {
     }
   };
 
-  let api = form.value.fileType === 'pdf' ? createPDF : createTXT;
-
+  let api = null as any;
+  switch(form.value.fileType){
+    case "pdf":
+      api = createPDF;
+      break;
+    case "pdf":
+      api = createTXT;
+      break;
+    case "epub":
+      api = createEPUB;
+      break;
+  }
   saving.value = true;
 
   api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle).then((res: any) => {
@@ -181,7 +192,7 @@ const onSubmit = () => {
       resultData.value.result = 'error';
       resultData.value.msg = res.msg;
     }
-  }).catch(err => {
+  }).catch((err:any) => {
     current.value = 4;
     saving.value = false;
     resultData.value.result = 'error';
