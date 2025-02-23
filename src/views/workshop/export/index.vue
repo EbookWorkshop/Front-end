@@ -56,6 +56,56 @@
                   <a-form-item label="发送到默认邮箱">
                     <a-switch v-model="form.isSendEmail" />
                   </a-form-item>
+                  <a-table>
+                    <a-tr><a-th>类型</a-th><a-th>优点</a-th><a-th>缺点</a-th></a-tr>
+                    <a-tr>
+                      <a-td>EPUB</a-td><a-td>
+                        <ul>
+                          <li>适用大多流行的阅读器设备</li>
+                          <li>支持 Kindle （需要用 Send to Kindle，直接复制到 Kindle 不支持）</li>
+                          <li>支持设置封面</li>
+                          <li>在 Kindle 上可以设置显示的字体、字号大小</li>
+                          <li>可以保存书籍的元数据（作者、出版社、ISBN等）</li>
+                          <li>占用空间最少（对比其它格式）</li>
+                        </ul>
+                      </a-td>
+                      <a-td>
+                        <ul>
+                          <li>需要专用的阅读器查看</li>
+                          <li>需要专用的工具编辑</li>
+                        </ul>
+                      </a-td>
+                    </a-tr>
+                    <a-tr>
+                      <a-td>PDF</a-td>
+                      <a-td>
+                        <ul>
+                          <li>可以预设显示的效果，排版、字体、字号等，能在不同设备、平台得到相似的效果</li>
+                          <li>在 Kindle 上直接显示</li>
+                        </ul>
+                      </a-td>
+                      <a-td>
+                        <ul>
+                          <li>需要用专用的工具编辑，而且大多需要收费</li>
+                        </ul>
+                      </a-td>
+                    </a-tr>
+                    <a-tr>
+                      <a-td>TXT</a-td>
+                      <a-td>
+                        <ul>
+                          <li>方便编辑，进行二次修改、查看</li>
+                          <li>在 Kindle 上可以设置显示的字体、字号大小</li>
+                          <li>方便转换成其它格式</li>
+                        </ul>
+                      </a-td>
+                      <a-td>
+                        <ul>
+                          <li>在 Kindle 上显示会有吞行问题——曾经遇到过不知道解决了没</li>
+                        </ul>
+                      </a-td>
+                    </a-tr>
+                  </a-table>
                 </div>
                 <div v-if="current == 4" class="main-content">
                   <a-result :status="resultData.result" :title="resultData.result == 'success' ? '导出成功' : '导出失败'"
@@ -90,7 +140,7 @@ import { ref, h } from 'vue';
 import { FormInstance } from '@arco-design/web-vue/es/form';
 import SelectBook from '@/components/select-book/index.vue'
 
-import { queryBookById, createTXT, createPDF,createEPUB } from '@/api/book';
+import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';
 import { queryFontList, } from '@/api/font';
 import { ApiResultCode } from '@/types/global'
 
@@ -162,11 +212,11 @@ const onSubmit = () => {
   };
 
   let api = null as any;
-  switch(form.value.fileType){
+  switch (form.value.fileType) {
     case "pdf":
       api = createPDF;
       break;
-    case "pdf":
+    case "txt":
       api = createTXT;
       break;
     case "epub":
@@ -192,7 +242,7 @@ const onSubmit = () => {
       resultData.value.result = 'error';
       resultData.value.msg = res.msg;
     }
-  }).catch((err:any) => {
+  }).catch((err: any) => {
     current.value = 4;
     saving.value = false;
     resultData.value.result = 'error';
