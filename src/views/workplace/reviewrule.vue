@@ -10,7 +10,7 @@
         <a-space>
           <a-button status="success" @click="createNewRule">添加</a-button>
         </a-space>
-        <a-table :columns="columns" :data="renderData" :loading="tableLoading">
+        <a-table :columns="columns" :data="renderData" :loading="tableLoading" :pagination="{pageSize:20}">
           <template #optional="{ record }">
             <a-button @click="editRow(record)">编辑</a-button>
             <a-button @click="testRule(record)">验证</a-button>
