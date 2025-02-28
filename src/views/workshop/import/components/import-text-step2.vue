@@ -67,7 +67,7 @@
                   <dt>删除空行：</dt>
                   <dd><a-tag>^\s*\n</a-tag></dd>
                   <dt>删除胡乱换行：</dt>
-                  <dd><a-tag>\n{2,}</a-tag></dd>
+                  <dd><a-tag>{{ '(?<![.：。？！…”’])\\r?\\n(\\s+)?' }}</a-tag></dd>
                 </dl>
               </dd>
             </dl>

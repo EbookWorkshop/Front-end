@@ -24,23 +24,12 @@ const SYSTEM: AppRouteRecordRaw = {
       },
     },
     {
-      path: 'smtp',
-      name: 'smtp',
-      component: () => import('@/views/system/smtpsetting.vue'),
+      path: 'mailsetting',
+      name: 'mailsetting',
+      component: () => import('@/views/system/mailsetting.vue'),
       meta: {
         locale: 'menu.system.smtp',
         icon: 'icon-email',
-        requiresAuth: true,
-        roles: ['*'],
-      },
-    },
-    {
-      path: 'email',
-      name: 'Email',
-      component: () => import('@/views/system/kindlemail.vue'),
-      meta: {
-        locale: 'menu.system.email_kindle',
-        icon: 'icon-mobile',
         requiresAuth: true,
         roles: ['*'],
       },

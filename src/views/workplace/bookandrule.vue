@@ -110,7 +110,7 @@ const columns = [
     dataIndex: 'bookName',
     filterable: {
       filter: (value: string, record: RuleAndBook) =>
-        record.bookName.includes(value),
+        record.bookName?.includes(value),
       slotName: 'name-filter',
       icon: () => h(IconSearch),
     },
