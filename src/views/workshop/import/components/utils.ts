@@ -38,9 +38,9 @@ export function cleanContent(content: IChapter[], rule: string[]) {
   let result: IChapter[] = [];    //用于收集替换后的内容
   content.forEach((c) => { result.push({ txt: c.txt, name: c.name }) });
   rule.forEach((r) => {
-    const reg = new RegExp(r, 'g');
+    const reg = new RegExp(r, 'gm');
     result.forEach((c) => {
-      let reg = new RegExp(r, 'g');
+      let reg = new RegExp(r, 'gm');
       if (!litters[r]) litters[r] = [];
       let newTxt = c.txt.replace(reg, function (target, index, content) {
         litters[r].push(target);
@@ -61,7 +61,7 @@ export function cutContent(content: IChapter[], rule: string) {
   let result: Chapter[] = [];    //用于收集替换后的内容
   let combinedContent = content.map(c => c.txt).join('\n');
 
-  const titleReg = new RegExp(rule, 'g'); //  ((第\S+?回\s[^\n]+)|后记)\r?\n
+  const titleReg = new RegExp(rule, 'gm'); //  ((第\S+?回\s[^\n]+)|后记)\r?\n
   const matchs = Array.from(combinedContent.matchAll(titleReg) ?? []);
 
   let curEnd = combinedContent.length;//裁剪的结束位置

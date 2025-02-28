@@ -36,12 +36,11 @@
                 <a-switch v-model="form.oneChapterAFile" :default-checked="(files?.length ?? 0) > 1" />
               </a-form-item>
               <a-form-item field="removeRule" label="删除规则" tooltip="按正则解释输入的规则，命中的内容替换为空。用于删除一些广告之类的文案。">
-                <a-input-tag v-model="form.removeRule" placeholder="按回车设置一条规则，使用Global模式的正则表达式" allow-clear />
+                <a-input-tag v-model="form.removeRule" placeholder="按回车录入一条规则，使用正则表达式格式并开启全局、多行搜索" allow-clear />
               </a-form-item>
               <a-form-item field="titleRule" label="章节标题" tooltip="章节分割规则，通过命中章节标题分割章节。如果留空则不进行任何分割！"
-              :rules="[{ match: /\(+.*?\)+/, message: '标题规则为正则表达式，需要用英文括号提取标题部分。' }]"              
-              >
-                <a-textarea v-model="form.titleRule"  :auto-size="{ minRows: 2 }"
+                :rules="[{ match: /\(+.*?\)+/, message: '标题规则为正则表达式，需要用英文括号提取标题部分。' }]">
+                <a-textarea v-model="form.titleRule" :auto-size="{ minRows: 2 }"
                   placeholder="使用正则表达式语法，启用全局匹配模式，所以切勿使用$标记行尾；需要用提取符()将章节标题完整取出。" />
               </a-form-item>
               <a-form-item>
@@ -61,6 +60,17 @@
                 <a-button status="warning" @click="testCutRule">测试分割章节规则</a-button>
               </a-form-item>
             </a-form>
+            <dl class="usefulRule">
+              <dt>常见的删除规则</dt>
+              <dd>
+                <dl class="regList">
+                  <dt>删除空行：</dt>
+                  <dd><a-tag>^\s*\n</a-tag></dd>
+                  <dt>删除胡乱换行：</dt>
+                  <dd><a-tag>\n{2,}</a-tag></dd>
+                </dl>
+              </dd>
+            </dl>
           </a-space>
         </template>
       </a-split>
@@ -105,7 +115,7 @@ const getFileText = () => {
   setLoading(true);
   setTimeout(() => {
     let finishFile = 0;
-    
+
     prop.files?.forEach((file) => {
       const fileReader = new FileReader();
       let curFile: IChapter = {
@@ -116,7 +126,7 @@ const getFileText = () => {
       fileReader.onload = () => {
         curFile.txt = fileReader.result as string;
         finishFile++;
-        if (finishFile >= contents.length ) setLoading(false);
+        if (finishFile >= contents.length) setLoading(false);
       };
       fileReader.readAsText(file.file as Blob, form.encoderType);
     });
@@ -224,3 +234,26 @@ const getData = (): IStepResult => {
 // 暴露的方法
 defineExpose({ restData, getData });
 </script>
+<style lang="less">
+.usefulRule {
+  dt {
+    font-weight: bold;
+  }
+
+  dd {
+    margin-left: 20px;
+  }
+
+  .regList {
+    dt {
+      float: left;
+      clear: left;
+    }
+
+    dd {
+      float: left;
+      margin-right: 20px;
+    }
+  }
+}
+</style>
