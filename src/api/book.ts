@@ -32,6 +32,10 @@ export function queryBookInfo(id: number) {
 export function queryBookSourcesById(id: number) {
   return axios.get(`/library/webbook/sources?bookid=${id}`);
 }
+export function queryBookDefaultSourcesById(id: number) {
+  return axios.get(`/library/webbook/defsources?bookid=${id}`);
+}
+
 /**
  * 拿到章节的来源地址
  * @param id 章节ID
