@@ -41,7 +41,7 @@
                     </a-doption>
                     <a-doption>
                       <template #icon> <icon-pen /> </template>
-                      <template #default><a-button type="text">修改元数据</a-button></template>
+                      <template #default><a-button type="text" @click="curEditBookId=item.BookId">修改元数据</a-button></template>
                     </a-doption>
                   </template>
                 </a-dropdown>
@@ -52,6 +52,8 @@
       </a-col>
     </a-row>
   </a-spin>
+
+  <EditBookInfo :visible="curEditBookId != 0" :bookId="curEditBookId" @cancel="curEditBookId = 0"/>
 </template>
 
 <script lang="ts" setup>
@@ -63,6 +65,7 @@ import { Book } from '@/types/book';
 import useRequest from '../../hooks/request';
 import BookCover from '../book-cover/index.vue';
 
+import EditBookInfo from '../book-info/edit.vue';
 
 // 入参
 const props = defineProps({
@@ -77,6 +80,7 @@ const props = defineProps({
 const tagId = ref(props.tagid);
 const curTag = ref<Tag>();
 const defaultValue: Book[] = new Array().fill({});
+const curEditBookId = ref(0);
 
 /**
  * renderData --实际的数据

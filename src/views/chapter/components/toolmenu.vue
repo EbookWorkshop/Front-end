@@ -36,7 +36,7 @@
                         <icon-language></icon-language>
                     </template>
                     字体
-                    <a-select v-model="selectedFont" @change="onChangeFont">
+                    <a-select v-model="selectedFont as string" @change="onChangeFont">
                         <a-option v-for="font in fontData" :key="font.name" :value="font.name">
                             {{ font.name }}
                         </a-option>
@@ -56,7 +56,7 @@
                     <template #icon>
                         <icon-zoom-in></icon-zoom-in>
                     </template>
-                    <a-slider v-model:model-value="fontSize" :style="{ width: '200px' }"
+                    <a-slider v-model:model-value="fontSize as number" :style="{ width: '200px' }"
                         @change="emit('changeFontSize', toRaw(fontSize))" :max="50" />
                 </a-menu-item>
             </a-menu>

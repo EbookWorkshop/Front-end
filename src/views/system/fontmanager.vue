@@ -8,26 +8,26 @@
         </a-col>
         <a-col :span="6">
           <a-form-item field="showContent" label="示例文章" label-col-flex="100px">
-            <a-select id="showContent" v-model="contentIndex" :default-value="contentIndex">
+            <a-select id="showContent" v-model="contentIndex as number" :default-value="contentIndex">
               <a-option v-for="(t, index) in demoContext" :key="t.name" :value="index">{{ t.name }}</a-option>
             </a-select>
           </a-form-item>
         </a-col>
         <a-col :span="6">
           <a-form-item field="showSize" label="字体大小" label-col-flex="100px">
-            <a-slider v-model:model-value="fontSize" :default-value="fontSize" :style="{ width: '100%' }" :min="10"
-              :max="64" />
+            <a-slider v-model:model-value="fontSize as number" :default-value="fontSize" :style="{ width: '100%' }"
+              :min="10" :max="64" />
           </a-form-item>
         </a-col>
         <a-col v-if="viewModel == 'web'" :span="6">
           <a-form-item field="showSize" label="列数" label-col-flex="100px">
-            <a-slider v-model:model-value="colNum" :default-value="4" :style="{ width: '100%' }" :min="1" :max="12"
-              :marks="{ 2: '2', 4: '4', 6: '6', 8: '8', 10: '10', 12: '12' }" @change="ResetCol" />
+            <a-slider v-model:model-value="colNum as number" :default-value="4" :style="{ width: '100%' }" :min="1"
+              :max="12" :marks="{ 2: '2', 4: '4', 6: '6', 8: '8', 10: '10', 12: '12' }" @change="ResetCol" />
           </a-form-item>
         </a-col>
         <a-col v-else-if="viewModel == 'pdf'" :span="6">
           <a-form-item field="showFont" label="字体" label-col-flex="100px">
-            <a-select id="showFont" v-model="font" :default-value="fontData[0]?.name" allow-search>
+            <a-select id="showFont" v-model="font as string" :default-value="fontData[0]?.name" allow-search>
               <a-option v-for="t in fontData" :key="t.name" :value="t.name">{{
                 t.name
               }}</a-option>
@@ -125,7 +125,7 @@ interface FontFace {
 const demoContext: Array<ContentType> = reactive([]);
 const renderData: FontFace[][] = reactive([]);
 const contentIndex = ref(0);
-const fontSize = ref(24);
+const fontSize = ref<number>(24);
 const colNum = ref(4); // 列数
 const fontData: FontFace[] = []; // 默认的字体数据
 const font = ref(fontData[0]?.name); // 当前预览字体

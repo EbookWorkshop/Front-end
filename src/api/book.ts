@@ -14,6 +14,16 @@ if (import.meta.env.VITE_API_BASE_URL) {
 export function queryBookById(id: number) {
   return axios.get(`/library/book?bookid=${id}`);
 }
+
+/**
+ * 拿到书的信息
+ * @param id
+ * @returns
+ */
+export function queryBookInfo(id: number) {
+  return axios.get(`/library/bookinfo?bookid=${id}`);
+}
+
 /**
  * 拿到书的来源地址
  * @param id
