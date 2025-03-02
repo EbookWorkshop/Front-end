@@ -75,6 +75,7 @@ const { bookId } = useBookHelper();
 
 const loading = ref(true);
 const renderData = ref<Book | null>(null);//完整的 - 书本信息
+let maxOrderNum = 0;    //最大章节序号
 
 nextTick(() => {
   loading.value = true;
@@ -255,8 +256,11 @@ function moveToBottom(item: any) {
   let IndexList = renderData.value?.Index || [];
   let [newItem] = IndexList.splice(findIndex, 1);
   let maxOrder = IndexList[IndexList.length - 1].OrderNum + 1;
+
+  maxOrderNum = Math.max(maxOrderNum+1, maxOrder);
+
   // { order: t.OrderNum, indexId: t.IndexId }
-  updateChapterOrder([{ newOrder: maxOrder, indexId: newItem.IndexId }]).then(result => {
+  updateChapterOrder([{ newOrder: maxOrderNum, indexId: newItem.IndexId }]).then(result => {
     orderList.length = 0;
     IndexList.push(newItem as any);
   }).catch(err => {
