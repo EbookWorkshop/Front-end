@@ -27,7 +27,7 @@ const LIBRARY: AppRouteRecordRaw = {
     {
       path: 'search',
       name: 'Search',
-      component: () => import('@/views/result/success/index.vue'),
+      component: () => import('@/views/library/search.vue'),
       meta: {
         locale: 'menu.library.search',
         requiresAuth: true,

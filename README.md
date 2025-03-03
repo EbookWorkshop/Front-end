@@ -68,7 +68,7 @@ wt --maximized -d %cd%\\EBWFrontEnd PowerShell -c npm run dev;split-pane -d %cd%
 * [ ] 🚩❗❗❗加入网站延时的规则配置
 * [ ] 加入作者、简介规则采集功能
 * [ ] 切换源的问题修复
-* [ ] 在章节目录最底页面回到顶端需要反复滚动操作 —— [返回顶部 BackTop]控件加不上
+* [ ] ~~在章节目录最底页面回到顶端需要反复滚动操作 —— [返回顶部 BackTop]控件加不上~~
 * [x] 校阅结果对照比较
 * [x] 解决三级路由页面会有`[Vue Router warn]`的问题
 
