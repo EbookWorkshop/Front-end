@@ -38,7 +38,8 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from 'vue';
 import { queryFontList, ASSETS_HOST, } from '@/api/font';
-import { queryBookInfo } from '@/api/book';
+import { queryBookInfo, patchBookInfo } from '@/api/book';
+import { Message } from '@arco-design/web-vue';
 
 
 let fontDataMap = new Map();
@@ -76,7 +77,10 @@ const form = reactive({
 function handleBeforeOk(callback: any) {
     // emit('submit', form);
     // callback(true); // 关闭弹窗
-
+    patchBookInfo(form).then(() => {
+        Message.success('修改成功');
+        callback(true); // 关闭弹窗
+    });
 }
 
 async function InitFont() {

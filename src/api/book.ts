@@ -21,8 +21,13 @@ export function queryBookById(id: number) {
  * @returns
  */
 export function queryBookInfo(id: number) {
-  return axios.get(`/library/bookinfo?bookid=${id}`);
+  return axios.get(`/library/book/metadata?bookid=${id}`);
 }
+export function patchBookInfo(metadata: any) {
+  return axios.patch(`/library/book/metadata`, metadata);
+}
+
+
 
 /**
  * 拿到书的来源地址

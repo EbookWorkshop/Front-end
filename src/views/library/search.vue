@@ -13,7 +13,7 @@
                         <a-form v-bind:model="searchForm">
                             <a-form-item label-col-flex="80px">
                                 <a-input v-model="searchForm.searchQuery" placeholder="请输入关键字..." />
-                                <a-button @click="search" type="primary">检 索</a-button>
+                                <a-button @click="search" type="primary" :loading="isSearching">检 索</a-button>
                                 <a-button @click="isAdvance = !isAdvance" type="text">高级检索</a-button>
                             </a-form-item>
                         </a-form>
@@ -39,7 +39,12 @@
                     <a-col>
                         <div>
                             <ul>
-                                <li v-for="result in results" :key="result.id">{{ result.name }}</li>
+                                <li v-for="result in results" :key="result.id">
+                                    <a-card :title="result.index +'《'+ result.BookName +'》'">
+                                        <div v-html="result.Title"></div>
+                                        <div v-html="result.Content"></div>
+                                    </a-card>
+                                </li>
                             </ul>
                         </div>
                     </a-col>
@@ -52,6 +57,7 @@
 <script setup>
 import { ref } from 'vue';
 import SelectBook from '@/components/select-book/index.vue';
+import { searchBook } from '@/api/library';
 
 const searchForm = ref({
     searchQuery: '',
@@ -62,10 +68,53 @@ const advanceForm = ref({
 });
 const isAdvance = ref(false);       // 是否显示高级检索
 const results = ref([]);
+const isSearching = ref(false);
 
 const search = () => {
-    console.log('Searching for:', searchForm.value.searchQuery);
+    let setting = {
+        keyword: searchForm.value.searchQuery,
+    };
+    if (isAdvance.value) {
+        setting.option = {
+            ...advanceForm.value,
+        };
+    }
+    isSearching.value = true;
+    searchBook(setting).then(res => {
+        RenderResult(res.data);
+    }).catch(() => {
+        results.value = [];
+    }).finally(() => {
+        isSearching.value = false;
+    });
 };
+
+function RenderResult(data) {
+    const keyWord = searchForm.value.searchQuery;
+    var i = 0;
+    let rr = data.map(item => {
+        let title = item.Title;
+        let contIndex = item.Content?.indexOf(keyWord);
+        let content = item.Content?.substring(Math.max(contIndex - 180, 0), contIndex + 180);
+        title = title.replace(keyWord, `<span style="color: red;">${keyWord}</span>`);
+        content = content?.replace(keyWord, `<span style="color: red;">${keyWord}</span>`);
+
+        if (!content) content = "章节内容为空";
+        else content = `...${content}...`;
+
+        return {
+            index: ++i,
+            id: item.id,
+            BookName: item.Ebook?.BookName,
+            Title: title,
+            Content: content,
+        };
+    });
+    console.log(rr);
+
+    results.value = rr;
+}
+
 </script>
 <style lang="less">
 .mainTitle {
