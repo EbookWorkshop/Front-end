@@ -35,18 +35,32 @@
                         </a-form>
                     </a-col>
                 </a-row>
+                <a-row v-if="isShowResult">
+                    <a-col>
+                        <a-empty v-if="!results.length" />
+                        <a-typography-paragraph v-else>已找到<a-typography-text type="danger" underline>{{ results.length }}</a-typography-text>条记录，共涉及<a-typography-text type="danger" underline>{{ bookCount }}</a-typography-text>本书。
+                        </a-typography-paragraph>
+                    </a-col>
+                </a-row>
                 <a-row v-if="results.length">
                     <a-col>
-                        <div>
-                            <ul>
-                                <li v-for="result in results" :key="result.id">
-                                    <a-card :title="result.index +'《'+ result.BookName +'》'">
-                                        <div v-html="result.Title"></div>
-                                        <div v-html="result.Content"></div>
-                                    </a-card>
-                                </li>
-                            </ul>
-                        </div>
+                        <a-list :data="results">
+                            <template #item="{ item }">
+                                <a-list-item>
+                                    <a-typography>
+                                        <a-typography-title :heading="3">
+                                            <a-link
+                                                :href="`/book/${item.BookId}/chapter/${item.id}?keywork=${encodeURIComponent(searchForm.searchQuery)}`"
+                                                target="_blank"
+                                                v-html="'&nbsp;&nbsp;' + item.Title + '&nbsp;&nbsp;'"></a-link>
+                                            &nbsp;&nbsp;
+                                            <a-link :href="`/book/${item.BookId}`" target="_blank">《{{ item.BookName }}》</a-link>
+                                        </a-typography-title>
+                                        <a-typography-paragraph v-html="item.Content"></a-typography-paragraph>
+                                    </a-typography>
+                                </a-list-item>
+                            </template>
+                        </a-list>
                     </a-col>
                 </a-row>
             </div>
@@ -69,8 +83,11 @@ const advanceForm = ref({
 const isAdvance = ref(false);       // 是否显示高级检索
 const results = ref([]);
 const isSearching = ref(false);
+const isShowResult = ref(false);
+const bookCount = ref(0);
 
 const search = () => {
+    isShowResult.value = false;
     let setting = {
         keyword: searchForm.value.searchQuery,
     };
@@ -86,33 +103,36 @@ const search = () => {
         results.value = [];
     }).finally(() => {
         isSearching.value = false;
+        isShowResult.value = true;
     });
 };
 
 function RenderResult(data) {
     const keyWord = searchForm.value.searchQuery;
-    var i = 0;
+    bookCount.value = 0;
+    let bookSet=new Set();
+    let i = 0;
     let rr = data.map(item => {
         let title = item.Title;
         let contIndex = item.Content?.indexOf(keyWord);
         let content = item.Content?.substring(Math.max(contIndex - 180, 0), contIndex + 180);
-        title = title.replace(keyWord, `<span style="color: red;">${keyWord}</span>`);
-        content = content?.replace(keyWord, `<span style="color: red;">${keyWord}</span>`);
+        title = title.replaceAll(keyWord, `<span class="keyword">${keyWord}</span>`);
+        content = content?.replaceAll(keyWord, `<span class="keyword">${keyWord}</span>`);
 
-        if (!content) content = "章节内容为空";
+        if (!content) content = "章节内容缺失";
         else content = `...${content}...`;
-
+        bookSet.add(item.BookId);
         return {
             index: ++i,
             id: item.id,
             BookName: item.Ebook?.BookName,
             Title: title,
             Content: content,
+            BookId: item.BookId
         };
     });
-    console.log(rr);
-
     results.value = rr;
+    bookCount.value = bookSet.size;
 }
 
 </script>
@@ -130,5 +150,15 @@ function RenderResult(data) {
         stroke-width: 3;
         color: gray;
     }
+}
+
+h3.arco-typography {
+    margin-top: 5px;
+}
+
+.keyword {
+    color: rgb(var(--red-6));
+    background-color: cornsilk;
+    font-weight: bold;
 }
 </style>
