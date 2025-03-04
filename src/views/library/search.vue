@@ -12,9 +12,9 @@
                     <a-col>
                         <a-form v-bind:model="searchForm">
                             <a-form-item label-col-flex="80px">
-                                <a-input v-model="searchForm.searchQuery" placeholder="请输入关键字..." />
-                                <a-button @click="search" type="primary" :loading="isSearching">检 索</a-button>
-                                <a-button @click="isAdvance = !isAdvance" type="text">高级检索</a-button>
+                                <a-input v-model="searchForm.searchQuery" placeholder="请输入关键字..." size="large" />
+                                <a-button @click="search" type="primary" :loading="isSearching" size="large">检 索</a-button>
+                                <a-button @click="isAdvance = !isAdvance" type="text" size="large">高级检索</a-button>
                             </a-form-item>
                         </a-form>
                     </a-col>
@@ -32,13 +32,19 @@
                             <a-form-item label="限定检索范围">
                                 <SelectBook v-model="advanceForm.bookId" :is-multiple="true" />
                             </a-form-item>
+                            <a-form-item label="排除书籍">
+                                <SelectBook v-model="advanceForm.notFind" :is-multiple="true" />
+                            </a-form-item>
                         </a-form>
                     </a-col>
                 </a-row>
                 <a-row v-if="isShowResult">
                     <a-col>
                         <a-empty v-if="!results.length" />
-                        <a-typography-paragraph v-else>已找到<a-typography-text type="danger" underline>{{ results.length }}</a-typography-text>条记录，共涉及<a-typography-text type="danger" underline>{{ bookCount }}</a-typography-text>本书。
+                        <a-typography-paragraph v-else>
+                            已找到<a-typography-text type="danger" underline>{{ results.length }}</a-typography-text>条记录，
+                            共命中<a-typography-text type="danger" underline>{{ hitCount }}</a-typography-text>次，
+                            共涉及<a-typography-text type="danger" underline>{{ bookCount }}</a-typography-text>本书。
                         </a-typography-paragraph>
                     </a-col>
                 </a-row>
@@ -48,14 +54,15 @@
                             <template #item="{ item }">
                                 <a-list-item>
                                     <a-typography>
-                                        <a-typography-title :heading="3">
+                                        <a-typography-title :heading="5">
                                             <a-link
-                                                :href="`/book/${item.BookId}/chapter/${item.id}?keywork=${encodeURIComponent(searchForm.searchQuery)}`"
+                                                :href="`/book/${item.BookId}/chapter/${item.id}?keyword=${encodeURIComponent(searchForm.searchQuery)}`"
                                                 target="_blank"
-                                                v-html="'&nbsp;&nbsp;' + item.Title + '&nbsp;&nbsp;'"></a-link>
+                                                v-html="'&nbsp;&nbsp;' + item.Title + '&nbsp;&nbsp;'" style="font-size: inherit;"></a-link>
                                             &nbsp;&nbsp;
-                                            <a-link :href="`/book/${item.BookId}`" target="_blank">《{{ item.BookName }}》</a-link>
+                                            <a-link :href="`/book/${item.BookId}`" target="_blank" style="font-size: inherit;">《{{ item.BookName }}》</a-link>
                                         </a-typography-title>
+                                        <a-typography-text code>已命中{{ item.HitCount }}次</a-typography-text>
                                         <a-typography-paragraph v-html="item.Content"></a-typography-paragraph>
                                     </a-typography>
                                 </a-list-item>
@@ -78,13 +85,15 @@ const searchForm = ref({
 });
 const advanceForm = ref({
     bookId: [],
+    notFind: [],
     type: 'all',
 });
 const isAdvance = ref(false);       // 是否显示高级检索
 const results = ref([]);
 const isSearching = ref(false);
 const isShowResult = ref(false);
-const bookCount = ref(0);
+const bookCount = ref(0);       // 涉及的书籍数量
+const hitCount = ref(0);        // 命中次数总和
 
 const search = () => {
     isShowResult.value = false;
@@ -95,6 +104,9 @@ const search = () => {
         setting.option = {
             ...advanceForm.value,
         };
+    }
+    if(!setting.keyword) {
+        return;
     }
     isSearching.value = true;
     searchBook(setting).then(res => {
@@ -110,8 +122,9 @@ const search = () => {
 function RenderResult(data) {
     const keyWord = searchForm.value.searchQuery;
     bookCount.value = 0;
-    let bookSet=new Set();
+    let bookSet = new Set();
     let i = 0;
+    let sumCount=0;
     let rr = data.map(item => {
         let title = item.Title;
         let contIndex = item.Content?.indexOf(keyWord);
@@ -122,17 +135,20 @@ function RenderResult(data) {
         if (!content) content = "章节内容缺失";
         else content = `...${content}...`;
         bookSet.add(item.BookId);
+        sumCount += item.HitCount;
         return {
             index: ++i,
             id: item.id,
-            BookName: item.Ebook?.BookName,
+            BookName: item.BookName,
             Title: title,
             Content: content,
+            HitCount: item.HitCount,
             BookId: item.BookId
         };
     });
     results.value = rr;
     bookCount.value = bookSet.size;
+    hitCount.value = sumCount;
 }
 
 </script>
@@ -142,6 +158,7 @@ function RenderResult(data) {
     font-weight: bold;
     display: flex;
     align-items: center;
+    color: var(--color-neutral-10);
 
     .search-icon {
         font-size: 168px;
@@ -152,8 +169,8 @@ function RenderResult(data) {
     }
 }
 
-h3.arco-typography {
-    margin-top: 5px;
+h5.arco-typography {
+    margin-top: 0px;
 }
 
 .keyword {

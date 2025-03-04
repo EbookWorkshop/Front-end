@@ -25,8 +25,8 @@
             <a-typography-title class="title">{{ renderData.Title }}
             </a-typography-title>
             <a-typography-paragraph v-for="(p, index) in renderData.Content?.split('\n')" :key="index"
-              :style="{ color: ftColor, fontSize: ftSize + 'px', fontFamily: 'MyCustomFont' }">
-              {{ p }}
+              :style="{ color: ftColor, fontSize: ftSize + 'px', fontFamily: 'MyCustomFont' }"
+              v-html="p">
             </a-typography-paragraph>
           </a-typography>
         </a-col>
@@ -58,11 +58,13 @@ import {
   queryAdjacentChapterInfo,
 } from '@/api/book';
 import useRequest from '@/hooks/request';
+import { useRoute } from 'vue-router';
 import useBookHelper from '@/hooks/book-helper';
 
 import ToolMenu from './components/toolmenu.vue'
 
 const ASSETS_HOST = import.meta.env.VITE_API_BASE_URL;
+const route = useRoute();
 
 //变量
 const pdfModel = ref(false);//在PDF模式查看
@@ -71,14 +73,18 @@ const ftSize = ref(20);
 const ftFamily = ref("");
 const bgColor = ref("var(--color-bg-2)");
 const { chapterId, gotoChapter, gotoIndex } = useBookHelper();
-const { loading, response: renderData } = useRequest<Chapter>(
-  queryChapterById.bind(null, chapterId)
-);
-const { response: adjChap } = useRequest<any>(
-  queryAdjacentChapterInfo.bind(null, chapterId)
-);
-
-
+const { loading, response: renderData } = useRequest<Chapter>(() => new Promise((resolve, reject) => {
+  queryChapterById(chapterId).then((res) => {
+    let data = res.data;
+    data.Content = data.Content?.replaceAll(keyword.value, `<span class='keyword'>${keyword.value}</span>`);
+    resolve({ data: data } as any);
+  }).catch((err) => {
+    reject(err);
+  });
+}));
+const { response: adjChap } = useRequest<any>(queryAdjacentChapterInfo.bind(null, chapterId));
+const keyword = ref<string>(route.query.keyword as string || "");
+console.log('keyword:', keyword.value);
 
 function ftFamilyChange(fontFamily: any) {
   if (!fontFamily) return;
@@ -126,5 +132,11 @@ function togglePDF() { pdfModel.value = !pdfModel.value; }
   border-radius: 8px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease-in-out;
+}
+
+.keyword {
+  color: rgb(var(--red-6));
+  background-color: cornsilk;
+  font-weight: bold;
 }
 </style>
