@@ -55,14 +55,17 @@
                                 <a-list-item>
                                     <a-typography>
                                         <a-typography-title :heading="5">
-                                            <a-link
-                                                :href="`/book/${item.BookId}/chapter/${item.id}?keyword=${encodeURIComponent(searchForm.searchQuery)}`"
-                                                target="_blank"
-                                                v-html="'&nbsp;&nbsp;' + item.Title + '&nbsp;&nbsp;'" style="font-size: inherit;"></a-link>
+                                            <a-badge :count="item.HitCount">
+                                                <a-link
+                                                    :href="`/book/${item.BookId}/chapter/${item.id}?keyword=${encodeURIComponent(searchForm.searchQuery)}`"
+                                                    target="_blank"
+                                                    v-html="'&nbsp;&nbsp;' + item.Title + '&nbsp;&nbsp;'"
+                                                    style="font-size: inherit;"></a-link>
+                                            </a-badge>
                                             &nbsp;&nbsp;
-                                            <a-link :href="`/book/${item.BookId}`" target="_blank" style="font-size: inherit;">《{{ item.BookName }}》</a-link>
+                                            <a-link :href="`/book/${item.BookId}`" target="_blank"
+                                                style="font-size: inherit;">《{{ item.BookName }}》</a-link>
                                         </a-typography-title>
-                                        <a-typography-text code>已命中{{ item.HitCount }}次</a-typography-text>
                                         <a-typography-paragraph v-html="item.Content"></a-typography-paragraph>
                                     </a-typography>
                                 </a-list-item>
@@ -105,7 +108,7 @@ const search = () => {
             ...advanceForm.value,
         };
     }
-    if(!setting.keyword) {
+    if (!setting.keyword) {
         return;
     }
     isSearching.value = true;
@@ -124,7 +127,7 @@ function RenderResult(data) {
     bookCount.value = 0;
     let bookSet = new Set();
     let i = 0;
-    let sumCount=0;
+    let sumCount = 0;
     let rr = data.map(item => {
         let title = item.Title;
         let contIndex = item.Content?.indexOf(keyWord);

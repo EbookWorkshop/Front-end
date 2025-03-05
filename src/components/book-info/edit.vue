@@ -1,5 +1,5 @@
 <template>
-    <a-modal :visible="visible" title="修改元数据" @before-ok="handleBeforeOk" @cancel="emit('cancel')">
+    <a-modal :visible="visible" title="修改元数据" @before-ok="handleBeforeOk" @cancel="emit('cancel')" @before-open="LoadData">
         <a-form :model="form">
             <input type="hidden" :value="form.id" />
             <a-form-item field="name" label="书名">
@@ -36,7 +36,7 @@
     </a-modal>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref } from 'vue';
 import { queryFontList, ASSETS_HOST, } from '@/api/font';
 import { queryBookInfo, patchBookInfo } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
@@ -48,11 +48,15 @@ const prop = defineProps<{
     visible: boolean,
     bookId: number,
 }>();
+let oldBookMeta = {} as any;       // 保存旧的书籍元数据
 
-watch(() => prop.bookId, async (newBookId) => {
-    console.log('newBookId', newBookId);
-    if (newBookId !== 0) {
-        const result = await queryBookInfo(newBookId);
+/**
+ * 加载数据
+ */
+async function LoadData() {
+    console.log('LoadData');
+    if (prop.bookId !== 0) {
+        const result = await queryBookInfo(prop.bookId);
         const bookInfo = result.data;
         form.id = bookInfo.id;
         form.name = bookInfo.BookName;
@@ -60,12 +64,14 @@ watch(() => prop.bookId, async (newBookId) => {
         form.font = bookInfo.FontFamily;
         form.overview = bookInfo.overview;
         form.bookCover = bookInfo.CoverImg;
+
+        oldBookMeta = { ...form };
     }
-});
+};
 
 const emit = defineEmits(["submit", "cancel"]);
 
-const form = reactive({
+const form = reactive<any>({
     id: prop.bookId,
     name: '',
     author: '',
@@ -75,11 +81,18 @@ const form = reactive({
 });
 
 function handleBeforeOk(callback: any) {
-    // emit('submit', form);
-    // callback(true); // 关闭弹窗
-    patchBookInfo(form).then(() => {
+    let metadata = { id: form.id } as any;
+    for (let key in form) {
+        if (form[key] !== oldBookMeta[key]) {
+            metadata[key] = form[key];
+        }
+    }
+
+    patchBookInfo(metadata).then(() => {
         Message.success('修改成功');
         callback(true); // 关闭弹窗
+    }).finally(() => {
+        emit('cancel');
     });
 }
 

@@ -25,8 +25,7 @@
             <a-typography-title class="title">{{ renderData.Title }}
             </a-typography-title>
             <a-typography-paragraph v-for="(p, index) in renderData.Content?.split('\n')" :key="index"
-              :style="{ color: ftColor, fontSize: ftSize + 'px', fontFamily: 'MyCustomFont' }"
-              v-html="p">
+              :style="{ color: ftColor, fontSize: ftSize + 'px', fontFamily: 'MyCustomFont' }" v-html="p">
             </a-typography-paragraph>
           </a-typography>
         </a-col>
@@ -76,7 +75,7 @@ const { chapterId, gotoChapter, gotoIndex } = useBookHelper();
 const { loading, response: renderData } = useRequest<Chapter>(() => new Promise((resolve, reject) => {
   queryChapterById(chapterId).then((res) => {
     let data = res.data;
-    data.Content = data.Content?.replaceAll(keyword.value, `<span class='keyword'>${keyword.value}</span>`);
+    if (keyword.value && keyword.value?.length > 0) data.Content = data.Content?.replaceAll(keyword.value, `<span class='keyword'>${keyword.value}</span>`);
     resolve({ data: data } as any);
   }).catch((err) => {
     reject(err);
@@ -84,7 +83,6 @@ const { loading, response: renderData } = useRequest<Chapter>(() => new Promise(
 }));
 const { response: adjChap } = useRequest<any>(queryAdjacentChapterInfo.bind(null, chapterId));
 const keyword = ref<string>(route.query.keyword as string || "");
-console.log('keyword:', keyword.value);
 
 function ftFamilyChange(fontFamily: any) {
   if (!fontFamily) return;

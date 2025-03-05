@@ -24,7 +24,7 @@
                     <a-button status="success" @click="isMustUpdate = !isMustUpdate">
                         <a-checkbox :model-value="isMustUpdate">强制更新</a-checkbox>
                     </a-button>
-                    <a-button status="success" @click="UpdateChapter">
+                    <a-button status="success" @click="UpdateChapter" :loading="btStatusGettingData">
                         <template #icon><icon-robot /></template>
                         <a-badge :count="chapterHasCheckedNum" :max-count="99999" :offset="[15, -10]">
                             抓取选中章节
@@ -72,6 +72,7 @@ const isMerging = ref(false);       //合并章节状态
 const isShow = ref(false);
 const isMustUpdate = ref(false);    //强制更新-覆盖更新
 const isEditBookInfo = ref(false);
+const btStatusGettingData = ref(false);
 
 const data = reactive<{
     cBegin: any,
@@ -171,6 +172,7 @@ function mergeIndex() {
  * 启动更新选中的章节
  */
 function UpdateChapter() {
+    btStatusGettingData.value = true;
     // console.log(props.CheckedChapter);
     let hasCheckChapter = [] as Array<number>;
     props.ChapterStatus?.forEach((value, key) => {
@@ -187,6 +189,8 @@ function UpdateChapter() {
             Message.info("已启动下载。");
             emit("StartUpdateChapter", 0);
         } else Message.error("启动失败，原因：" + res.msg)
+    }).finally(() => {
+        btStatusGettingData.value = false;
     });
 
 }
