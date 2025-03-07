@@ -4,7 +4,7 @@
       <a-space>
         <img
           alt="logo"
-          :src="`/src/assets/logo${isDark ? '-dark' : ''}.svg`"
+          :src="isDark ? logoDark : logoLight"
           width="32"
         />
         <a-typography-title
@@ -167,6 +167,9 @@
   import MessageBox from '../message-box/index.vue';
   import ConnectStatus from './connect-status.vue';
 
+  const logoLight = new URL('@/assets/logo.svg', import.meta.url).href;
+  const logoDark = new URL('@/assets/logo-dark.svg', import.meta.url).href;
+  
   const socket = useSocket();
 
   const appStore = useAppStore();
