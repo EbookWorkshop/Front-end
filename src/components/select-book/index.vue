@@ -18,7 +18,7 @@
   import { queryBookList } from '@/api/library';
   import useRequest from '@/hooks/request';
 
-  const props = defineProps<{  isMultiple: boolean; }>();
+  const props = defineProps<{  isMultiple?: boolean; }>();
 
   const { loading, response: renderData } = useRequest<Book[]>(queryBookList);
 </script>
