@@ -131,7 +131,7 @@ function RenderResult(data) {
     let rr = data.map(item => {
         let title = item.Title;
         let contIndex = item.Content?.indexOf(keyWord);
-        let content = item.Content?.substring(Math.max(contIndex - 180, 0), contIndex + 180);
+        let content = item.Content?.substring(Math.max(contIndex - 90, 0), contIndex + 280);
         title = title.replaceAll(keyWord, `<span class="keyword">${keyWord}</span>`);
         content = content?.replaceAll(keyWord, `<span class="keyword">${keyWord}</span>`);
 
