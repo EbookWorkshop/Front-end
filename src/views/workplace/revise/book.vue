@@ -12,9 +12,23 @@
       <keep-alive>
         <ChapterList :loading="loading" :Chapters="renderData?.Index">
           <template #content="{ item }">
-            <a-button v-if="!isOrdering" long class="chapter" @click="onClickChapter(item.IndexId)">
-              {{ item.Title }}
-            </a-button>
+            <a-button-group v-if="!isOrdering" style="width: 100%;">
+              <a-button long class="chapter" @click="onClickChapter(item.IndexId)" style="width: 100%;">
+                {{ item.Title }}
+              </a-button>
+              <a-dropdown trigger="click" position="br">
+                <a-button>
+                  <template #icon>
+                    <icon-down />
+                  </template>
+                </a-button>
+                <template #content>
+                  <a-doption @click="onClickSplit(item.IndexId)">分割章节</a-doption>
+                  <a-doption>合并当前和下一章</a-doption>
+                  <a-doption style="color: red;">删除章节</a-doption>
+                </template>
+              </a-dropdown>
+            </a-button-group>
             <a-dropdown v-else trigger="contextMenu" alignPoint :style="{ display: 'block' }">
               <a-button long class="chapter">{{ item.Title }}</a-button>
               <template #content>
@@ -45,6 +59,8 @@
           </a-form-item>
         </a-form>
       </a-modal>
+
+      <SplitTool v-model:model-value="isSplit" :id="splitId" @submit="onSubmit" />
     </div>
   </div>
 </template>
@@ -67,6 +83,7 @@ import { Message, } from '@arco-design/web-vue';
 import BookInfo from "@/components/book-info/index.vue";
 import ChapterList from '@/components/chapter-list/index.vue';
 import Toolbar from "./components/toolbar.vue";
+import SplitTool from "./components/SplitTool.vue";
 
 // import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
@@ -96,6 +113,8 @@ const curChapId = ref(0);
 let defTitle: String = ""
 let defContent: String = "";
 const isEdit = ref(false);
+const isSplit = ref(false);
+const splitId = ref(0); // 新增响应式变量存储当前分割章节ID
 const isOrdering = ref(false);
 let sortChapterList = null as any;
 const orderList = [] as Array<any>;
@@ -124,6 +143,11 @@ const onClickChapter = (cid: number) => {
   }).catch(result => {
     form.chapTitle = result.value;
   });
+}
+
+const onClickSplit = (cid: number) => {
+  isSplit.value = true;
+  splitId.value = cid; // 设置当前要分割的章节ID
 }
 
 /**
@@ -257,7 +281,7 @@ function moveToBottom(item: any) {
   let [newItem] = IndexList.splice(findIndex, 1);
   let maxOrder = IndexList[IndexList.length - 1].OrderNum + 1;
 
-  maxOrderNum = Math.max(maxOrderNum+1, maxOrder);
+  maxOrderNum = Math.max(maxOrderNum + 1, maxOrder);
 
   // { order: t.OrderNum, indexId: t.IndexId }
   updateChapterOrder([{ newOrder: maxOrderNum, indexId: newItem.IndexId }]).then(result => {

@@ -7,6 +7,7 @@
                         :status="isOrdering ? 'success' : 'normal'"> {{ isOrdering ? "保存并退出排序" : "章节排序" }} </a-button>
                     <a-button @click="isEditBookInfo = true"> <icon-pen /> 元数据 </a-button>
                     <a-button> 标题格式化 </a-button>
+                    <a-button> 内容重复检查 </a-button>
 
                 </a-button-group>
             </a-space>

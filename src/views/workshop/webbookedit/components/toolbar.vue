@@ -13,6 +13,7 @@
                 </a-button-group>
                 <a-button-group type="primary">
                     <a-button shape="round"> 已隐藏章节 </a-button>
+                    <a-button >查重</a-button>
                     <a-button shape="round">来源管理</a-button>
                 </a-button-group>
             </a-space>

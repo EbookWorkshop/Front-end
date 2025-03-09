@@ -55,6 +55,9 @@ export function queryBookDefaultSourcesById(id: number) {
 export function queryWebBookChapterSourcesById(id: number) {
   return axios.get(`/library/webbook/chapter/sources?chapterid=${id}`);
 }
+export function updateWebBookChapterSourcesById(setting: any) {
+  return axios.post(`/library/webbook/chapter/sources`, setting);
+}
 
 /**
  * 拿到某章内容
