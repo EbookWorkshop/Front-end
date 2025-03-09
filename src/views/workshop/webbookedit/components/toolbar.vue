@@ -62,7 +62,7 @@
 import { ref, reactive } from 'vue';
 import { Chapter } from '@/types/book';
 import { ApiResultCode } from '@/types/global';
-import { mergeWebBookIndex, updateChapter, queryBookSourcesById, queryBookDefaultSourcesById } from '@/api/book';
+import { mergeWebBookIndex, updateChapter, queryBookDefaultSourcesById } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
 
 import EditBookInfo from '@/components/book-info/edit.vue';

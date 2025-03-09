@@ -22,6 +22,12 @@ export interface Chapter {
     BookId?: number;
 }
 
+export interface WebChapter extends Chapter {
+    URL: Array<{ id: number; Path: string }>;
+    curHost: string;
+    WebTitle: string;
+}
+
 /**
  * 章节状态
  */
@@ -52,6 +58,6 @@ export interface BookSources {
  * 章节排序设置
  */
 export interface ChapterOrderSetting {
-    indexId:number,
-    newOrder:number
+    indexId: number,
+    newOrder: number
 }

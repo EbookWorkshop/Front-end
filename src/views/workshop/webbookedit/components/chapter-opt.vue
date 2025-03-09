@@ -14,6 +14,7 @@
                     <a-doption :disabled="chapter.IsHasContent ? false : true"
                         @click="gotoChapter(chapter.IndexId, true)">阅读</a-doption>
                     <a-doption>隐藏本章</a-doption>
+                    <a-doption>编辑来源</a-doption>
                     <a-doption @click="OpenWin">打开来源网页</a-doption>
                     <a-doption>属性</a-doption>
                 </template>
@@ -24,11 +25,11 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { queryWebBookChapterSourcesById } from '@/api/book';
+// import { queryWebBookChapterSourcesById } from '@/api/book';
 import { openWindow } from '@/utils';
 
 //类型
-import type { Chapter } from '@/types/book';
+import type { WebChapter } from '@/types/book';
 
 //操作
 import useBookHelper from '@/hooks/book-helper';
@@ -41,14 +42,16 @@ const emit = defineEmits(['toggle']);
 
 //入参定义
 const props = defineProps<{
-    chapter: Chapter;
+    chapter: WebChapter;
     status?: "normal" | "success" | "warning" | "danger" | undefined;
 }>();
 
+// console.log(props.chapter);
+
 defineExpose({
     handleCheckIt: (checked: boolean) => { isChecked.value = checked; },
-    handleChangeStatus:(status:"normal" | "success" | "warning" | "danger" | undefined)=>{updateStatus.value=status;},
-    getTitle:()=>{return props.chapter.Title;}
+    handleChangeStatus: (status: "normal" | "success" | "warning" | "danger" | undefined) => { updateStatus.value = status; },
+    getTitle: () => { return props.chapter.Title; }
 })
 
 let updateStatus = ref<"normal" | "success" | "warning" | "danger" | undefined>(props.chapter.IsHasContent ? 'normal' : 'warning');
@@ -60,9 +63,8 @@ function onToggle() {
 }
 
 function OpenWin() {
-    queryWebBookChapterSourcesById(props.chapter.IndexId).then(data => {
-        openWindow(data.data[0]?.Path);
-    });
+    let thisUrl = props.chapter.URL.filter(i => i.Path.includes(props.chapter.curHost));
+    if (thisUrl.length > 0) openWindow(thisUrl[0].Path);
 }
 
 </script>

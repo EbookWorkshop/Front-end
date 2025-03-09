@@ -15,6 +15,12 @@ export function queryBookById(id: number) {
   return axios.get(`/library/book?bookid=${id}`);
 }
 
+export function queryWebBookById(id: number) {
+  return axios.get(`/library/webbook?bookid=${id}`);
+}
+
+
+
 /**
  * 拿到书的信息
  * @param id
