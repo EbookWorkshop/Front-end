@@ -24,8 +24,8 @@
           <a-typography :style="{ marginTop: '-40px', color: ftColor }">
             <a-typography-title class="title" :style="{ fontFamily: 'MyCustomFont' }">{{ renderData.Title }}
             </a-typography-title>
-            <a-typography-paragraph v-for="(p, index) in renderData.Content?.split('\n')" :key="index"
-              :style="{ color: ftColor, fontSize: ftSize + 'px', fontFamily: 'MyCustomFont' }" v-html="p">
+            <a-typography-paragraph v-for="(p, index) in renderData.Content?.split('\n')" :key="index" class="paragraph"
+              :style="{ color: ftColor, fontSize: ftSize + 'px', fontFamily: 'MyCustomFont' }" v-html="p.trim()">
             </a-typography-paragraph>
           </a-typography>
         </a-col>
@@ -123,6 +123,10 @@ function togglePDF() { pdfModel.value = !pdfModel.value; }
 .content {
   color: var(--color-neutral-10);
   font-size: var(--font-size-body-3);
+}
+
+.paragraph::before{
+  content: '　　';
 }
 
 .toolbar {
