@@ -64,21 +64,12 @@
     </a-trigger>
 </template>
 <script lang="ts" setup>
-import { ref, toRaw, onMounted, onBeforeUnmount } from 'vue';
+import { ref, toRaw, onMounted, onBeforeUnmount, watch } from 'vue';
 import { ApiResultCode, HttpResponse } from '@/types/global'
 import { addBookmarkForChapter } from '@/api/bookmark'
 import { queryFontList, ASSETS_HOST, } from '@/api/font';
 
 import { Message } from '@arco-design/web-vue';
-
-
-const scrollProgress = ref(0);
-const selectedFont = ref("");
-const popupOver = ref(false);
-const bgColor = ref("#fff");
-const fontColor = ref("#000");
-const fontSize = ref(20);
-let fontData: Array<any> = [];
 
 const emit = defineEmits(['togglePdfModel', 'changeFontColor', 'changeFontSize', 'changeBgColor', 'changeFontFamily']);
 const props = defineProps({
@@ -86,7 +77,20 @@ const props = defineProps({
         type: Number,
         required: true
     }
+    , defaultFont: {
+        type: String,
+        required: true
+    }
 });
+
+const scrollProgress = ref(0);
+const selectedFont = ref(props.defaultFont);
+const popupOver = ref(false);
+const bgColor = ref("#fff");
+const fontColor = ref("#000");
+const fontSize = ref(20);
+let fontData: Array<any> = [];
+
 
 //字体加载、切换部分
 let fontDataMap = new Map();
@@ -98,6 +102,10 @@ InitFont();
 function onChangeFont() {
     emit('changeFontFamily', fontDataMap.get(selectedFont.value));
 }
+watch(() => props.defaultFont, (newVal, oldVal) => {
+    selectedFont.value = newVal;
+    onChangeFont(); 
+})
 
 
 //阅读进度条逻辑相关

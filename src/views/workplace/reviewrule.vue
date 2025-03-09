@@ -12,7 +12,7 @@
         </a-space>
         <a-table :columns="columns" :data="renderData" :loading="tableLoading" :pagination="{ pageSize: 20 }">
           <template #rule-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
-            <a-card hoverable :style="{ width: '320px' }" title="规则筛选">
+            <a-card hoverable :style="{ width: '320px' }" title="规则-筛选">
               <a-form-item>
                 <a-input-search v-model="filterValue[0]" placeholder="输入筛选内容" @search="handleFilterConfirm"
                   @change="(value: any) => setFilterValue([value])" />
@@ -22,9 +22,9 @@
           </template>
 
           <template #replace-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
-            <a-card hoverable :style="{ width: '320px' }" title="替换内容筛选">
+            <a-card hoverable :style="{ width: '320px' }" title="替换内容-筛选">
               <a-form-item>
-                <a-select v-model="filterValue[0]" allow-clear placeholder="请选择书名" allow-search
+                <a-select v-model="filterValue[0]" allow-clear placeholder="请选择筛选内容" allow-search
                   @change="(value) => { setFilterValue([value]); handleFilterConfirm() }">
                   <a-option v-for="item of uniqueRenderData" :value="item" :label="item" />
                 </a-select>
@@ -42,16 +42,19 @@
         </a-table>
       </div>
       <a-modal v-model:visible="visible" title="设置规则" @before-ok="handleBeforeOk">
-        <a-form :model="form">
+        <a-form :model="form" ref="formRef" :rules="formRules">
           <input type="hidden" :value="form.id" />
-          <a-form-item field="name" label="规则名">
+          <a-form-item field="name" label="规则名" :rules="[{ required: true, message: '规则名必须填写' }]">
             <a-input v-model="form.name" />
           </a-form-item>
-          <a-form-item field="rule" label="查找内容">
+          <a-form-item field="rule" label="查找内容" :rules="[{ required: true, message: '查找内容不能为空' }]">
             <a-textarea v-model="form.rule"></a-textarea>
           </a-form-item>
           <a-form-item field="replace" label="替换内容">
             <a-textarea v-model="form.replace"></a-textarea>
+          </a-form-item>
+          <a-form-item field="bookId" label="同时应用到">
+            <SelectBook v-model="form.bookId" :is-multiple="true" />
           </a-form-item>
         </a-form>
       </a-modal>
@@ -102,6 +105,14 @@ import SelectBook from '@/components/select-book/index.vue';
 import { useAppStore } from '@/store';
 
 import { IconSearch } from '@arco-design/web-vue/es/icon';
+
+import { FormInstance } from '@arco-design/web-vue';
+const formRef = ref<FormInstance>();
+const formRules = {
+  name: [{ required: true, message: '规则名必须填写' }],
+  rule: [{ required: true, message: '查找内容不能为空' }],
+};
+
 
 const appStore = useAppStore();
 const theme = computed<any>(() => {
@@ -155,6 +166,7 @@ const form = reactive({
   name: '',
   rule: '',
   replace: '',
+  bookId: [] as number[],
 });
 const testForm = reactive({
   bookId: 0 as number,
@@ -176,6 +188,7 @@ const createNewRule = () => {
   form.name = '';
   form.rule = '';
   form.replace = '';
+  form.bookId = [];
   visible.value = true;
 };
 /**
@@ -205,7 +218,12 @@ const uniqueRenderData = computed(() => {
 /**
  * 保存提交
  */
-const handleBeforeOk = (callback: any) => {
+const handleBeforeOk =async (callback: any) => {
+  let result = await formRef.value?.validate();
+  if (result) { //校验不通过
+    callback(false);
+    return;
+  }
   updateReviewRule(form)
     .then(() => {
       callback(true);

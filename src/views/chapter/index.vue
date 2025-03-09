@@ -22,7 +22,7 @@
       <a-row class="grid-chapter" :gutter="[0, 120]">
         <a-col v-if="!pdfModel" :span="20" class="content" :offset="2">
           <a-typography :style="{ marginTop: '-40px', color: ftColor }">
-            <a-typography-title class="title">{{ renderData.Title }}
+            <a-typography-title class="title" :style="{ fontFamily: 'MyCustomFont' }">{{ renderData.Title }}
             </a-typography-title>
             <a-typography-paragraph v-for="(p, index) in renderData.Content?.split('\n')" :key="index"
               :style="{ color: ftColor, fontSize: ftSize + 'px', fontFamily: 'MyCustomFont' }" v-html="p">
@@ -44,7 +44,8 @@
           <a-button long :disabled="!adjChap.next" @click="gotoChapter(adjChap?.next?.id)">下一章</a-button></a-col>
       </a-row>
       <ToolMenu @toggle-pdf-model="togglePDF" @change-font-color="ftChange" @change-font-size="ftSizeChange"
-        @change-font-family="ftFamilyChange" @change-bg-color="bgChange" :chapterId="chapterId"></ToolMenu>
+        @change-font-family="ftFamilyChange" @change-bg-color="bgChange" :chapterId="chapterId" :defaultFont="ftFamily">
+      </ToolMenu>
     </div>
   </div>
 </template>
@@ -76,6 +77,8 @@ const { loading, response: renderData } = useRequest<Chapter>(() => new Promise(
   queryChapterById(chapterId).then((res) => {
     let data = res.data;
     if (keyword.value && keyword.value?.length > 0) data.Content = data.Content?.replaceAll(keyword.value, `<span class='keyword'>${keyword.value}</span>`);
+    // console.log(data.Book.FontFamily)
+    ftFamily.value = data.Book.FontFamily;
     resolve({ data: data } as any);
   }).catch((err) => {
     reject(err);
