@@ -35,7 +35,6 @@ import { AxiosResponse } from 'axios';
 import {
     queryChapterById,
 } from '@/api/book';
-import { result } from "lodash";
 
 defineProps({
     modelValue: Boolean,

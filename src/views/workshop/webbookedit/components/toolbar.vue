@@ -13,7 +13,7 @@
                 </a-button-group>
                 <a-button-group type="primary">
                     <a-button shape="round"> 已隐藏章节 </a-button>
-                    <a-button >查重</a-button>
+                    <a-button @click="checkDescriptions = true">查重</a-button>
                     <a-button shape="round">来源管理</a-button>
                 </a-button-group>
             </a-space>
@@ -57,7 +57,7 @@
     </a-modal>
 
     <EditBookInfo :visible="isEditBookInfo" :bookId="bookid ?? 0" @cancel="isEditBookInfo = false" />
-
+    <Descriptions :bookId="bookid?? 0" :show="checkDescriptions" @close="checkDescriptions = false"/>
 </template>
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
@@ -67,6 +67,7 @@ import { mergeWebBookIndex, updateChapter, queryBookDefaultSourcesById } from '@
 import { Message } from '@arco-design/web-vue';
 
 import EditBookInfo from '@/components/book-info/edit.vue';
+import Descriptions from '@/components/book-tool/duplicates.vue';
 
 const chapterHasCheckedNum = ref(0);    // 已选中的章节数
 const isMerging = ref(false);       //合并章节状态
@@ -74,6 +75,7 @@ const isShow = ref(false);
 const isMustUpdate = ref(false);    //强制更新-覆盖更新
 const isEditBookInfo = ref(false);
 const btStatusGettingData = ref(false);
+const checkDescriptions = ref(false);
 
 const data = reactive<{
     cBegin: any,

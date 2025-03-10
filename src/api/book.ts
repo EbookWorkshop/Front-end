@@ -96,6 +96,15 @@ export function queryAdjacentChapterInfo(cid: number) {
 }
 
 /**
+ * 找到重复的章节
+ * @param bookId 书ID
+ * @returns 
+ */
+export function queryDuplicatesChapter(bookId: number) {
+  return axios.get(`/library/book/duplicates?bookid=${bookId}`); 
+}
+
+/**
  * 创建一本书，新书入库
  * @param url 书目录地址
  * @returns
