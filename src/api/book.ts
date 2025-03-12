@@ -87,6 +87,15 @@ export function updateChapterOrder(chapterOrderList: Array<ChapterOrderSetting>)
 }
 
 /**
+ * 修改章节信息
+ * @param setting 章节
+ * @returns
+ */
+export function restructureChapter(setting: any) {
+  return axios.patch('/library/book/chapters/restructure', setting);
+}
+
+/**
  * 找到相邻的章节
  * @param cid 当前章节ID
  * @returns
@@ -101,7 +110,7 @@ export function queryAdjacentChapterInfo(cid: number) {
  * @returns 
  */
 export function queryDuplicatesChapter(bookId: number) {
-  return axios.get(`/library/book/duplicates?bookid=${bookId}`); 
+  return axios.get(`/library/book/duplicates?bookid=${bookId}`);
 }
 
 /**

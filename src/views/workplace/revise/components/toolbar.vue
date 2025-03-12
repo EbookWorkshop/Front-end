@@ -15,7 +15,7 @@
         </a-space>
     </a-row>
     <EditBookInfo :visible="isEditBookInfo" :bookId="bookid ?? 0" @cancel="isEditBookInfo = false" />
-    <Descriptions :bookId="bookid?? 0" :show="checkDescriptions" @close="checkDescriptions = false"/>
+    <Descriptions :bookId="bookid ?? 0" :show="checkDescriptions" @close="checkDescriptions = false" />
 
 </template>
 

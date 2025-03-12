@@ -60,7 +60,7 @@
         </a-form>
       </a-modal>
 
-      <SplitTool v-model:model-value="isSplit" :id="splitId" @submit="onSubmit" />
+      <SplitTool v-model:model-value="isSplit" :id="splitId" :bookId="bookId" @submit="onSubmit" />
     </div>
   </div>
 </template>

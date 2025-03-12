@@ -1,5 +1,5 @@
 <template>
-    <a-modal fullscreen :visible="modelValue" title="分割章节" @before-open="loadData(id ?? 0)" @ok="$emit('submit')"
+    <a-modal fullscreen :visible="modelValue" title="分割章节" @before-open="loadData(id ?? 0)" @ok="submit"
         @cancel="$emit('update:modelValue', false)"> >
         <a-form :model="formData" layout="vertical">
             <a-split :style="{
@@ -32,14 +32,18 @@
 import { Book, Chapter } from "@/types/book";
 import { reactive } from 'vue';
 import { AxiosResponse } from 'axios';
+import { Message } from "@arco-design/web-vue";
 import {
     queryChapterById,
+    restructureChapter,
 } from '@/api/book';
 
-defineProps({
+const param = defineProps({
     modelValue: Boolean,
     id: Number,
+    bookId: Number,
 })
+const emiter = defineEmits(['update:modelValue', 'submit'])
 
 const formData = reactive({
     chapTitle: '',
@@ -53,7 +57,7 @@ const formData = reactive({
 const loadData = (cid: number) => {
     // isSplit.value = true;
     if (cid <= 0) return;
-    formData.nextContent  = "";
+    formData.nextContent = "";
     formData.nextTitle = "";
     queryChapterById(cid).then((result: AxiosResponse<Chapter>) => {
         formData.chapTitle = result.data.Title as any
@@ -64,5 +68,34 @@ const loadData = (cid: number) => {
         // form.chapTitle = result.value;
     });
 }
-defineEmits(['update:modelValue', 'submit'])
+
+const submit = () => {
+    let data = {
+        baseChapter: {
+            bookId: param.bookId,
+            chapterId: param.id,
+            content: formData.content,
+            orderNum: formData.orderNum,
+            title: formData.chapTitle,
+        },
+        operations: [{
+            operationType: "create",
+            chapters: [{
+                content: formData.nextContent,
+                orderNum: formData.nextOrderNum,
+                title: formData.nextTitle,
+            }]
+        }]
+    }
+    restructureChapter(data).then(result => {
+        Message.success('分割章节成功');
+        emiter('submit');
+        // emiter('update:modelValue', false);
+    }).catch(err => {
+        Message.error(`分割章节失败：${err}`);
+        console.log(err);
+    }).finally(() => {
+    })
+}
+
 </script>
