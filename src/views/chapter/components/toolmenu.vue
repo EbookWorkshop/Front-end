@@ -57,7 +57,7 @@
                         <icon-zoom-in></icon-zoom-in>
                     </template>
                     <a-slider v-model:model-value="fontSize as number" :style="{ width: '200px' }"
-                        @change="emit('changeFontSize', toRaw(fontSize))" :max="50" />
+                        @change="onChangeFontSize" :max="50" />
                 </a-menu-item>
             </a-menu>
         </template>
@@ -88,9 +88,9 @@ const selectedFont = ref(props.defaultFont);
 const popupOver = ref(false);
 const bgColor = ref("#fff");
 const fontColor = ref("#000");
-const fontSize = ref(20);
+const fontSize = ref(localStorage.getItem('ebws-readingFontSize') * 1 || 24);
+emit('changeFontSize', fontSize.value);
 let fontData: Array<any> = [];
-
 
 //字体加载、切换部分
 let fontDataMap = new Map();
@@ -102,9 +102,13 @@ InitFont();
 function onChangeFont() {
     emit('changeFontFamily', fontDataMap.get(selectedFont.value));
 }
+function onChangeFontSize() {
+    emit('changeFontSize', fontSize.value);
+    localStorage.setItem('ebws-readingFontSize', fontSize.value.toString());
+}
 watch(() => props.defaultFont, (newVal, oldVal) => {
     selectedFont.value = newVal;
-    onChangeFont(); 
+    onChangeFont();
 })
 
 

@@ -62,15 +62,16 @@
                       <a-td>EPUB</a-td><a-td>
                         <ul>
                           <li>适用大多流行的阅读器设备</li>
-                          <li>支持 Kindle （需要用 Send to Kindle，直接复制到 Kindle 不支持）</li>
                           <li>支持设置封面</li>
                           <li>在 Kindle 上可以设置显示的字体、字号大小</li>
                           <li>可以保存书籍的元数据（作者、出版社、ISBN等）</li>
                           <li>占用空间最少（对比其它格式）</li>
+                          <li>丰富的在线转换工具可转为其它格式</li>
                         </ul>
                       </a-td>
                       <a-td>
                         <ul>
+                          <li>不支持直接拷贝到Kindle查看（但可以借助亚马逊的 Send to Kindle 发到邮箱）</li>
                           <li>需要专用的阅读器查看</li>
                           <li>需要专用的工具编辑</li>
                         </ul>
