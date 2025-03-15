@@ -36,7 +36,7 @@
                         <icon-language></icon-language>
                     </template>
                     字体
-                    <a-select v-model="selectedFont as string" @change="onChangeFont">
+                    <a-select v-model="selectedFont" @change="onChangeFont">
                         <a-option v-for="font in fontData" :key="font.name" :value="font.name">
                             {{ font.name }}
                         </a-option>
@@ -63,11 +63,11 @@
         </template>
     </a-trigger>
 </template>
-<script lang="ts" setup>
+<script lang='ts' setup>
 import { ref, toRaw, onMounted, onBeforeUnmount, watch } from 'vue';
 import { ApiResultCode, HttpResponse } from '@/types/global'
 import { addBookmarkForChapter } from '@/api/bookmark'
-import { queryFontList, ASSETS_HOST, } from '@/api/font';
+import { queryFontList, } from '@/api/font';
 
 import { Message } from '@arco-design/web-vue';
 
@@ -88,7 +88,7 @@ const selectedFont = ref(props.defaultFont);
 const popupOver = ref(false);
 const bgColor = ref("#fff");
 const fontColor = ref("#000");
-const fontSize = ref(localStorage.getItem('ebws-readingFontSize') * 1 || 24);
+const fontSize = ref<number>(localStorage.getItem('ebws-readingFontSize') as any * 1 || 24);
 emit('changeFontSize', fontSize.value);
 let fontData: Array<any> = [];
 

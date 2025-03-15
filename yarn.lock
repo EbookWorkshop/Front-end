@@ -1452,9 +1452,9 @@ available-typed-arrays@^1.0.5:
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
 axios@^1.8.2:
-  version "1.8.2"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.8.2.tgz"
-  integrity sha512-ls4GYBm5aig9vWx8AWDSGLpnpDQRtWAfrjU+EuytuODrFBkqesN2RkOQCBzrA1RQNHw1SmRMSDDDSwzNAYQ6Rg==
+  version "1.8.3"
+  resolved "https://registry.npmmirror.com/axios/-/axios-1.8.3.tgz"
+  integrity sha512-iP4DebzoNlP/YN2dpwCgb8zoCmhtkajzS48JvwmkSkXvPI3DHc7m+XYL5tGnSlJtR6nImXZmdCuN5aP8dh1d8A==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
@@ -8334,9 +8334,9 @@ vite-svg-loader@^5.1.0:
     svgo "^3.0.2"
 
 "vite@^5.0.0 || ^6.0.0", vite@^6.2.1, vite@>=2, vite@>=2.0.0:
-  version "6.2.1"
-  resolved "https://registry.npmjs.org/vite/-/vite-6.2.1.tgz"
-  integrity sha512-n2GnqDb6XPhlt9B8olZPrgMD/es/Nd1RdChF6CBD/fHW6pUyUTt2sQW2fPRX5GiD9XEa6+8A6A4f2vT6pSsE7Q==
+  version "6.2.2"
+  resolved "https://registry.npmmirror.com/vite/-/vite-6.2.2.tgz"
+  integrity sha512-yW7PeMM+LkDzc7CgJuRLMW2Jz0FxMOsVJ8Lv3gpgW9WLcb9cTW+121UEr1hvmfR7w3SegR5ItvYyzVz1vxNJgQ==
   dependencies:
     esbuild "^0.25.0"
     postcss "^8.5.3"
@@ -8394,7 +8394,7 @@ vue-router@^4.5.0:
 
 vue-tsc@^2.2.8:
   version "2.2.8"
-  resolved "https://registry.npmjs.org/vue-tsc/-/vue-tsc-2.2.8.tgz"
+  resolved "https://registry.npmmirror.com/vue-tsc/-/vue-tsc-2.2.8.tgz"
   integrity sha512-jBYKBNFADTN+L+MdesNX/TB3XuDSyaWynKMDgR+yCSln0GQ9Tfb7JS2lr46s2LiFUT1WsmfWsSvIElyxzOPqcQ==
   dependencies:
     "@volar/typescript" "~2.4.11"
