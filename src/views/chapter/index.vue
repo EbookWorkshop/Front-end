@@ -24,9 +24,7 @@
           <a-typography :style="{ marginTop: '-40px', color: ftColor }">
             <a-typography-title class="title" :style="{ fontFamily: 'MyCustomFont' }">{{ renderData.Title }}
             </a-typography-title>
-            <a-typography-paragraph v-for="(p, index) in renderData.Content?.split('\n')" :key="index" class="paragraph"
-              :style="{ color: ftColor, fontSize: ftSize + 'px', fontFamily: 'MyCustomFont' }" v-html="p.trim()">
-            </a-typography-paragraph>
+            <ContentRenderer :content="processedContent" />
           </a-typography>
         </a-col>
         <a-col v-else :span="24" style="text-align: center">
@@ -62,6 +60,7 @@ import { useRoute } from 'vue-router';
 import useBookHelper from '@/hooks/book-helper';
 
 import ToolMenu from './components/toolmenu.vue'
+import ContentRenderer from './components/ContentRenderer.vue'
 
 const ASSETS_HOST = import.meta.env.VITE_API_BASE_URL;
 const route = useRoute();
@@ -73,11 +72,21 @@ const ftSize = ref(20);
 const ftFamily = ref("");
 const bgColor = ref("var(--color-bg-2)");
 const { chapterId, gotoChapter, gotoIndex } = useBookHelper();
+const processedContent = ref("");
 const { loading, response: renderData } = useRequest<Chapter>(() => new Promise((resolve, reject) => {
   queryChapterById(chapterId).then((res) => {
     let data = res.data;
     if (keyword.value && keyword.value?.length > 0) data.Content = data.Content?.replaceAll(keyword.value, `<span class='keyword'>${keyword.value}</span>`);
-    // console.log(data.Book.FontFamily)
+
+    processedContent.value = data.Content?.split('\n').map(p => ({
+      text: p.trim(),
+      style: {
+        color: ftColor.value,
+        fontSize: `${ftSize.value}px`,
+        fontFamily: 'MyCustomFont'
+      }
+    }));
+
     ftFamily.value = data.Book.FontFamily;
     resolve({ data: data } as any);
   }).catch((err) => {
@@ -125,7 +134,7 @@ function togglePDF() { pdfModel.value = !pdfModel.value; }
   font-size: var(--font-size-body-3);
 }
 
-.paragraph::before{
+.paragraph::before {
   content: '　　';
 }
 
