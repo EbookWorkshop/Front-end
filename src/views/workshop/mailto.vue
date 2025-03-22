@@ -21,7 +21,7 @@
                   <a-radio-group style="width:280px;text-align: center;" v-model:model-value="book.filetype">
                     <a-radio value="pdf">PDF</a-radio>
                     <a-radio value="txt">TXT</a-radio>
-                    <a-radio value="epub">Epub</a-radio>
+                    <a-radio value="epub">EPUB</a-radio>
                   </a-radio-group>
                 </a-form-item>
               </a-form-item>

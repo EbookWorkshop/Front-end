@@ -29,7 +29,7 @@
   defineProps({
     loading: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     bookName: {
       type: String,

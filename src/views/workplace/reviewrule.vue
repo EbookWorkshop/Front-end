@@ -15,7 +15,7 @@
             <a-card hoverable :style="{ width: '320px' }" title="规则-筛选">
               <a-form-item>
                 <a-input-search v-model="filterValue[0]" placeholder="输入筛选内容" @search="handleFilterConfirm"
-                  @change="(value: any) => setFilterValue([value])" />
+                  @change="(value: any) => {setFilterValue([value]);handleFilterConfirm()}" />
                 <a-button @click="handleFilterReset">重置</a-button>
               </a-form-item>
             </a-card>

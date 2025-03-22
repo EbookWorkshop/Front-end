@@ -1,6 +1,6 @@
 <template>
     <a-modal fullscreen :visible="modelValue" title="分割章节" @before-open="loadData(id ?? 0)" @ok="submit"
-        @cancel="$emit('update:modelValue', false)"> >
+        @cancel="$emit('update:modelValue', false)">
         <a-form :model="formData" layout="vertical">
             <a-split :style="{
                 height: '90vh',
