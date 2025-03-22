@@ -22,12 +22,9 @@
       <a-row class="grid-chapter" :gutter="[0, 120]">
         <a-col v-if="!pdfModel" :span="20" class="content" :offset="2">
           <a-typography :style="{ marginTop: '-40px', color: ftColor }">
-            <a-typography-title class="title">{{ renderData.Title }}
+            <a-typography-title class="title" :style="{ fontFamily: 'MyCustomFont' }">{{ renderData.Title }}
             </a-typography-title>
-            <a-typography-paragraph v-for="(p, index) in renderData.Content?.split('\n')" :key="index"
-              :style="{ color: ftColor, fontSize: ftSize + 'px', fontFamily: 'MyCustomFont' }">
-              {{ p }}
-            </a-typography-paragraph>
+            <ContentRenderer :content="processedContent" />
           </a-typography>
         </a-col>
         <a-col v-else :span="24" style="text-align: center">
@@ -45,7 +42,8 @@
           <a-button long :disabled="!adjChap.next" @click="gotoChapter(adjChap?.next?.id)">下一章</a-button></a-col>
       </a-row>
       <ToolMenu @toggle-pdf-model="togglePDF" @change-font-color="ftChange" @change-font-size="ftSizeChange"
-        @change-font-family="ftFamilyChange" @change-bg-color="bgChange" :chapterId="chapterId"></ToolMenu>
+        @change-font-family="ftFamilyChange" @change-bg-color="bgChange" :chapterId="chapterId" :defaultFont="ftFamily">
+      </ToolMenu>
     </div>
   </div>
 </template>
@@ -58,11 +56,14 @@ import {
   queryAdjacentChapterInfo,
 } from '@/api/book';
 import useRequest from '@/hooks/request';
+import { useRoute } from 'vue-router';
 import useBookHelper from '@/hooks/book-helper';
 
 import ToolMenu from './components/toolmenu.vue'
+import ContentRenderer from './components/ContentRenderer.vue'
 
 const ASSETS_HOST = import.meta.env.VITE_API_BASE_URL;
+const route = useRoute();
 
 //变量
 const pdfModel = ref(false);//在PDF模式查看
@@ -71,14 +72,29 @@ const ftSize = ref(20);
 const ftFamily = ref("");
 const bgColor = ref("var(--color-bg-2)");
 const { chapterId, gotoChapter, gotoIndex } = useBookHelper();
-const { loading, response: renderData } = useRequest<Chapter>(
-  queryChapterById.bind(null, chapterId)
-);
-const { response: adjChap } = useRequest<any>(
-  queryAdjacentChapterInfo.bind(null, chapterId)
-);
+const processedContent = ref("");
+const { loading, response: renderData } = useRequest<Chapter>(() => new Promise((resolve, reject) => {
+  queryChapterById(chapterId).then((res) => {
+    let data = res.data;
+    if (keyword.value && keyword.value?.length > 0) data.Content = data.Content?.replaceAll(keyword.value, `<span class='keyword'>${keyword.value}</span>`);
 
+    processedContent.value = data.Content?.split('\n').map(p => ({
+      text: p.trim(),
+      style: {
+        color: ftColor.value,
+        fontSize: `${ftSize.value}px`,
+        fontFamily: 'MyCustomFont'
+      }
+    }));
 
+    ftFamily.value = data.Book.FontFamily;
+    resolve({ data: data } as any);
+  }).catch((err) => {
+    reject(err);
+  });
+}));
+const { response: adjChap } = useRequest<any>(queryAdjacentChapterInfo.bind(null, chapterId));
+const keyword = ref<string>(route.query.keyword as string || "");
 
 function ftFamilyChange(fontFamily: any) {
   if (!fontFamily) return;
@@ -118,6 +134,10 @@ function togglePDF() { pdfModel.value = !pdfModel.value; }
   font-size: var(--font-size-body-3);
 }
 
+.paragraph::before {
+  content: '　　';
+}
+
 .toolbar {
   margin: 48px auto;
 }
@@ -126,5 +146,11 @@ function togglePDF() { pdfModel.value = !pdfModel.value; }
   border-radius: 8px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease-in-out;
+}
+
+.keyword {
+  color: rgb(var(--red-6));
+  background-color: cornsilk;
+  font-weight: bold;
 }
 </style>

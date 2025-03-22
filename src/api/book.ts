@@ -14,6 +14,27 @@ if (import.meta.env.VITE_API_BASE_URL) {
 export function queryBookById(id: number) {
   return axios.get(`/library/book?bookid=${id}`);
 }
+
+export function queryWebBookById(id: number) {
+  return axios.get(`/library/webbook?bookid=${id}`);
+}
+
+
+
+/**
+ * 拿到书的信息
+ * @param id
+ * @returns
+ */
+export function queryBookInfo(id: number) {
+  return axios.get(`/library/book/metadata?bookid=${id}`);
+}
+export function patchBookInfo(metadata: any) {
+  return axios.patch(`/library/book/metadata`, metadata);
+}
+
+
+
 /**
  * 拿到书的来源地址
  * @param id
@@ -22,6 +43,10 @@ export function queryBookById(id: number) {
 export function queryBookSourcesById(id: number) {
   return axios.get(`/library/webbook/sources?bookid=${id}`);
 }
+export function queryBookDefaultSourcesById(id: number) {
+  return axios.get(`/library/webbook/defsources?bookid=${id}`);
+}
+
 /**
  * 拿到章节的来源地址
  * @param id 章节ID
@@ -29,6 +54,9 @@ export function queryBookSourcesById(id: number) {
  */
 export function queryWebBookChapterSourcesById(id: number) {
   return axios.get(`/library/webbook/chapter/sources?chapterid=${id}`);
+}
+export function updateWebBookChapterSourcesById(setting: any) {
+  return axios.post(`/library/webbook/chapter/sources`, setting);
 }
 
 /**
@@ -59,12 +87,30 @@ export function updateChapterOrder(chapterOrderList: Array<ChapterOrderSetting>)
 }
 
 /**
+ * 修改章节信息
+ * @param setting 章节
+ * @returns
+ */
+export function restructureChapter(setting: any) {
+  return axios.patch('/library/book/chapters/restructure', setting);
+}
+
+/**
  * 找到相邻的章节
  * @param cid 当前章节ID
  * @returns
  */
 export function queryAdjacentChapterInfo(cid: number) {
   return axios.get(`/library/book/adjacentchapter?chapterid=${cid}`);
+}
+
+/**
+ * 找到重复的章节
+ * @param bookId 书ID
+ * @returns 
+ */
+export function queryDuplicatesChapter(bookId: number) {
+  return axios.get(`/library/book/duplicates?bookid=${bookId}`);
 }
 
 /**
@@ -150,6 +196,31 @@ export function createTXT(
     bookId: bookid,
     chapterIds,
     sendByEmail: isSendEmail,
+    embedTitle,
+  });
+}
+
+/**
+ * 制作epub——可发到默认邮箱
+ * @param bookid 
+ * @param chapterIds 
+ * @param isSendEmail 
+ * @param fontFamliy 没用，对齐API用
+ * @param embedTitle 是否嵌入章节标题
+ * @returns 
+ */
+export function createEPUB(
+  bookid: number,
+  chapterIds: number[],
+  isSendEmail: boolean,
+  fontFamliy: string,
+  embedTitle: boolean
+) {
+  return axios.post(`/export/epub`, {
+    bookId: bookid,
+    chapterIds,
+    sendByEmail: isSendEmail,
+    fontFamliy,
     embedTitle,
   });
 }

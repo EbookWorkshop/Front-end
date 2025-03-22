@@ -10,7 +10,28 @@
         <a-space>
           <a-button status="success" @click="createNewRule">添加</a-button>
         </a-space>
-        <a-table :columns="columns" :data="renderData" :loading="tableLoading">
+        <a-table :columns="columns" :data="renderData" :loading="tableLoading" :pagination="{ pageSize: 20 }">
+          <template #rule-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
+            <a-card hoverable :style="{ width: '320px' }" title="规则-筛选">
+              <a-form-item>
+                <a-input-search v-model="filterValue[0]" placeholder="输入筛选内容" @search="handleFilterConfirm"
+                  @change="(value: any) => {setFilterValue([value]);handleFilterConfirm()}" />
+                <a-button @click="handleFilterReset">重置</a-button>
+              </a-form-item>
+            </a-card>
+          </template>
+
+          <template #replace-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
+            <a-card hoverable :style="{ width: '320px' }" title="替换内容-筛选">
+              <a-form-item>
+                <a-select v-model="filterValue[0]" allow-clear placeholder="请选择筛选内容" allow-search
+                  @change="(value) => { setFilterValue([value]); handleFilterConfirm() }">
+                  <a-option v-for="item of uniqueRenderData" :value="item" :label="item" />
+                </a-select>
+                <a-button @click="handleFilterReset">重置</a-button>
+              </a-form-item>
+            </a-card>
+          </template>
           <template #optional="{ record }">
             <a-button @click="editRow(record)">编辑</a-button>
             <a-button @click="testRule(record)">验证</a-button>
@@ -21,16 +42,19 @@
         </a-table>
       </div>
       <a-modal v-model:visible="visible" title="设置规则" @before-ok="handleBeforeOk">
-        <a-form :model="form">
+        <a-form :model="form" ref="formRef" :rules="formRules">
           <input type="hidden" :value="form.id" />
-          <a-form-item field="name" label="规则名">
+          <a-form-item field="name" label="规则名" :rules="[{ required: true, message: '规则名必须填写' }]">
             <a-input v-model="form.name" />
           </a-form-item>
-          <a-form-item field="rule" label="查找内容">
+          <a-form-item field="rule" label="查找内容" :rules="[{ required: true, message: '查找内容不能为空' }]">
             <a-textarea v-model="form.rule"></a-textarea>
           </a-form-item>
           <a-form-item field="replace" label="替换内容">
             <a-textarea v-model="form.replace"></a-textarea>
+          </a-form-item>
+          <a-form-item field="bookId" label="同时应用到">
+            <SelectBook v-model="form.bookId" :is-multiple="true" />
           </a-form-item>
         </a-form>
       </a-modal>
@@ -39,7 +63,7 @@
         <a-form :model="testForm">
           <a-form-item field="book" label="书">
             <SelectBook v-model="testForm.bookId"
-              @change="queryBookById(testForm.bookId).then((result) => { Chapters = result.data.Index.filter((i:any)=>i.IsHasContent) })" />
+              @change="queryBookById(testForm.bookId).then((result) => { Chapters = result.data.Index.filter((i: any) => i.IsHasContent) })" />
           </a-form-item>
           <a-form-item field="chapter" label="章节">
             <a-select v-model="testForm.chapterId as number" :options="Chapters"
@@ -65,7 +89,7 @@
 
 <script lang="ts" setup>
 import "vue-diff/dist/index.css";
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref, computed, h } from 'vue';
 import useRequest from '@/hooks/request';
 import { queryBookById, } from '@/api/book';
 import {
@@ -80,6 +104,16 @@ import { Message } from '@arco-design/web-vue';
 import SelectBook from '@/components/select-book/index.vue';
 import { useAppStore } from '@/store';
 
+import { IconSearch } from '@arco-design/web-vue/es/icon';
+
+import { FormInstance } from '@arco-design/web-vue';
+const formRef = ref<FormInstance>();
+const formRules = {
+  name: [{ required: true, message: '规则名必须填写' }],
+  rule: [{ required: true, message: '查找内容不能为空' }],
+};
+
+
 const appStore = useAppStore();
 const theme = computed<any>(() => {
   return appStore.theme;
@@ -93,10 +127,20 @@ const columns = [
   {
     title: '规则',
     dataIndex: 'Rule',
+    filterable: {
+      filter: (value: string, record: Rule) => record.Rule.includes(value),
+      slotName: 'rule-filter',
+      icon: () => h(IconSearch),
+    },
   },
   {
     title: '替换内容',
     dataIndex: 'Replace',
+    filterable: {
+      filter: (value: string, record: Rule) => record.Replace.includes(value),
+      slotName: 'replace-filter',
+      icon: () => h(IconSearch),
+    },
   },
   {
     title: '已用次数',
@@ -122,6 +166,7 @@ const form = reactive({
   name: '',
   rule: '',
   replace: '',
+  bookId: [] as number[],
 });
 const testForm = reactive({
   bookId: 0 as number,
@@ -143,6 +188,7 @@ const createNewRule = () => {
   form.name = '';
   form.rule = '';
   form.replace = '';
+  form.bookId = [];
   visible.value = true;
 };
 /**
@@ -159,10 +205,25 @@ const TableReload = () => {
     });
 };
 
+// 计算去重后的数据
+const uniqueRenderData = computed(() => {
+  const mySet = new Set() as Set<string>;
+  renderData.value.forEach(item => {
+    mySet.add(item.Replace);
+  });
+  return mySet;
+});
+
+
 /**
  * 保存提交
  */
-const handleBeforeOk = (callback: any) => {
+const handleBeforeOk =async (callback: any) => {
+  let result = await formRef.value?.validate();
+  if (result) { //校验不通过
+    callback(false);
+    return;
+  }
   updateReviewRule(form)
     .then(() => {
       callback(true);

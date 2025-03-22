@@ -8,14 +8,14 @@
           :Author="bookData.Author">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Chapters="bookData.Index"
-              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar" @-start-update-chapter="(rsl:any)=>curDoingProcent = rsl"
-              ref="toolbarRef"></Toolbar>
+              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar"
+              @start-update-chapter="(rsl: any) => curDoingProcent = rsl" ref="toolbarRef"></Toolbar>
           </template>
         </BookInfo>
         <a-divider />
         <ChapterList :loading="loading" :Chapters="bookData.Index">
           <template #content="{ item }">
-            <ChapterOpt :chapter="item" @toggle="OnToggleChapter" :ref="chapterRefMap.get(item.IndexId)" />
+            <ChapterOpt :chapter="item as WebChapter" @toggle="OnToggleChapter" :ref="chapterRefMap.get(item.IndexId)" />
           </template>
         </ChapterList>
       </a-spin>
@@ -25,7 +25,7 @@
 
 <script lang="ts" setup>
 //类型引入
-import type { Book, Chapter } from '@/types/book';
+import type { Book, Chapter, WebChapter } from '@/types/book';
 import { WebBookStatus } from './data'
 import type { OneChapterStatus } from './data'
 
@@ -42,9 +42,7 @@ import ChapterOpt from './components/chapter-opt.vue';
 import ProcessBar from './components/processbar.vue';
 import { Notification } from '@arco-design/web-vue';
 
-import { queryBookById, } from '@/api/book';
-
-
+import { queryWebBookById, } from '@/api/book';
 
 
 //变量定义
@@ -56,11 +54,12 @@ const toolbarRef = ref<any>(null);       //工具栏对象
 //数据请求
 const queryBook = () => {
   curDoingProcent.value = -1;
-  return queryBookById(bookId).then((rsl: any) => {
+  return queryWebBookById(bookId).then((rsl: any) => {
     new Promise((ok: any) => {
       ok();
     }).then(() => {
-      rsl.data.Index.forEach((iCpt: Chapter) => {
+      rsl.data.Index.forEach((iCpt: WebChapter) => {
+        // console.log(iCpt);
         chapterRefMap.set(iCpt.IndexId, ref(null));
       })
     });
@@ -115,7 +114,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
   //单一章节更新成功
   socket.on(WebBookStatus.Success + `.${bookId}`, (chaptOne: OneChapterStatus) => {
     const curChapter = chapterRefMap.get(chaptOne.chapterId);
-    console.log(curChapter);
+    // console.log(curChapter);
     if (!curChapter) return;
     let thisCpt = bookData.value.Index.filter(c => c.IndexId == chaptOne.chapterId);
     if (thisCpt.length > 0) thisCpt[0].IsHasContent = true;

@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 export function getSystemVersion() {
   return axios.get('/services/version');
 }
@@ -48,4 +47,15 @@ export function getKindleInbox() {
  */
 export function saveKindleInbox(address: string) {
   return axios.post('/services/email/inbox', { address });
+}
+
+/**
+ * 发邮件
+ * @param {} email 
+ * @returns 
+ */
+export function sendAEMail(email:FormData) {
+  // console.log("准备发送邮件:", email);
+  // return new Promise(() => { });
+  return axios.post('/services/email/send', email);
 }

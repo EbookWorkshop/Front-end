@@ -31,6 +31,15 @@ export function addABook(book: any) {
 }
 
 /**
+ * 搜索书库
+ * @param setting 
+ * @returns 
+ */
+export function searchBook(setting: any) {
+  return axios.post(`/library/book/search`, setting);
+}
+
+/**
  * 添加一本空书入书库
  * @param book
  * @returns
@@ -41,4 +50,13 @@ export function addEmptyBook(book: {
   conver: string;
 }) {
   return axios.post(`/library/emptybook`, book);
+}
+
+/**
+ * 删除一本书
+ * @param bookId 书本id
+ * @returns 
+ */
+export function deleteABook(bookId: number) {
+  return axios.delete(`/library/book?bookid=${bookId}`)
 }

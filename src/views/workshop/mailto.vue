@@ -18,16 +18,16 @@
                   <a-select v-model="book.bookid" placeholder="请选择" @change="OnAddABook" allow-search>
                     <a-option v-for="item of allBookList" :value="item.BookId" :label="item.BookName" />
                   </a-select>
-                  <a-radio-group style="width:180px;" v-model:model-value="book.filetype">
+                  <a-radio-group style="width:280px;text-align: center;" v-model:model-value="book.filetype">
                     <a-radio value="pdf">PDF</a-radio>
                     <a-radio value="txt">TXT</a-radio>
+                    <a-radio value="epub">EPUB</a-radio>
                   </a-radio-group>
                 </a-form-item>
               </a-form-item>
               <a-form-item label="上传书籍">
                 <a-upload v-model:file-list="emailForm.fileList" :show-file-list="true" :auto-upload="false"
-                  :multiple="true" class="fileUpload">
-                </a-upload>
+                  :multiple="true" class="fileUpload"></a-upload>
               </a-form-item>
 
               <a-form-item>
@@ -48,12 +48,11 @@ import { reactive, ref } from 'vue';
 import { queryBookList } from '@/api/library'
 import { getSMTPServer, getKindleInbox } from '@/api/system';
 import useRequest from '@/hooks/request';
-import { FileItem } from '@arco-design/web-vue';
-
+import { FileItem, Message } from '@arco-design/web-vue';
+import { sendAEMail } from '@/api/system'
 import { Book } from '@/types/book'
 
 const dataLoading = ref(false);
-
 
 const { response: allBookList } = useRequest<Book[]>(queryBookList);
 // const {response:SendMail} = useRequest<any>(getSMTPServer);
@@ -87,7 +86,17 @@ function OnAddABook() {
  * 发邮件
  */
 function handleSubmit() {
+  const formData = new FormData();
+  emailForm.fileList.map(t => formData.append("bookFiles", t.file as File));
+  formData.append("sender", emailForm.from);
+  formData.append("mailto", emailForm.to);
+  formData.append("bookList", JSON.stringify(emailForm.bookList.filter(f => f.bookid != "请选择")));
 
+  sendAEMail(formData as any).then((rsl) => {
+    Message.success("已发送邮件。");
+  }).catch(err => {
+    Message.error("发送邮件失败：" + err);
+  });
 }
 
 </script>
@@ -96,7 +105,8 @@ function handleSubmit() {
 .fileUpload {
   div.arco-upload-list {
     .arco-upload-progress {
-      display: none;/* 文件进度条上的开始按钮 不做独立上传，不要开始按钮 */
+      display: none;
+      /* 文件进度条上的开始按钮 不做独立上传，不要开始按钮 */
     }
   }
 }

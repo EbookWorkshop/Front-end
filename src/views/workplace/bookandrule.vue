@@ -10,7 +10,7 @@
         <a-space>
           <a-button status="success" @click="createNewRule">添加</a-button>
         </a-space>
-        <a-table :columns="columns" :data="renderData" :loading="tableLoading">
+        <a-table :columns="columns" :data="renderData" :loading="tableLoading" :pagination="{ pageSize: 20 }">
           <template #name-filter="{
             filterValue,
             setFilterValue,
@@ -19,7 +19,7 @@
           }">
             <a-card hoverable :style="{ width: '320px', marginBottom: '20px' }" title="筛选">
               <a-form-item>
-                <a-select v-model="filterValue[0]" allow-clear placeholder="请选择书名"
+                <a-select v-model="filterValue[0]" allow-clear placeholder="请选择书名" allow-search
                   @change="(value) => { setFilterValue([value]); handleFilterConfirm() }">
                   <a-option v-for="item of uniqueRenderData" :value="item" :label="item" />
                 </a-select>
@@ -39,7 +39,7 @@
       <a-modal v-model:visible="visible" title="添加规则引用" @before-ok="handleBeforeOk">
         <a-form :model="form">
           <a-form-item field="book" label="书">
-            <SelectBook v-model="form.bookId" />
+            <SelectBook v-model="form.bookId" :is-multiple="false" />
           </a-form-item>
           <a-form-item field="name" label="校正规则">
             <a-select v-model="form.ruleId as number" :style="{ width: '100%' }" size="large" placeholder="请选校阅规则"
@@ -110,7 +110,7 @@ const columns = [
     dataIndex: 'bookName',
     filterable: {
       filter: (value: string, record: RuleAndBook) =>
-        record.bookName.includes(value),
+        record.bookName?.includes(value),
       slotName: 'name-filter',
       icon: () => h(IconSearch),
     },

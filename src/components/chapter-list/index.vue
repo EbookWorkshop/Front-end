@@ -27,9 +27,9 @@
 
 </template>
 <script lang="ts" setup>
-// import { computed } from "vue";
+import type { PropType  } from "vue";
 //类型引入
-import { Chapter } from '@/types/book';
+import { Chapter ,WebChapter} from '@/types/book';
 
 const props = defineProps({
     loading: {
@@ -37,8 +37,8 @@ const props = defineProps({
         default: false
     },
     Chapters: {
-        type: Array as () => Chapter[],
-        default: []
+        type: Array as PropType<Chapter[] | WebChapter[]>,
+        default: () => []
     }
 });
 

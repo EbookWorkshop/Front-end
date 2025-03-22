@@ -25,6 +25,17 @@ const LIBRARY: AppRouteRecordRaw = {
       },
     },
     {
+      path: 'search',
+      name: 'Search',
+      component: () => import('@/views/library/search.vue'),
+      meta: {
+        locale: 'menu.library.search',
+        requiresAuth: true,
+        icon: 'icon-search',
+        roles: ['*'],
+      },
+    },
+    {
       path: 'tagmanage',
       name: 'TagManage',
       component: () => import('@/views/library/tagmanage.vue'),

@@ -82,7 +82,7 @@ const initData = (data: IStepResult) => {
     cleanResult.result.forEach((c, i) => {
       let curTitle = c.name;
       if (data?.setting?.titleRule !== '') {
-        let rule = new RegExp(data?.setting?.titleRule);
+        let rule = new RegExp(data?.setting?.titleRule,"gm");
         let match = c.txt.match(rule);
         if (match) curTitle = match[1];
       }

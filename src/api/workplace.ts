@@ -7,6 +7,7 @@ export interface Rule {
   id: number; // 规则id
   Name: string; // 规则名称
   Rule: string; // 校阅内容
+  Replace: string; // 替换结果
 }
 export type RuleListType = Rule[];
 

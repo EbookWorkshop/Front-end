@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue';
+import { ref } from 'vue';
 import { FileItem } from '@arco-design/web-vue';
 import { reactive, toRaw } from 'vue';
 
@@ -42,9 +42,9 @@ const onFileChange = (fileList: FileItem[], curFile: FileItem) => {
   form.bookCover = curFile.file;
 };
 
-const handleSubmit =async (data: any) => {
+const handleSubmit = async (data: any) => {
   let result = await formRef.value.validate();
-  if(result?.bookName?.isRequiredError) return false;
+  if (result?.bookName?.isRequiredError) return false;
 
   return toRaw(form);
 };

@@ -5,21 +5,27 @@
                 <a-button-group type="primary">
                     <a-button shape="round" @click="onCheckAll(true)"> 全选 </a-button>
                     <a-button shape="round" @click="onCheckAll(false)"> 清空 </a-button>
-                    <a-button @click="onCheckEmpty"> 选空章节 </a-button>
+                </a-button-group>
+                <a-button-group type="primary">
+                    <a-button @click="onCheckEmpty" shape="round"> 选空章节 </a-button>
                     <a-button @click="onCheckNotEmpty"> 选非空章节 </a-button>
-                    <a-button @click="isShow = true"> 区段选择 </a-button>
-                    <a-button> 已隐藏章节 </a-button>
+                    <a-button @click="isShow = true" shape="round"> 区段选择 </a-button>
+                </a-button-group>
+                <a-button-group type="primary">
+                    <a-button shape="round"> 已隐藏章节 </a-button>
+                    <a-button @click="checkDescriptions = true">查重</a-button>
                     <a-button shape="round">来源管理</a-button>
                 </a-button-group>
             </a-space>
             <a-space>
                 <a-button-group type="primary">
-                    <a-button shape="round"> <icon-eye title="查看目录页面"/> </a-button>
+                    <a-button shape="round" title="查看目录页面" @click="openDefaultIndex"> <icon-eye /> </a-button>
                     <a-button :loading="isMerging" @click="mergeIndex"> 更新目录 </a-button>
+                    <a-button @click="isEditBookInfo = true"> 修改元数据 </a-button>
                     <a-button status="success" @click="isMustUpdate = !isMustUpdate">
                         <a-checkbox :model-value="isMustUpdate">强制更新</a-checkbox>
                     </a-button>
-                    <a-button status="success" @click="UpdateChapter">
+                    <a-button status="success" @click="UpdateChapter" :loading="btStatusGettingData">
                         <template #icon><icon-robot /></template>
                         <a-badge :count="chapterHasCheckedNum" :max-count="99999" :offset="[15, -10]">
                             抓取选中章节
@@ -35,33 +41,41 @@
         <a-form :model="data" layout="vertical">
             <a-form-item field="cBegin" label="开始章节:" required>
                 <a-select v-model="data.cBegin" :options="Chapters" :field-names="{ value: 'IndexId', label: 'Title' }"
-                    :virtual-list-props="{ height: 200 }" allow-search/>
+                    :virtual-list-props="{ height: 200 }" allow-search />
             </a-form-item>
             <a-form-item field="cLength" label="按数量选：">
                 <a-select placeholder="需要先选择【开始章节】" allow-create @change="onSetChapterLength">
-                    <a-option v-for="item of [10,50,250,500,1000]" :value="item" :key=item :label="`${item}`" />
-                </a-select>    
+                    <a-option v-for="item of [10, 50, 250, 500, 1000]" :value="item" :key=item :label="`${item}`" />
+                </a-select>
             </a-form-item>
             <a-form-item field="cEnd" label="结束章节:" required>
                 <a-select v-model="data.cEnd" :options="[...Chapters].reverse()"
-                    :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }" allow-search/>
+                    :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
+                    allow-search />
             </a-form-item>
         </a-form>
     </a-modal>
 
-
+    <EditBookInfo :visible="isEditBookInfo" :bookId="bookid ?? 0" @cancel="isEditBookInfo = false" />
+    <Descriptions :bookId="bookid?? 0" :show="checkDescriptions" @close="checkDescriptions = false"/>
 </template>
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { Chapter } from '@/types/book';
 import { ApiResultCode } from '@/types/global';
-import { mergeWebBookIndex, updateChapter } from '@/api/book';
+import { mergeWebBookIndex, updateChapter, queryBookDefaultSourcesById } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
+
+import EditBookInfo from '@/components/book-info/edit.vue';
+import Descriptions from '@/components/book-tool/duplicates.vue';
 
 const chapterHasCheckedNum = ref(0);    // 已选中的章节数
 const isMerging = ref(false);       //合并章节状态
 const isShow = ref(false);
 const isMustUpdate = ref(false);    //强制更新-覆盖更新
+const isEditBookInfo = ref(false);
+const btStatusGettingData = ref(false);
+const checkDescriptions = ref(false);
 
 const data = reactive<{
     cBegin: any,
@@ -87,13 +101,13 @@ const props = defineProps({
         default: new Map()
     }
 });
-const emit = defineEmits(["ToggleCheck","StartUpdateChapter"]);
+const emit = defineEmits(["ToggleCheck", "StartUpdateChapter"]);
 
 //定义回调函数
 defineExpose({
     updateChecked: () => {
         chapterHasCheckedNum.value = 0;
-        props.ChapterStatus?.forEach((value,key)=>{if(value)chapterHasCheckedNum.value++;});
+        props.ChapterStatus?.forEach((value, key) => { if (value) chapterHasCheckedNum.value++; });
     },
 });
 
@@ -121,8 +135,8 @@ function onSetChapter() {
 /**
  * 设置章节区段
  */
-function onSetChapterLength(value:any){
-    if(!data.cBegin) {
+function onSetChapterLength(value: any) {
+    if (!data.cBegin) {
         Message.error("需要先选择【开始章节】");
         return false;
     }
@@ -149,7 +163,7 @@ function mergeIndex() {
     return mergeWebBookIndex(props.bookid || -1)
         .then((result) => {
             isMerging.value = false;
-            Message.success('章节更新已完成');
+            Message.normal('已启动章节合并任务，请稍后');
         })
         .catch((err) => {
             isMerging.value = false;
@@ -161,6 +175,7 @@ function mergeIndex() {
  * 启动更新选中的章节
  */
 function UpdateChapter() {
+    btStatusGettingData.value = true;
     // console.log(props.CheckedChapter);
     let hasCheckChapter = [] as Array<number>;
     props.ChapterStatus?.forEach((value, key) => {
@@ -173,10 +188,12 @@ function UpdateChapter() {
     }
 
     updateChapter(props.bookid as number, hasCheckChapter, isMustUpdate.value).then((res: any) => {
-        if (res?.code == ApiResultCode.Success){
-             Message.info("已启动下载。");
-             emit("StartUpdateChapter",0);
+        if (res?.code == ApiResultCode.Success) {
+            Message.info("已启动下载。");
+            emit("StartUpdateChapter", 0);
         } else Message.error("启动失败，原因：" + res.msg)
+    }).finally(() => {
+        btStatusGettingData.value = false;
     });
 
 }
@@ -228,6 +245,17 @@ function onCheckEmpty() {
         chapterHasCheckedNum.value++;
 
         emit("ToggleCheck", c.IndexId, true);
+    });
+}
+
+/**
+ * 查看目录页面
+ */
+function openDefaultIndex() {
+    queryBookDefaultSourcesById(props.bookid ?? 0).then((res) => {
+        if (res.code == ApiResultCode.Success) {
+            window.open(res.data.Path);
+        }
     });
 }
 
