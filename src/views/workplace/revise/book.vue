@@ -24,7 +24,7 @@
                 </a-button>
                 <template #content>
                   <a-doption @click="onClickSplit(item.IndexId)">分割章节</a-doption>
-                  <a-doption>合并当前和下一章</a-doption>
+                  <a-doption @click="onMargeChapter(item.IndexId)">合并当前和下一章</a-doption>
                   <a-doption style="color: red;">删除章节</a-doption>
                 </template>
               </a-dropdown>
@@ -49,7 +49,8 @@
       </keep-alive>
       <!-- 编辑章节内容的弹出窗口 -->
       <a-modal fullscreen :visible="isEdit" @cancel="() => isEdit = false"
-        :title="curChapId == -1 ? '新增章节' : form.chapTitle" @ok="onSubmit">
+        :title="curChapId == -1 ? '新增章节' : form.chapTitle"
+        @ok="() => { return deleteChapter > 0 ? onSaveChapter() : onSubmit() }">
         <a-form :model="form" layout="vertical">
           <a-form-item field="chapTitle" label="章节标题">
             <a-input v-model="form.chapTitle" />
@@ -60,7 +61,7 @@
         </a-form>
       </a-modal>
 
-      <SplitTool v-model:model-value="isSplit" :id="splitId" :bookId="bookId" @submit="onSubmit" />
+      <SplitTool v-model:model-value="isSplit" :id="splitId" :bookId="bookId" />
     </div>
   </div>
 </template>
@@ -75,6 +76,7 @@ import {
   queryBookById,
   updateChapterOrder,
   editChapter,
+  restructureChapter,
 } from '@/api/book';
 import { AxiosResponse } from 'axios';
 
@@ -93,6 +95,7 @@ const { bookId } = useBookHelper();
 const loading = ref(true);
 const renderData = ref<Book | null>(null);//完整的 - 书本信息
 let maxOrderNum = 0;    //最大章节序号
+let deleteChapter = 0;  //合并章节时用-合并删除的章节
 
 nextTick(() => {
   loading.value = true;
@@ -126,6 +129,7 @@ const orderList = [] as Array<any>;
 const onClickChapter = (cid: number) => {
   curChapId.value = cid;
   isEdit.value = true;
+  deleteChapter = 0;
 
   if (cid == -1) {
     form.chapTitle = "";
@@ -145,6 +149,33 @@ const onClickChapter = (cid: number) => {
   });
 }
 
+const onMargeChapter = async (cid: number) => {
+  isEdit.value = true;
+  // 获取当前章节在列表中的位置
+  const currentIndex = renderData.value?.Index?.findIndex(chap => chap.IndexId === cid) ?? -1;
+  // 获取下一章节ID（当前章节位置+1）
+  const cidNext = currentIndex > -1 ? renderData.value?.Index?.[currentIndex + 1]?.IndexId : -1;
+  if (cidNext === -1) {
+    Message.error("没有找到可合并的下一章节");
+    return;
+  }
+  deleteChapter = cidNext;
+
+  try {
+    let result = await queryChapterById(cid);
+    form.chapTitle = result.data.Title as any
+    form.content = result.data.Content as any;
+    defTitle = result.data.Title;
+    defContent = result.data.Content ?? "";
+
+    result = await queryChapterById(cidNext);
+    form.content = form.content + result.data.Title + result.data.Content as any;
+  } catch (err) {
+    form.chapTitle = err.message || err;
+  }
+}
+
+
 const onClickSplit = (cid: number) => {
   isSplit.value = true;
   splitId.value = cid; // 设置当前要分割的章节ID
@@ -154,6 +185,7 @@ const onClickSplit = (cid: number) => {
  * 提交修改-单独修改单独章节标题/内容
  */
 const onSubmit = () => {
+  console.log("保存", deleteChapter)
   let result = {} as Chapter;
   let change = false;
   let reload = false;
@@ -186,6 +218,29 @@ const onSubmit = () => {
     });
     return;
   }
+}
+
+/**
+ * 合并章节保存
+ */
+function onSaveChapter() {
+  console.log("合并章节保存", deleteChapter)
+  if (deleteChapter <= 0) return;
+  restructureChapter({
+    "baseChapter": {
+      "bookId": bookId,
+      "chapterId": curChapId.value,
+      "content": form.content,
+      "title": form.title
+    },
+    "operations": [{
+      "operationType": "delete",
+      "chapters": [deleteChapter]
+    }]
+  }).then(rsl => {
+    Message.success("更新成功！");
+    isEdit.value = false;
+  })
 }
 
 /**
@@ -227,7 +282,7 @@ function onChangeOrdering(ordering: boolean) {
 
     loading.value = true;
     updateChapterOrder(edit).then(result => {
-      console.log("修改排序结果", result);
+      // console.log("修改排序结果", result);
       queryBookById(bookId).then((result: AxiosResponse<Book>) => {
         renderData.value = result.data;
       });

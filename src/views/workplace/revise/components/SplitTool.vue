@@ -89,8 +89,8 @@ const submit = () => {
     }
     restructureChapter(data).then(result => {
         Message.success('分割章节成功');
-        emiter('submit');
-        // emiter('update:modelValue', false);
+        // emiter('submit');
+        emiter('update:modelValue', false);
     }).catch(err => {
         Message.error(`分割章节失败：${err}`);
         console.log(err);
