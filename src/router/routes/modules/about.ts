@@ -22,20 +22,10 @@ const ABOUT: AppRouteRecordRaw = {
       meta: {
         locale: 'menu.about',
         requiresAuth: false,
-        activeMenu: '/about', // 这个属性可以设置高亮的菜单项
+        activeMenu: 'About', // 这个属性可以设置高亮的菜单项
         // hideInMenu: true, // 这个属性可以控制该路由是否在菜单中隐藏
       },
     },
-    // {
-    //   path: 'me', // 子路由默认路径为空字符串
-    //   name: 'AboutMe',
-    //   component: () => import('@/views/about/index.vue'),
-    //   meta: {
-    //     requiresAuth: false,
-    //     activeMenu: '/about', // 这个属性可以设置高亮的菜单项
-    //     // hideInMenu: true, // 这个属性可以控制该路由是否在菜单中隐藏
-    //   },
-    // },
   ],
 };
 

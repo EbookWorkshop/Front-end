@@ -76,6 +76,7 @@ const WORKPLACE: AppRouteRecordRaw = {
       meta: {
         requiresAuth: true,
         hideInMenu: true,
+        activeMenu:"revise",
         roles: ['*'],
       },
     },

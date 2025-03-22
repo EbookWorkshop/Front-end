@@ -63,6 +63,7 @@ const LIBRARY: AppRouteRecordRaw = {
       component: () => import('@/views/book/reading.vue'),
       meta: {
         requiresAuth: true,
+        activeMenu:"BookList",
         hideInMenu: true,
         roles: ['*'],
       },
@@ -73,6 +74,7 @@ const LIBRARY: AppRouteRecordRaw = {
       component: () => import('@/views/chapter/index.vue'),
       meta: {
         requiresAuth: true,
+        activeMenu:"BookList",
         hideInMenu: true,
         roles: ['*'],
       },
