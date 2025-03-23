@@ -8,34 +8,34 @@
           <template #toolbar>
             <a-row align="end" justify="start" style="height: 150px;">
               <a-col :span="24" :offset="2">
-              <a-space direction="horizontal" wrap>
-                <a-tag v-for="t of tagsData" :color="t.Color" :key="t.id" :style="{ cursor: 'pointer' }"
-                  :closable="delTagAble" @close="handleCloseTag(t.id)">
-                  {{ t.Text }}
-                </a-tag>
-
-
-                <!-- 添加标签工具 -->
-                <a-input v-if="showInput" ref="inputRef" :style="{ width: '90px' }" size="mini" v-model.trim="inputVal"
-                  @keyup.enter="handleAddTag" @blur="handleAddTag" />
-                <span v-else>
-                  <a-tag :style="{
-                    backgroundColor: 'var(--color-fill-2)',
-                    border: '1px dashed var(--color-fill-3)',
-                    cursor: 'pointer',
-                  }" @click="handleEdit">
-                    <template #icon>
-                      <icon-plus />
-                    </template>
+                <a-space direction="horizontal" wrap>
+                  <a-tag v-for="t of tagsData" :color="t.Color" :key="t.id" :style="{ cursor: 'pointer' }"
+                    :closable="delTagAble" @close="handleCloseTag(t.id)">
+                    {{ t.Text }}
                   </a-tag>
-                  <a-tag :style="{
-                    backgroundColor: 'var(--color-fill-2)',
-                    border: '1px dashed var(--color-fill-3)',
-                    cursor: 'pointer',
-                  }" @click="delTagAble = !delTagAble"> <template #icon><icon-delete /></template> </a-tag>
-                </span>
-                <!-- 添加标签工具 -->
-              </a-space>
+
+
+                  <!-- 添加标签工具 -->
+                  <a-input v-if="showInput" ref="inputRef" :style="{ width: '90px' }" size="mini"
+                    v-model.trim="inputVal" @keyup.enter="handleAddTag" @blur="handleAddTag" />
+                  <span v-else>
+                    <a-tag :style="{
+                      backgroundColor: 'var(--color-fill-2)',
+                      border: '1px dashed var(--color-fill-3)',
+                      cursor: 'pointer',
+                    }" @click="handleEdit">
+                      <template #icon>
+                        <icon-plus />
+                      </template>
+                    </a-tag>
+                    <a-tag :style="{
+                      backgroundColor: 'var(--color-fill-2)',
+                      border: '1px dashed var(--color-fill-3)',
+                      cursor: 'pointer',
+                    }" @click="delTagAble = !delTagAble"> <template #icon><icon-delete /></template> </a-tag>
+                  </span>
+                  <!-- 添加标签工具 -->
+                </a-space>
               </a-col>
             </a-row>
           </template>
@@ -44,7 +44,8 @@
         <ChapterList :loading="loading" :Chapters="renderData.Index">
           <template #content="{ item }">
             <a-button long @click="gotoChapter(item.IndexId)" :type="item.IsHasContent ? 'secondary' : 'secondary'"
-              :disabled="!item.IsHasContent" :size="renderData.Index.length < 50 ? 'large' : 'medium'">
+              :disabled="!item.IsHasContent" :size="renderData.Index.length < 50 ? 'large' : 'medium'"
+              class="chapterBar">
               {{ item.Title }}
             </a-button>
           </template>
@@ -106,3 +107,8 @@ function handleCloseTag(tagId: number) {
   removeTagForBook(bookId, tagId);
 }
 </script>
+<style lang="less">
+.chapterBar {
+  overflow: hidden;
+}
+</style>

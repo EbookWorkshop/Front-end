@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export interface MessageRecord {
   id: number;
-  type: "message" | "notice" | "todo"; //对应：通知、消息、待办
+  type: "notice" | "message" | "todo"; //对应：通知、消息、待办
   title: string;
   subTitle: string;
   avatar?: string;//头像地址

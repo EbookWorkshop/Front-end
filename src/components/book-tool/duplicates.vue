@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref } from 'vue';
 
 import { queryDuplicatesChapter } from '@/api/book';
 const expandedKeys = ref<number[]>([]);
