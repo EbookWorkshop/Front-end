@@ -205,6 +205,7 @@ socket.io.on(
       id: bookid,
       type: 'notice',
       title: `《${bookName}》已导入完成。`,
+      content: "",
       time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
       avatar: '/src/assets/logo.svg?t=12312213',
       status: 1,

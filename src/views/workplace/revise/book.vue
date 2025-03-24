@@ -154,7 +154,7 @@ const onMargeChapter = async (cid: number) => {
   // 获取当前章节在列表中的位置
   const currentIndex = renderData.value?.Index?.findIndex(chap => chap.IndexId === cid) ?? -1;
   // 获取下一章节ID（当前章节位置+1）
-  const cidNext = currentIndex > -1 ? renderData.value?.Index?.[currentIndex + 1]?.IndexId : -1;
+  const cidNext = (currentIndex > -1 ? renderData.value?.Index?.[currentIndex + 1]?.IndexId : -1) ?? 0;
   if (cidNext === -1) {
     Message.error("没有找到可合并的下一章节");
     return;
@@ -170,7 +170,7 @@ const onMargeChapter = async (cid: number) => {
 
     result = await queryChapterById(cidNext);
     form.content = form.content + result.data.Title + result.data.Content as any;
-  } catch (err) {
+  } catch (err: any) {
     form.chapTitle = err.message || err;
   }
 }
@@ -227,11 +227,11 @@ function onSaveChapter() {
   console.log("合并章节保存", deleteChapter)
   if (deleteChapter <= 0) return;
   restructureChapter({
+    "bookId": bookId,
     "baseChapter": {
-      "bookId": bookId,
       "chapterId": curChapId.value,
       "content": form.content,
-      "title": form.title
+      "title": form.chapTitle
     },
     "operations": [{
       "operationType": "delete",

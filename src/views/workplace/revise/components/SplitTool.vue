@@ -71,8 +71,8 @@ const loadData = (cid: number) => {
 
 const submit = () => {
     let data = {
+        bookId: param.bookId,
         baseChapter: {
-            bookId: param.bookId,
             chapterId: param.id,
             content: formData.content,
             orderNum: formData.orderNum,

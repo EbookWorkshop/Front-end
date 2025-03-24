@@ -60,7 +60,7 @@ import { useRoute } from 'vue-router';
 import useBookHelper from '@/hooks/book-helper';
 
 import ToolMenu from './components/toolmenu.vue'
-import ContentRenderer from './components/ContentRenderer.vue'
+import ContentRenderer, { type ContentItem } from './components/ContentRenderer.vue'
 
 const ASSETS_HOST = import.meta.env.VITE_API_BASE_URL;
 const route = useRoute();
@@ -72,13 +72,14 @@ const ftSize = ref(20);
 const ftFamily = ref("");
 const bgColor = ref("var(--color-bg-2)");
 const { chapterId, gotoChapter, gotoIndex } = useBookHelper();
-const processedContent = ref("");
+const processedContent = ref<ContentItem[]>([]);
+
 const { loading, response: renderData } = useRequest<Chapter>(() => new Promise((resolve, reject) => {
   queryChapterById(chapterId).then((res) => {
     let data = res.data;
     if (keyword.value && keyword.value?.length > 0) data.Content = data.Content?.replaceAll(keyword.value, `<span class='keyword'>${keyword.value}</span>`);
 
-    processedContent.value = data.Content?.split('\n').map(p => ({
+    processedContent.value = data.Content?.split('\n').map((p: String) => ({
       text: p.trim(),
       style: {
         color: ftColor.value,
