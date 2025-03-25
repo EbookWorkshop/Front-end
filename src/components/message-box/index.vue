@@ -66,15 +66,15 @@
   toRefs(messageData);
   const tabList: TabItem[] = [
     {
-      key: 'notice',//通知
+      key: 'notice',
       title: t('messageBox.tab.title.notice'),
     },
     {
-      key: 'message',//消息
+      key: 'message',
       title: t('messageBox.tab.title.message'),
     },
     {
-      key: 'todo',//待办
+      key: 'todo',
       title: t('messageBox.tab.title.todo'),
     },
   ];

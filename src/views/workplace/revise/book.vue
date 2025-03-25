@@ -5,7 +5,7 @@
       <BookInfo :loading="loading" :bookId="bookId" :BookName="renderData?.BookName" :convertImg="renderData?.CoverImg"
         :Author="renderData?.Author">
         <template #toolbar>
-          <Toolbar @EditChapterOrdering="onChangeOrdering" :bookid="bookId"></Toolbar>
+          <Toolbar @EditChapterOrdering="onChangeOrdering" :bookid="bookId" :chapters="renderData?.Index ?? []"></Toolbar>
         </template>
       </BookInfo>
       <a-divider />

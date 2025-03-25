@@ -101,7 +101,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, inject, reactive, watch } from 'vue';
-import { Message } from '@arco-design/web-vue';
+import { Message, Notification } from '@arco-design/web-vue';
 import { useDark, useToggle, useFullscreen } from '@vueuse/core';
 import { useAppStore, useUserStore } from '@/store';
 import { LOCALE_OPTIONS } from '@/locale';
@@ -200,7 +200,6 @@ socket.io.on(
 
 socket.io.on(
   "WebBook.Create.Finish", ({ bookid, bookName }) => {
-    Message.success(`《${bookName}》已导入完成。`);
     messageList.push({
       id: bookid,
       type: 'notice',
@@ -221,13 +220,21 @@ socket.io.on("Message.Box.Send", (msg) => {
 
 watch(messageList, (newValue, oldValue) => {
   let lastMsg = newValue[newValue.length - 1];
-  let t1 = new Date().getTime();
-  let t2 = new Date(lastMsg.time).getTime();
-  if (t1 - t2 > 1100) return;
+  // let t1 = new Date().getTime();
+  // let t2 = new Date(lastMsg.time).getTime();
+  // console.log("收到消息", lastMsg, t1, t2);
+  // if (t1 - t2 > 1100) return;
   if (lastMsg.type == "notice") {
-    Message.info(`[${lastMsg.title}]${lastMsg.content}`)
+    Notification.info({
+      id: lastMsg.id.toString(),
+      title: lastMsg.title,
+      content: lastMsg.content,
+      duration: 0,
+      showIcon: true,
+      closable: true,
+    })
   }
-})
+}, { deep: true })
 </script>
 
 <style scoped lang="less">
