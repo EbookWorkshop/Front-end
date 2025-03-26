@@ -1,6 +1,5 @@
 <template>
-  <a-modal fullscreen :visible="visible" title="格式化标题" @before-open="loadData()" @ok="submit"
-    @cancel="$emit('update:visible', false)">
+  <a-modal fullscreen :visible="visible" title="格式化标题" @ok="submit" @cancel="$emit('update:visible', false)">
     <div class="setPanel">
       <div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
         <a-form :model="formModel" layout="horizontal" label-align="right" label-col="{ span: 6 }"
@@ -23,8 +22,9 @@
               </a-form-item>
             </a-col>
             <a-col :span="24" style="text-align: center; margin-top: 10px;">
-              <a-button>刷新预览</a-button>
-              <a-button style="margin-left: 2px;">只看调整的</a-button>
+              <a-button @click="Reflush">刷新预览</a-button>
+              <a-button @click="ResetForm">重置</a-button>
+              <a-button style="margin-left: 2px;" @click="isShowDiffOnly = !isShowDiffOnly">只看调整的</a-button>
               <a-button style="margin-left: 10px;" type="primary" status="success" @click="submit">应用</a-button>
             </a-col>
           </a-row>
@@ -34,8 +34,14 @@
     <a-card :bordered="false" :style="{ width: '100%', marginTop: '100px' }">
       <a-card-grid v-for="(item, index) in chapterTitles" :key="index" :hoverable="chapterTitles.length <= 100"
         :class="chapterTitles.length > 200 ? 'L' : (chapterTitles.length > 80 ? 'M' : 'S')">
-        <a-card :bordered="false" :title="''">
-          {{ item.OldTitle }}
+        <a-card v-if="!isShowDiffOnly || (isShowDiffOnly && item.OldTitle != item.NewTitle)" :bordered="false"
+          :title="''">
+          <a-typography-paragraph>
+            <a-typography-text type="secondary">{{ item.OldTitle }}</a-typography-text>
+          </a-typography-paragraph>
+          <a-typography-text v-if="item.NewTitle != item.OldTitle" type="danger">
+            {{ item.NewTitle }}
+          </a-typography-text>
         </a-card>
       </a-card-grid>
     </a-card>
@@ -49,7 +55,7 @@ import { ref, reactive, watch } from 'vue';
 import { Message } from "@arco-design/web-vue";
 import {
   // queryChapterById,
-  // restructureChapter,
+  restructureChapter,
 } from '@/api/book';
 
 type ChapterTitle = {
@@ -74,7 +80,7 @@ const param = defineProps({
 })
 const emiter = defineEmits(['update:visible', 'submit'])
 
-
+const isShowDiffOnly = ref(false);
 
 watch(() => param.chapters, (newChapters) => {
   if (!newChapters) return;
@@ -86,13 +92,47 @@ watch(() => param.chapters, (newChapters) => {
   })));
 }, { immediate: true });
 
-const submit = () => {
+const submit = async () => {
+  let isDone = false;
+  const changeChapters = chapterTitles.filter(item => item.OldTitle !== item.NewTitle);
+  if (changeChapters.length === 0) {
+    Message.error('没有修改的标题');
+    return;
+  }
 
-  emiter('update:visible', false);
+  try {
+    const chaptersSetting = changeChapters.map(item => ({
+      chapterId: item.Id,
+      title: item.NewTitle,
+    }));
+
+    await restructureChapter({
+      bookId: param.bookId, operations: [{
+        operationType: 'update',
+        chapters: chaptersSetting,
+      }]
+    });
+    Message.success('格式化标题成功');
+
+    emiter('update:visible', false);
+  } catch (error) {
+    Message.error(`格式化标题失败：${error}`);
+  }
 }
 
-const loadData = () => {
+function Reflush(params: type) {
+  const reg = new RegExp(formModel.replaceReg, 'g');
+  chapterTitles.forEach((item) => {
+    item.NewTitle = item.NewTitle.replace(reg, formModel.replaceStr);
+  })
+}
 
+function ResetForm() {
+  // formModel.replaceReg = '';
+  // formModel.replaceStr = '';
+  chapterTitles.forEach((item) => {
+    item.NewTitle = item.OldTitle;
+  });
 }
 </script>
 <style lang="css">
