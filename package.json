@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@arco-design/web-vue": "^2.56.3",
-    "@vueuse/core": "^9.3.0",
+    "@vueuse/core": "^13.0.0",
     "axios": "^1.8.2",
     "dayjs": "^1.11.13",
     "lodash": "^4.17.21",
@@ -48,8 +48,8 @@
   },
   "devDependencies": {
     "@arco-plugins/vite-vue": "^1.4.5",
-    "@commitlint/cli": "^17.1.2",
-    "@commitlint/config-conventional": "^17.1.0",
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
     "@types/lodash": "^4.14.186",
     "@types/mockjs": "^1.0.7",
     "@types/nprogress": "^0.2.0",
@@ -83,7 +83,7 @@
     "stylelint-config-standard": "^28.0.0",
     "stylelint-order": "^6.0.4",
     "typescript": "^5.8.2",
-    "unplugin-vue-components": "^0.24.1",
+    "unplugin-vue-components": "^28.4.1",
     "vite": "^6.2.1",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-eslint": "^1.8.1",

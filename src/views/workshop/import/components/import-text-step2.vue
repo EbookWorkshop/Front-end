@@ -7,7 +7,7 @@
         minWidth: '500px',
         marginTop: '40px',
         // border: '1px solid var(--color-border)'
-      }" min="80px" disabled size="0.618">
+      }" min="80px" disabled max="Infinity" size="0.618">
         <template #first>
           <a-card hoverable :style="{
             overflow: 'hidden',
@@ -67,7 +67,8 @@
                   <dt>删除空行：</dt>
                   <dd><a-tag>^\s*\n</a-tag></dd>
                   <dt>删除胡乱换行：</dt>
-                  <dd><a-tag>{{ '(?<![.：。？！…”’])\\r?\\n(\\s+)?' }}</a-tag></dd>
+                  <dd><a-tag>(?^&lt;![.：。？！…”’])\r?\n(\s +)?</a-tag>
+                  </dd>
                 </dl>
               </dd>
             </dl>
@@ -80,8 +81,8 @@
 
 <script lang="ts" setup>
 import { PropType, reactive, ref, h } from 'vue';
-import { FileItem, Modal, Table, Tag, Space } from '@arco-design/web-vue';
-import { FormInstance } from '@arco-design/web-vue/es/form';
+import { Modal, Table, Tag, Space } from '@arco-design/web-vue';
+import type { FileItem, FormInstance } from '@arco-design/web-vue';
 import { IChapter, IForm, IStepResult } from './utils';
 import { cleanContent, cutContent } from './utils';
 import useLoading from '@/hooks/loading';
@@ -146,7 +147,7 @@ function testCleanRule() {
     });
     return;
   }
-  formRef.value?.validate((formOk) => {
+  formRef.value?.validate((formOk: FormInstance) => {
     if (formOk?.encoderType?.isRequiredError) return;
     let runRsl = cleanContent(contents, form.removeRule);
     let showResult: Array<{
@@ -195,7 +196,7 @@ function testCutRule() {
     });
     return;
   }
-  formRef.value?.validate((formOk) => {
+  formRef.value?.validate((formOk: FormInstance) => {
     if (formOk?.encoderType?.isRequiredError) return;
     let cutRsl = cutContent(contents, form.titleRule);
     let showTitle = cutRsl.map((c) => c.Title);

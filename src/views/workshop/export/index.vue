@@ -138,8 +138,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, h } from 'vue';
-import { FormInstance } from '@arco-design/web-vue/es/form';
+import { ref } from 'vue';
+import type { FormInstance } from '@arco-design/web-vue';
 import SelectBook from '@/components/select-book/index.vue'
 
 import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';

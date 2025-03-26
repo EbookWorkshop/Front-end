@@ -5,7 +5,7 @@
             <a-split :style="{
                 width: '100%',
                 minWidth: '800px',
-            }" min="80px">
+            }" min="80px" max="Infinity">
                 <template #first>
                     <input type="hidden" :value="form.id" />
                     <a-form-item field="name" label="书名">

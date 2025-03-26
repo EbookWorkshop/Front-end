@@ -6,7 +6,7 @@
                 height: '90vh',
                 width: '100%',
                 minWidth: '500px',
-            }" min="80px">
+            }" min="80px" max="Infinity">
                 <template #first>
                     <a-form-item field="chapTitle" label="章节标题" style="padding-right: 10px;">
                         <a-input v-model="formData.chapTitle" />

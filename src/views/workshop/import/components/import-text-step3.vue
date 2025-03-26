@@ -6,7 +6,7 @@
       minWidth: '500px',
       marginTop: '40px',
       // border: '1px solid var(--color-border)'
-    }" min="80px" size="0.618" disabled>
+    }" min="80px" size="0.618" max="Infinity" disabled>
       <template #first>
         <a-card hoverable :style="{
           overflow: 'hidden',

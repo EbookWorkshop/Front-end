@@ -15,7 +15,7 @@
             <a-card hoverable :style="{ width: '320px' }" title="规则-筛选">
               <a-form-item>
                 <a-input-search v-model="filterValue[0]" placeholder="输入筛选内容" @search="handleFilterConfirm"
-                  @change="(value: any) => {setFilterValue([value]);handleFilterConfirm()}" />
+                  @change="(value: any) => { setFilterValue([value]); handleFilterConfirm() }" />
                 <a-button @click="handleFilterReset">重置</a-button>
               </a-form-item>
             </a-card>
@@ -25,7 +25,7 @@
             <a-card hoverable :style="{ width: '320px' }" title="替换内容-筛选">
               <a-form-item>
                 <a-select v-model="filterValue[0]" allow-clear placeholder="请选择筛选内容" allow-search
-                  @change="(value) => { setFilterValue([value]); handleFilterConfirm() }">
+                  @change="(value: string) => { setFilterValue([value]); handleFilterConfirm() }">
                   <a-option v-for="item of uniqueRenderData" :value="item" :label="item" />
                 </a-select>
                 <a-button @click="handleFilterReset">重置</a-button>
@@ -63,7 +63,7 @@
         <a-form :model="testForm">
           <a-form-item field="book" label="书">
             <SelectBook v-model="testForm.bookId"
-              @change="queryBookById(testForm.bookId).then((result) => { Chapters = result.data.Index.filter((i: any) => i.IsHasContent) })" />
+              @change="queryBookById(testForm.bookId).then((result: any) => { Chapters = result.data.Index.filter((i: any) => i.IsHasContent) })" />
           </a-form-item>
           <a-form-item field="chapter" label="章节">
             <a-select v-model="testForm.chapterId as number" :options="Chapters"
@@ -218,7 +218,7 @@ const uniqueRenderData = computed(() => {
 /**
  * 保存提交
  */
-const handleBeforeOk =async (callback: any) => {
+const handleBeforeOk = async (callback: any) => {
   let result = await formRef.value?.validate();
   if (result) { //校验不通过
     callback(false);
