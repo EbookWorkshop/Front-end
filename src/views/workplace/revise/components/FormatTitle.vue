@@ -120,7 +120,7 @@ const submit = async () => {
   }
 }
 
-function Reflush(params: type) {
+function Reflush() {
   const reg = new RegExp(formModel.replaceReg, 'g');
   chapterTitles.forEach((item) => {
     item.NewTitle = item.NewTitle.replace(reg, formModel.replaceStr);

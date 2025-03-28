@@ -73,30 +73,17 @@
                       </a-select>
                     </a-form-item>
                     <a-form-item label="获取内容" :field="`rules.${index}.getContentAction`">
-                      <a-popover position="tl" title="表达式说明">
-                        <a-textarea v-model="rule.getContentAction" placeholder="获取内容的表达式" />
-                        <template #content>
-                          <p>[attr]：如<a-tag color="green">attr/innerText</a-tag>代表从命中节点对象的innerText属性获取内容。</p>
-                          <p>[cache]：如<a-tag color="green">cache/src</a-tag>代表从src的前面加上“cache::”字符串，目前看没什么特殊逻辑在。</p>
-                          <p style="text-decoration: line-through red wavy;">[fun]：如<a-tag color="red">fun/action</a-tag>代表从命中节点对象执行方法action()。</p>
-                        </template>
-                      </a-popover>
+                      <SelectAction v-model="rule.getContentAction" />
                     </a-form-item>
-                    <a-form-item label="获取链接" :field="`rules.${index}.getUrlAction`">
-                      <a-popover position="tl" title="表达式说明">
-                        <a-textarea v-model="rule.getUrlAction" placeholder="获取超链接地址的表达式" />
-                        <template #content>
-                          <p>[attr]：如<a-tag color="green">attr/innerText</a-tag>代表从命中节点对象的innerText属性获取内容。</p>
-                          <p>[cache]：如<a-tag color="green">cache/src</a-tag>代表从src的前面加上“cache::”字符串，目前看没什么特殊逻辑在。</p>
-                          <p style="text-decoration: line-through red wavy;">[fun]：如<a-tag color="red">fun/action</a-tag>代表从命中节点对象执行方法action()。</p>
-                        </template>
-                      </a-popover>
+                    <a-form-item v-if="[`ChapterList`, `IndexNextPage`, `ContentNextPage`].includes(rule.ruleName)"
+                      label="获取链接" :field="`rules.${index}.getUrlAction`">
+                      <SelectAction v-model="rule.getUrlAction" />
                     </a-form-item>
                     <a-form-item label="内容类型" :field="`rules.${index}.type`">
-                      <a-select v-model="rule.type" placeholder="按哪种方式获取内容">
-                        <a-option value="Object">一次一个目标</a-option>
-                        <a-option value="List">一次多个目标</a-option>
-                      </a-select>
+                      <a-radio-group v-model="rule.type" type="button" >
+                        <a-radio value="Object">一次一个目标（独立元素）</a-radio>
+                        <a-radio value="List">一次多个目标（列表型）</a-radio>
+                      </a-radio-group>
                     </a-form-item>
                     <a-form-item label="命中匹配校验" :field="`rules.${index}.checkSetting`">
                       <a-input v-model="rule.checkSetting" placeholder="判断是否命中的文本。如相同的选择器，只匹配‘下一页’不匹配‘下一章’" />
@@ -115,7 +102,7 @@
             </a-col>
           </a-row>
         </a-form>
-        <a-modal v-model:visible="formUrlForVisVisible" title="首先：请提供两个网址用于辅助预览">
+        <a-modal v-model:visible="formUrlForVisVisible" title="首先：请提供两个网址用于辅助预览" @ok="onSetVisUrl">
           <a-form :model="formUrlForVis" layout="vertical">
             <a-form-item field="indexUrl" label="图书章节目录页网址:">
               <a-input v-model="formUrlForVis.indexUrl" />
@@ -161,6 +148,8 @@ import WebList from './components/web-list.vue';
 import { rulesOptions } from './data';  // 规则类型选项
 import useRequest from '@/hooks/request';
 
+import SelectAction from './components/SelectAction.vue';
+
 
 const formUrlForVisVisible = ref(false); // 配置弹窗是否显示
 const formUrlForVis = reactive({ indexUrl: '', contentUrl: '' }); // 弹窗表单——辅助预览的网址采集表单
@@ -183,7 +172,7 @@ const form = reactive({
       selector: '',
       type: 'Object',
       checkSetting: '',
-      getContentAction: '',
+      getContentAction: 'attr/',
       getUrlAction: '',
       removeSelector: [],
     },
@@ -263,7 +252,7 @@ function changeRuleNamelist(result: string[] | any) {
       selector: '',
       type: 'Object',
       checkSetting: '',
-      getContentAction: '',
+      getContentAction: 'attr/',
       getUrlAction: '',
       removeSelector: [],
     });
@@ -275,10 +264,12 @@ function changeRuleNamelist(result: string[] | any) {
  */
 function resetForm() {
   form.hostname = '';
-  form.rulename = ['BookName'];
+  form.rulename = ['BookName', 'ChapterList', 'Content'];
   form.rules = [];
-  changeRuleNamelist(['BookName']);
+  changeRuleNamelist(form.rulename);
 }
+//初始化表单
+resetForm();
 
 /**
  * 打开检查网站——看看网站是不是挂了
@@ -340,6 +331,11 @@ const toggleFormUrl4Vis = () => {
   if (isUseVisModel.value)
     formUrlForVisVisible.value = !formUrlForVisVisible.value;
 };
+
+function onSetVisUrl() {
+  let visUrl = new URL(formUrlForVis.indexUrl);
+  form.hostname = visUrl.hostname;
+}
 
 /**
  * 检查站点存活情况
