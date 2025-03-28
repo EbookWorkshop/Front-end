@@ -7,15 +7,21 @@
         </a-input-group>
         <template #content>
             <div v-if="valueParts[0] === `attr`">
-                <p>action常见值：<a-typography-text code>innerText</a-typography-text><a-typography-text
-                        code>href</a-typography-text></p>
+                <p>当前规则为：属性模式——直接读取命中元素对应属性的值。</p>
+                <p>action常见值：
+                    <a-typography-text code>innerText</a-typography-text>
+                    <a-typography-text code>href</a-typography-text>
+                </p>
                 <p>实际将执行：document.querySelector("className").{{ valueParts[1] }}</p>
             </div>
             <div v-else-if="valueParts[0] === `fun`">
+                <p>当前规则为：函数模式——在命中元素上直接执行指定函数，可以传入参数。</p>
                 <p>action常见值：<a-typography-text code>getAttribute</a-typography-text></p>
-                <p>实际将执行：document.querySelector("className").{{ valueParts[1] }}({{ valueParts[2] }})</p>
+                <p>实际将执行：document.querySelector("className").{{ valueParts[1] }}({{
+                    valueParts[2] ? `"${valueParts[2]}"` : '' }})</p>
             </div>
             <div v-else>
+                <p>当前规则为：。。。。——还没想好，目前上面两种模式已经够用了</p>
                 <p>开发中</p>
             </div>
             <p>生成执行表达式：{{ valueFormat(valueParts) }}</p>
@@ -58,10 +64,7 @@ function valueFormat(vals: string[] | null | undefined) {
 
 const type = computed({
     get: () => valueParts.value[0],
-    set: (val) => {
-        console.log('set', val);
-        valueParts.value = [val, '', '']
-    }
+    set: (val) => { valueParts.value = [val, '', ''] }
 });
 
 const action = computed({

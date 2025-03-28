@@ -40,7 +40,7 @@
               <a-space direction="vertical" size="large" :style="{ width: '100%' }">
                 <a-form-item field="hostname" label="网站域名" :rules="[{ required: true, message: '网站名为必填' }]"
                   :validate-trigger="['change', 'input']">
-                  <a-input-search v-model="form.hostname" placeholder="网站域名（域名，如：book.xiaoshuo.com）" search-button>
+                  <a-input-search v-model="form.hostname" placeholder="网站域名（域名，如：book.xiaoshuo.com）" search-button @blur="FormatHost">
                     <template #button-icon>
                       <a-tooltip content="打开当前网站">
                         <icon-launch @click="CheckThisWeb" />
@@ -68,7 +68,7 @@
                       <a-input v-model="rule.selector" placeholder="CSS选择器" />
                     </a-form-item>
                     <a-form-item label="删除的元素" :field="`rules.${index}.removeSelector`">
-                      <a-select v-model="rule.removeSelector" placeholder="通过CSS选择器匹配，命中的元素会从DOM中删除。用于去广告。" multiple
+                      <a-select v-model="rule.removeSelector" placeholder="通过CSS选择器匹配，命中的元素会从DOM中删除。用于去广告/按钮。" multiple
                         allow-create>
                       </a-select>
                     </a-form-item>
@@ -79,13 +79,13 @@
                       label="获取链接" :field="`rules.${index}.getUrlAction`">
                       <SelectAction v-model="rule.getUrlAction" />
                     </a-form-item>
-                    <a-form-item label="内容类型" :field="`rules.${index}.type`">
-                      <a-radio-group v-model="rule.type" type="button" >
+                    <a-form-item label="内容类型" :field="`rules.${index}.type`" tooltip="部分规则即使配置了多个目标也不生效的，如‘书名’、‘标题’、‘正文’等">
+                      <a-radio-group v-model="rule.type" type="button">
                         <a-radio value="Object">一次一个目标（独立元素）</a-radio>
                         <a-radio value="List">一次多个目标（列表型）</a-radio>
                       </a-radio-group>
                     </a-form-item>
-                    <a-form-item label="命中匹配校验" :field="`rules.${index}.checkSetting`">
+                    <a-form-item label="命中匹配校验" :field="`rules.${index}.checkSetting`" tooltip="注意：当需要使用命中匹配时，内容类型要选【一次多个目标】">
                       <a-input v-model="rule.checkSetting" placeholder="判断是否命中的文本。如相同的选择器，只匹配‘下一页’不匹配‘下一章’" />
                     </a-form-item>
                     <a-button v-if="isUseVisModel" status="warning" @click="VisRuleSetting(rule)">预览规则：{{
@@ -423,6 +423,10 @@ function importScheme(fileItem: FileItem) {
     Message.error(fileItem.response.msg);
   }
 
+}
+function FormatHost() {
+  let host = new URL(form.hostname);
+  if (host != null && host.hostname != form.hostname) form.hostname = host.hostname;
 }
 </script>
 
