@@ -24,7 +24,7 @@ export function queryTagByBookId(id: number) {
  * @returns
  */
 export function addTagForBook(bookid: number, text: string) {
-  return axios.post(`/library/tag`, {
+  return axios.post<HttpResponse<Tag>>(`/library/tag`, {
     bookId: bookid,
     tagText: text,
   });

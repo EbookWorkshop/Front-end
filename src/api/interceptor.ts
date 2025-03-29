@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { HttpResponse } from '@/types/global';
+import { HttpResponse, ApiResultCode } from '@/types/global';
 import type {
   InternalAxiosRequestConfig,
   AxiosRequestHeaders,
@@ -39,7 +39,7 @@ axios.interceptors.response.use(
   (response: AxiosResponse<HttpResponse | any, any>) => {
     const res = response.data;
     // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
+    if (res.code !== ApiResultCode.Success) {
       Message.error({
         content: res.msg || '未知错误',
         duration: 5 * 1000,
