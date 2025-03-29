@@ -12,7 +12,7 @@ const props = defineProps<Props>();
 
 // 内部状态管理
 const { response: tags } = useRequest<Array<Tag>>(
-  () => queryTagByBookId(props.bookId)
+  () => queryTagByBookId(props.bookId), []
 );
 const { response: allTags } = useRequest<Array<Tag>>(getAllTag);
 

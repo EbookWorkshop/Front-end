@@ -11,6 +11,15 @@
           <a-button status="success" @click="createNewRule">添加</a-button>
         </a-space>
         <a-table :columns="columns" :data="renderData" :loading="tableLoading" :pagination="{ pageSize: 20 }">
+          <template #rulename-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
+            <a-card hoverable :style="{ width: '320px' }" title="规则名称-筛选">
+              <a-form-item>
+                <a-input-search v-model="filterValue[0]" placeholder="输入筛选内容" @search="handleFilterConfirm"
+                  @change="(value: any) => { setFilterValue([value]); handleFilterConfirm() }" />
+                <a-button @click="handleFilterReset">重置</a-button>
+              </a-form-item>
+            </a-card>
+          </template>
           <template #rule-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
             <a-card hoverable :style="{ width: '320px' }" title="规则-筛选">
               <a-form-item>
@@ -123,6 +132,11 @@ const columns = [
   {
     title: '规则名称',
     dataIndex: 'Name',
+    filterable: {
+      filter: (value: string, record: Rule) => record.Name.includes(value),
+      slotName: 'rulename-filter',
+      icon: () => h(IconSearch),
+    },
   },
   {
     title: '规则',
