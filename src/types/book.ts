@@ -6,6 +6,7 @@ export interface Book {
     BookName: string;
     CoverImg: string;
     Author: string;
+    Introduction: string;
     FontFamily: string;
     FontSize: number;
     Index: Chapter[];

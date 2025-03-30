@@ -4,9 +4,9 @@
     <div class="wrapper">
       <a-spin :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%">
         <BookInfo :loading="loading" :bookId="bookId" :BookName="renderData.BookName" :convertImg="renderData.CoverImg"
-          :Author="renderData.Author">
+          :Author="renderData.Author" :Introduction="renderData.Introduction">
           <template #toolbar>
-            <a-row align="end" justify="start" style="height: 150px;">
+            <a-row align="end" justify="start" style="height: 50px;">
               <a-col :span="24" :offset="2">
                 <TagToolbar :book-id="bookId" />
               </a-col>

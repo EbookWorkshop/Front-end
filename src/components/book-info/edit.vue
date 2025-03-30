@@ -21,8 +21,8 @@
                             </a-option>
                         </a-select>
                     </a-form-item>
-                    <a-form-item field="overview" label="简介">
-                        <a-textarea v-model="form.overview"></a-textarea>
+                    <a-form-item field="introduction" label="简介">
+                        <a-textarea v-model="form.introduction"></a-textarea>
                     </a-form-item>
 
                 </template>
@@ -77,7 +77,7 @@ async function LoadData() {
         form.name = bookInfo.BookName;
         form.author = bookInfo.Author ?? '佚名';
         form.font = bookInfo.FontFamily;
-        form.overview = bookInfo.overview;
+        form.introduction = bookInfo.Introduction;
         form.bookCover = bookInfo.CoverImg;
         form.coverType = bookInfo.CoverImg.startsWith("#") ? "线装本" : "图片";
         oldBookMeta = { ...form };
@@ -91,7 +91,7 @@ const form = reactive<any>({
     name: '',
     author: '',
     font: '',
-    overview: '',
+    introduction: '',
     bookCover: '',
     coverType: "线装本",
 });

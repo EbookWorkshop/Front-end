@@ -1,5 +1,5 @@
 <template>
-    <a-row align="end" justify="center" style="height: 150px;">
+    <a-row align="end" justify="center">
         <a-space direction="vertical">
             <a-space>
                 <a-button-group type="primary">

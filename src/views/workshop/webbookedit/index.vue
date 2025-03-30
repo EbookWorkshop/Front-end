@@ -5,7 +5,7 @@
       <ProcessBar :bookid="bookId" :begin-percent="curDoingProcent" />
       <a-spin :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%">
         <BookInfo :loading="loading" :bookId="bookId" :BookName="bookData.BookName" :convertImg="bookData.CoverImg"
-          :Author="bookData.Author">
+          :Author="bookData.Author" :Introduction="bookData.Introduction">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Chapters="bookData.Index"
               :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar"

@@ -3,9 +3,10 @@
     <Breadcrumb :items="['menu.workplace', 'menu.workplace.revise', renderData?.BookName]" />
     <div class="wrapper">
       <BookInfo :loading="loading" :bookId="bookId" :BookName="renderData?.BookName" :convertImg="renderData?.CoverImg"
-        :Author="renderData?.Author">
+        :Author="renderData?.Author" :Introduction="renderData?.Introduction">
         <template #toolbar>
-          <Toolbar @EditChapterOrdering="onChangeOrdering" :bookid="bookId" :chapters="renderData?.Index ?? []"></Toolbar>
+          <Toolbar @EditChapterOrdering="onChangeOrdering" :bookid="bookId" :chapters="renderData?.Index ?? []">
+          </Toolbar>
         </template>
       </BookInfo>
       <a-divider />

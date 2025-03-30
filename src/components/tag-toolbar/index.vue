@@ -64,3 +64,8 @@ const handleDeleteTag = (tagId: number) => {
     </span>
   </a-space>
 </template>
+<style lang="css">
+.arco-select-option-content {
+  width: 100%;
+}
+</style>
