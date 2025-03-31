@@ -22,10 +22,10 @@
                         </a-select>
                     </a-form-item>
                     <a-form-item field="introduction" label="简介">
-                        <a-textarea v-model="form.introduction"></a-textarea>
+                        <a-textarea v-model="form.introduction" :auto-size="{ minRows: 4, maxRows: 13 }"></a-textarea>
                     </a-form-item>
-
                 </template>
+
                 <template #second>
                     <a-form-item field="bookCover" label="封面模式">
                         <a-radio-group v-model="form.coverType" type='button'>

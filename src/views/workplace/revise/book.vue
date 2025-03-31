@@ -27,6 +27,8 @@
                   <a-doption @click="onClickSplit(item.IndexId)">分割章节</a-doption>
                   <a-doption @click="onMargeChapter(item.IndexId)">合并当前和下一章</a-doption>
                   <a-doption style="color: red;">删除章节</a-doption>
+                  <a-doption>隐藏章节</a-doption>
+                  <a-doption>设为简介</a-doption>
                 </template>
               </a-dropdown>
             </a-button-group>
