@@ -50,7 +50,7 @@
           </template>
         </a-table>
       </div>
-      <a-modal v-model:visible="visible" title="设置规则" @before-ok="handleBeforeOk">
+      <a-modal v-model:visible="visible" title="设置规则" @before-ok="handleBeforeOk" draggable unmount-on-close>
         <a-form :model="form" ref="formRef" :rules="formRules">
           <input type="hidden" :value="form.id" />
           <a-form-item field="name" label="规则名" :rules="[{ required: true, message: '规则名必须填写' }]">

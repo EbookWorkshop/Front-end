@@ -1,6 +1,6 @@
 <template>
     <a-modal :visible="visible" title="修改元数据" @before-ok="handleBeforeOk" @cancel="emit('cancel')" width="auto"
-        @before-open="LoadData">
+        @before-open="LoadData" draggable>
         <a-form :model="form">
             <a-split :style="{
                 width: '100%',

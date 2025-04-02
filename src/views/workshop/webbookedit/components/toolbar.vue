@@ -37,7 +37,7 @@
         </a-space>
     </a-row>
 
-    <a-modal v-model:visible="isShow" title="区段选择" @ok="onSetChapter">
+    <a-modal v-model:visible="isShow" title="区段选择" @ok="onSetChapter" draggable unmount-on-close>
         <a-form :model="data" layout="vertical">
             <a-form-item field="cBegin" label="开始章节:" required>
                 <a-select v-model="data.cBegin" :options="Chapters" :field-names="{ value: 'IndexId', label: 'Title' }"

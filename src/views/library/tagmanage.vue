@@ -27,7 +27,7 @@
           </template>
         </a-table>
       </div>
-      <a-modal v-model:visible="visible" title="标签" @before-ok="handleBeforeOk">
+      <a-modal v-model:visible="visible" title="标签" @before-ok="handleBeforeOk" draggable unmount-on-close>
         <a-form :model="form">
           <input type="hidden" :value="form.id" />
           <a-form-item field="text" label="标签">

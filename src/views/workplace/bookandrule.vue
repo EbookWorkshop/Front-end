@@ -36,7 +36,7 @@
           </template>
         </a-table>
       </div>
-      <a-modal v-model:visible="visible" title="添加规则引用" @before-ok="handleBeforeOk">
+      <a-modal v-model:visible="visible" title="添加规则引用" @before-ok="handleBeforeOk" draggable unmount-on-close>
         <a-form :model="form">
           <a-form-item field="book" label="书">
             <SelectBook v-model="form.bookId" :is-multiple="false" />

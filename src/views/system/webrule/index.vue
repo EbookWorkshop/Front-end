@@ -10,10 +10,7 @@
                 <a-button type="primary" @click="resetForm">新增新方案</a-button>
                 <a-button type="primary" @click="showWebList">编辑现有方案</a-button>
                 <a-button type="primary" @click="CheckSiteAccessibility">检查站点存活情况</a-button>
-                <a-affix :offset-top="8">
-                  <a-button type="primary" status="success" html-type="submit"
-                    :disabled="form.hostname.length == 0">保存当前方案</a-button>
-                </a-affix>
+                <a-button type="primary" status="success" html-type="submit" :disabled="form.hostname.length == 0">保存当前方案</a-button>
                 <a-popconfirm content="你确定要删除当前站点配置？这将无法恢复。" type="warning" @ok="DeleteIt">
                   <a-button type="primary" status="danger" :disabled="form.hostname.length == 0">删除当前方案</a-button>
                 </a-popconfirm>
@@ -34,7 +31,7 @@
               </a-space>
             </a-col>
           </a-row>
-          <a-row style="margin-top: 50px">
+          <a-row style="margin-top: 50px;">
             <a-col :span="20">
               <!--方案表单 -->
               <a-space direction="vertical" size="large" :style="{ width: '100%' }">
@@ -49,62 +46,74 @@
                     </template>
                   </a-input-search>
                 </a-form-item>
+                <a-form-item label="超时设置" field="timeout">
+                  <a-input v-model="form.timeout" placeholder="不填默认就是3000ms" allow-clear>
+                    <template #append>
+                      ms
+                    </template>
+                  </a-input>
+                </a-form-item>
                 <a-form-item field="rulename" label="添加规则" :rules="[{ required: true, message: '至少得有一个规则' }]"
                   :validate-trigger="['change', 'input']">
                   <a-select v-model="form.rulename" placeholder="选择需要启用的规则" multiple :options="rulesOptions"
                     @change="changeRuleNamelist">
                   </a-select>
                 </a-form-item>
-                <a-form-item v-for="(rule, index) of form.rules" :key="index" :field="`rules.${index}.ruleShowName`"
-                  :label="rule.ruleShowName">
-                  <a-space direction="vertical" fill style="width: 100%">
-                    <a-divider />
-                    <input v-model="rule.ruleName" type="hidden" />
-                    <a-form-item label="选择器" :field="`rules.${index}.selector`" :rules="[
-                      {
-                        required: true,
-                        message: '选择器为必填，用于命中操作元素。',
-                      },
-                    ]" :validate-trigger="['change', 'input']">
-                      <a-input v-model="rule.selector" placeholder="CSS选择器" />
+                <a-row style="max-height: 80vh;overflow-y: auto;">
+                  <a-col>
+                    <a-form-item v-for="(rule, index) of form.rules" :key="index" :field="`rules.${index}.ruleShowName`"
+                      :label="rule.ruleShowName">
+                      <a-space direction="vertical" fill style="width: 100%">
+                        <a-divider />
+                        <input v-model="rule.ruleName" type="hidden" />
+                        <a-form-item label="选择器" :field="`rules.${index}.selector`" :rules="[
+                          {
+                            required: true,
+                            message: '选择器为必填，用于命中操作元素。',
+                          },
+                        ]" :validate-trigger="['change', 'input']">
+                          <a-input v-model="rule.selector" placeholder="CSS选择器" />
+                        </a-form-item>
+                        <a-form-item label="删除的元素" :field="`rules.${index}.removeSelector`">
+                          <a-select v-model="rule.removeSelector" placeholder="通过CSS选择器匹配，命中的元素会从DOM中删除。用于去广告/按钮。"
+                            multiple allow-create>
+                          </a-select>
+                        </a-form-item>
+                        <a-form-item label="获取内容" :field="`rules.${index}.getContentAction`">
+                          <SelectAction v-model="rule.getContentAction" />
+                        </a-form-item>
+                        <a-form-item v-if="[`ChapterList`, `IndexNextPage`, `ContentNextPage`].includes(rule.ruleName)"
+                          label="获取链接" :field="`rules.${index}.getUrlAction`">
+                          <SelectAction v-model="rule.getUrlAction" />
+                        </a-form-item>
+                        <a-form-item label="内容类型" :field="`rules.${index}.type`"
+                          tooltip="部分规则即使配置了多个目标也不生效的，如‘书名’、‘标题’、‘正文’等">
+                          <a-radio-group v-model="rule.type" type="button">
+                            <a-radio value="Object">一次一个目标（独立元素）</a-radio>
+                            <a-radio value="List">一次多个目标（列表型）</a-radio>
+                          </a-radio-group>
+                        </a-form-item>
+                        <a-form-item label="命中匹配校验" :field="`rules.${index}.checkSetting`"
+                          tooltip="注意：当需要使用命中匹配时，内容类型要选【一次多个目标】">
+                          <a-input v-model="rule.checkSetting" placeholder="判断是否命中的文本。如相同的选择器，只匹配‘下一页’不匹配‘下一章’" />
+                        </a-form-item>
+                        <a-button v-if="isUseVisModel" status="warning" @click="VisRuleSetting(rule)">预览规则：{{
+                          rule.ruleShowName
+                          }}</a-button>
+                      </a-space>
                     </a-form-item>
-                    <a-form-item label="删除的元素" :field="`rules.${index}.removeSelector`">
-                      <a-select v-model="rule.removeSelector" placeholder="通过CSS选择器匹配，命中的元素会从DOM中删除。用于去广告/按钮。" multiple
-                        allow-create>
-                      </a-select>
+                    <a-form-item>
+                      <a-button type="primary" status="success" html-type="submit">{{
+                        $t('system.form.save')
+                        }}</a-button>
                     </a-form-item>
-                    <a-form-item label="获取内容" :field="`rules.${index}.getContentAction`">
-                      <SelectAction v-model="rule.getContentAction" />
-                    </a-form-item>
-                    <a-form-item v-if="[`ChapterList`, `IndexNextPage`, `ContentNextPage`].includes(rule.ruleName)"
-                      label="获取链接" :field="`rules.${index}.getUrlAction`">
-                      <SelectAction v-model="rule.getUrlAction" />
-                    </a-form-item>
-                    <a-form-item label="内容类型" :field="`rules.${index}.type`"
-                      tooltip="部分规则即使配置了多个目标也不生效的，如‘书名’、‘标题’、‘正文’等">
-                      <a-radio-group v-model="rule.type" type="button">
-                        <a-radio value="Object">一次一个目标（独立元素）</a-radio>
-                        <a-radio value="List">一次多个目标（列表型）</a-radio>
-                      </a-radio-group>
-                    </a-form-item>
-                    <a-form-item label="命中匹配校验" :field="`rules.${index}.checkSetting`"
-                      tooltip="注意：当需要使用命中匹配时，内容类型要选【一次多个目标】">
-                      <a-input v-model="rule.checkSetting" placeholder="判断是否命中的文本。如相同的选择器，只匹配‘下一页’不匹配‘下一章’" />
-                    </a-form-item>
-                    <a-button v-if="isUseVisModel" status="warning" @click="VisRuleSetting(rule)">预览规则：{{
-                      rule.ruleShowName
-                    }}</a-button>
-                  </a-space>
-                </a-form-item>
-                <a-form-item>
-                  <a-button type="primary" status="success" html-type="submit">{{
-                    $t('system.form.save')
-                  }}</a-button>
-                </a-form-item>
+                  </a-col>
+                </a-row>
               </a-space>
             </a-col>
           </a-row>
         </a-form>
+
         <a-modal v-model:visible="formUrlForVisVisible" title="首先：请提供两个网址用于辅助预览" @ok="onSetVisUrl">
           <a-form :model="formUrlForVis" layout="vertical">
             <a-form-item field="indexUrl" label="图书章节目录页网址:">
@@ -115,7 +124,7 @@
             </a-form-item>
           </a-form>
         </a-modal>
-        <a-modal v-model:visible="isTableModalVisible" title="站点存活情况检查结果">
+        <a-modal v-model:visible="isTableModalVisible" title="站点存活情况检查结果" draggable unmount-on-close>
           <a-table :data="siteAccessibilityData">
             <template #columns>
               <a-table-column title="站点" data-index="hostName"></a-table-column>
@@ -168,6 +177,7 @@ const isTableModalVisible = ref(false);
 // 绑定数据的规则配置表单
 const form = reactive({
   hostname: '',
+  timeout: 4000,
   rulename: ['BookName'], // ,"ChapterList","Content"],
   rules: [
     {

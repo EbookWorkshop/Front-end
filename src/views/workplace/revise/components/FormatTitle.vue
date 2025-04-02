@@ -1,5 +1,5 @@
 <template>
-  <a-modal fullscreen :visible="visible" title="格式化标题" @ok="submit" @cancel="$emit('update:visible', false)">
+  <a-modal fullscreen :visible="visible" title="格式化标题" @ok="submit" @cancel="$emit('update:visible', false)" unmount-on-close>
     <div class="setPanel">
       <div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
         <a-form :model="formModel" layout="horizontal" label-align="right" label-col="{ span: 6 }"

@@ -26,7 +26,7 @@
                 <template #content>
                   <a-doption @click="onClickSplit(item.IndexId)">分割章节</a-doption>
                   <a-doption @click="onMargeChapter(item.IndexId)">合并当前和下一章</a-doption>
-                  <a-doption style="color: red;">删除章节</a-doption>
+                  <a-doption @click="onDeleteChapter(item.IndexId)" style="color: red;">删除章节</a-doption>
                   <a-doption>隐藏章节</a-doption>
                   <a-doption>设为简介</a-doption>
                 </template>
@@ -53,7 +53,7 @@
       <!-- 编辑章节内容的弹出窗口 -->
       <a-modal fullscreen :visible="isEdit" @cancel="() => isEdit = false"
         :title="curChapId == -1 ? '新增章节' : form.chapTitle"
-        @ok="() => { return deleteChapter > 0 ? onSaveChapter() : onSubmit() }">
+        @ok="() => { return toDeleteChapterId > 0 ? onSaveChapter() : onSubmit() }">
         <a-form :model="form" layout="vertical">
           <a-form-item field="chapTitle" label="章节标题">
             <a-input v-model="form.chapTitle" />
@@ -70,7 +70,9 @@
 </template>
 
 <script lang="ts" setup>
-import { Book, Chapter } from "@/types/book";
+import type { Book, Chapter } from "@/types/book";
+import type { HttpResponse } from "@/types/global";
+import { ApiResultCode } from "@/types/global";
 import Sortable from 'sortablejs';
 
 import { ref, reactive, nextTick } from "vue";
@@ -79,6 +81,7 @@ import {
   queryBookById,
   updateChapterOrder,
   editChapter,
+  deleteChapter,
   restructureChapter,
 } from '@/api/book';
 import { AxiosResponse } from 'axios';
@@ -93,12 +96,13 @@ import SplitTool from "./components/SplitTool.vue";
 // import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
 
+
 const { bookId } = useBookHelper();
 
 const loading = ref(true);
 const renderData = ref<Book | null>(null);//完整的 - 书本信息
 let maxOrderNum = 0;    //最大章节序号
-let deleteChapter = 0;  //合并章节时用-合并删除的章节
+let toDeleteChapterId = 0;  //合并章节时用-合并删除的章节
 
 nextTick(() => {
   loading.value = true;
@@ -132,7 +136,7 @@ const orderList = [] as Array<any>;
 const onClickChapter = (cid: number) => {
   curChapId.value = cid;
   isEdit.value = true;
-  deleteChapter = 0;
+  toDeleteChapterId = 0;
 
   if (cid == -1) {
     form.chapTitle = "";
@@ -162,7 +166,7 @@ const onMargeChapter = async (cid: number) => {
     Message.error("没有找到可合并的下一章节");
     return;
   }
-  deleteChapter = cidNext;
+  toDeleteChapterId = cidNext;
 
   try {
     let result = await queryChapterById(cid);
@@ -188,7 +192,7 @@ const onClickSplit = (cid: number) => {
  * 提交修改-单独修改单独章节标题/内容
  */
 const onSubmit = () => {
-  console.log("保存", deleteChapter)
+  // console.log("保存", deleteChapter)
   let result = {} as Chapter;
   let change = false;
   let reload = false;
@@ -227,8 +231,8 @@ const onSubmit = () => {
  * 合并章节保存
  */
 function onSaveChapter() {
-  console.log("合并章节保存", deleteChapter)
-  if (deleteChapter <= 0) return;
+  // console.log("合并章节保存", deleteChapter)
+  if (toDeleteChapterId <= 0) return;
   restructureChapter({
     "bookId": bookId,
     "baseChapter": {
@@ -238,11 +242,25 @@ function onSaveChapter() {
     },
     "operations": [{
       "operationType": "delete",
-      "chapters": [deleteChapter]
+      "chapters": [toDeleteChapterId]
     }]
   }).then(rsl => {
     Message.success("更新成功！");
     isEdit.value = false;
+  })
+}
+
+function onDeleteChapter(cid: number) {
+  deleteChapter(cid).then((result: HttpResponse<string>) => {
+    if (result.code == ApiResultCode.Success) {
+      Message.success("删除成功");
+      const index = renderData.value?.Index.findIndex(chap => chap.IndexId === cid);
+      if (index !== undefined && index !== -1) {
+        renderData.value?.Index.splice(index, 1);
+      }
+    } else Message.error("删除失败：" + result.msg)
+  }).catch(err => {
+    Message.error("删除出错：" + err);
   })
 }
 

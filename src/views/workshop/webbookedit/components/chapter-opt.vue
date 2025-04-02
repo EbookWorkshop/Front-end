@@ -23,7 +23,7 @@
 
         <!-- 原有按钮组保持不变... -->
         <a-modal v-model:visible="isUrlDialogVisible" :title="`来源管理-【${chapter.Title}】`" @ok="handleUrlConfirm"
-            width="50%">
+            width="50%" draggable unmount-on-close>
             <a-table :data="urlList" :pagination="false">
                 <template #columns>
                     <a-table-column title="操作" :width="180">

@@ -12,6 +12,7 @@ export const rulesOptions = [
       { value: 'ChapterList', label: '★目录-章节列表' },
       { value: 'IndexNextPage', label: '目录-下一页' },
       { value: 'Author', label: '目录-作者' },
+      { value: 'Introduction', label: '目录-简介' },
     ],
   },
   {

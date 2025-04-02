@@ -78,6 +78,17 @@ export function editChapter(chapter: Chapter) {
 }
 
 /**
+ * 删除章节
+ * @param chapterid 
+ * @returns 
+ */
+export function deleteChapter(chapterid: number) {
+  return axios.delete(`/library/book/chapter`, {
+    params: { chapterid }
+  })
+}
+
+/**
  * 修改章节信息
  * @param chapter 章节
  * @returns
