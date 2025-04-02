@@ -13,7 +13,8 @@
                         <a-form v-bind:model="searchForm">
                             <a-form-item label-col-flex="80px">
                                 <a-input v-model="searchForm.searchQuery" placeholder="请输入关键字..." size="large" />
-                                <a-button @click="search" type="primary" :loading="isSearching" size="large">检 索</a-button>
+                                <a-button @click="search" type="primary" :loading="isSearching" size="large">检
+                                    索</a-button>
                                 <a-button @click="isAdvance = !isAdvance" type="text" size="large">高级检索</a-button>
                             </a-form-item>
                         </a-form>
@@ -50,27 +51,36 @@
                 </a-row>
                 <a-row v-if="results.length">
                     <a-col>
-                        <a-list :data="results">
-                            <template #item="{ item }">
-                                <a-list-item>
-                                    <a-typography>
-                                        <a-typography-title :heading="5">
-                                            <a-badge :count="item.HitCount">
-                                                <a-link
-                                                    :href="`/book/${item.BookId}/chapter/${item.id}?keyword=${encodeURIComponent(searchForm.searchQuery)}`"
-                                                    target="_blank"
-                                                    v-html="'&nbsp;&nbsp;' + item.Title + '&nbsp;&nbsp;'"
-                                                    style="font-size: inherit;"></a-link>
-                                            </a-badge>
-                                            &nbsp;&nbsp;
-                                            <a-link :href="`/book/${item.BookId}`" target="_blank"
-                                                style="font-size: inherit;">《{{ item.BookName }}》</a-link>
-                                        </a-typography-title>
-                                        <a-typography-paragraph v-html="item.Content"></a-typography-paragraph>
-                                    </a-typography>
-                                </a-list-item>
-                            </template>
-                        </a-list>
+                        <a-collapse :default-active-key="results.map(t => t.BookId)" bordered>
+                            <a-collapse-item v-for="book in results" :key="book.BookId">
+                                <template #header>
+                                    <a-typography-paragraph>
+                                        <a-badge :count="book.HitCount" :max-count="9999">{{ book.BookName }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a-badge>
+                                    </a-typography-paragraph>
+                                </template>
+                                <a-list :data="book.data" bordered :style="{ backgroundColor: 'var(--color-bg-1)' }">
+                                    <template #item="{ item }">
+                                        <a-list-item>
+                                            <a-typography>
+                                                <a-typography-title :heading="5">
+                                                    <a-badge :count="item.HitCount">
+                                                        <a-link
+                                                            :href="`/book/${item.BookId}/chapter/${item.id}?keyword=${encodeURIComponent(searchForm.searchQuery)}`"
+                                                            target="_blank"
+                                                            v-html="'&nbsp;&nbsp;' + item.Title + '&nbsp;&nbsp;'"
+                                                            style="font-size: inherit;"></a-link>
+                                                    </a-badge>
+                                                    &nbsp;&nbsp;
+                                                    <a-link :href="`/book/${item.BookId}`" target="_blank"
+                                                        style="font-size: inherit;">《{{ item.BookName }}》</a-link>
+                                                </a-typography-title>
+                                                <a-typography-paragraph v-html="item.Content"></a-typography-paragraph>
+                                            </a-typography>
+                                        </a-list-item>
+                                    </template>
+                                </a-list>
+                            </a-collapse-item>
+                        </a-collapse>
                     </a-col>
                 </a-row>
             </div>
@@ -149,7 +159,27 @@ function RenderResult(data) {
             BookId: item.BookId
         };
     });
-    results.value = rr;
+
+    // 按照书名聚合
+    const groupedResults = rr.reduce((acc, item) => {
+        if (!acc[item.BookName]) {
+            acc[item.BookName] = [];
+        }
+        acc[item.BookName].push(item);
+        return acc;
+    }, {});
+    // rr = Object.values(groupedResults).flat();
+    const showResult = [];
+    for (const key in groupedResults) {
+        showResult.push({
+            BookName: key,
+            BookId: groupedResults[key][0].BookId,
+            data: groupedResults[key],
+            HitCount: groupedResults[key].reduce((sum, item) => sum + item.HitCount, 0),
+        });
+    }
+
+    results.value = showResult;
     bookCount.value = bookSet.size;
     hitCount.value = sumCount;
 }
