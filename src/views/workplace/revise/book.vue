@@ -27,7 +27,7 @@
                   <a-doption @click="onClickSplit(item.IndexId)">分割章节</a-doption>
                   <a-doption @click="onMargeChapter(item.IndexId)">合并当前和下一章</a-doption>
                   <a-doption @click="onDeleteChapter(item.IndexId)" style="color: red;">删除章节</a-doption>
-                  <a-doption>隐藏章节</a-doption>
+                  <a-doption @click="onToggleHideChapter(item.IndexId)">隐藏章节</a-doption>
                   <a-doption>设为简介</a-doption>
                 </template>
               </a-dropdown>
@@ -83,6 +83,7 @@ import {
   editChapter,
   deleteChapter,
   restructureChapter,
+  toggleChapterHide,
 } from '@/api/book';
 import { AxiosResponse } from 'axios';
 
@@ -261,6 +262,20 @@ function onDeleteChapter(cid: number) {
     } else Message.error("删除失败：" + result.msg)
   }).catch(err => {
     Message.error("删除出错：" + err);
+  })
+}
+
+function onToggleHideChapter(cid: number) {
+  toggleChapterHide(cid).then((result: HttpResponse<boolean>) => {
+    if (result.code == ApiResultCode.Success) {
+      Message.success("已隐藏");
+      const index = renderData.value?.Index.findIndex(chap => chap.IndexId === cid);
+      if (index !== undefined && index !== -1) {
+        renderData.value?.Index.splice(index, 1);
+      }
+    } else Message.error("隐藏章节失败：" + result.msg)
+  }).catch(err => {
+    Message.error("隐藏章节出错：" + err);
   })
 }
 

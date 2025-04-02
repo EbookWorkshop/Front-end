@@ -107,6 +107,15 @@ export function restructureChapter(setting: any) {
 }
 
 /**
+ * 隐藏/取消隐藏章节
+ * @param chapterid 章节id
+ * @returns
+ */
+export function toggleChapterHide(chapterid: number) {
+  return axios.patch<HttpResponse<boolean>>('/library/book/chapter/toggleHide', { chapterId: chapterid });
+}
+
+/**
  * 找到相邻的章节
  * @param cid 当前章节ID
  * @returns
