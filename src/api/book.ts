@@ -107,6 +107,15 @@ export function restructureChapter(setting: any) {
 }
 
 /**
+ * 将指定章节设为书籍简介
+ * @param chapterId - 需要转换的章节ID
+ * @returns 包含操作结果的Promise
+ */
+export function chapter2Introduction(chapterId: number) {
+  return axios.post<HttpResponse<boolean>>('/library/book/chapter/tointroduction', { chapterId });
+}
+
+/**
  * 隐藏/取消隐藏章节
  * @param chapterid 章节id
  * @returns

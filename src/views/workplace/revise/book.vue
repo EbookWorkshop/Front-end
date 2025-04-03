@@ -17,18 +17,24 @@
               <a-button long class="chapter" @click="onClickChapter(item.IndexId)" style="width: 100%;">
                 {{ item.Title }}
               </a-button>
-              <a-dropdown trigger="click" position="br">
+              <a-dropdown trigger="click" position="br" :popup-max-height="false">
                 <a-button>
                   <template #icon>
                     <icon-down />
                   </template>
                 </a-button>
                 <template #content>
-                  <a-doption @click="onClickSplit(item.IndexId)">分割章节</a-doption>
-                  <a-doption @click="onMargeChapter(item.IndexId)">合并当前和下一章</a-doption>
-                  <a-doption @click="onDeleteChapter(item.IndexId)" style="color: red;">删除章节</a-doption>
-                  <a-doption @click="onToggleHideChapter(item.IndexId)">隐藏章节</a-doption>
-                  <a-doption>设为简介</a-doption>
+                  <a-dgroup title="---------重组---------">
+                    <a-doption @click="onClickSplit(item.IndexId)">分割章节</a-doption>
+                    <a-doption @click="onMargeChapter(item.IndexId)">合并当前和下一章</a-doption>
+                  </a-dgroup>
+                  <a-dgroup title="---------舍弃---------">
+                    <a-doption @click="onDeleteChapter(item.IndexId)" style="color: red;">删除章节</a-doption>
+                    <a-doption @click="onToggleHideChapter(item.IndexId)">隐藏章节</a-doption>
+                  </a-dgroup>
+                  <a-dgroup title="---------转换---------">
+                    <a-doption @click="onSetChapter2Introduction(item.IndexId)">设为简介</a-doption>
+                  </a-dgroup>
                 </template>
               </a-dropdown>
             </a-button-group>
@@ -84,6 +90,7 @@ import {
   deleteChapter,
   restructureChapter,
   toggleChapterHide,
+  chapter2Introduction,
 } from '@/api/book';
 import { AxiosResponse } from 'axios';
 
@@ -276,6 +283,20 @@ function onToggleHideChapter(cid: number) {
     } else Message.error("隐藏章节失败：" + result.msg)
   }).catch(err => {
     Message.error("隐藏章节出错：" + err);
+  })
+}
+
+function onSetChapter2Introduction(cid: number) {
+  chapter2Introduction(cid).then((result: HttpResponse<boolean>) => {
+    if (result.code == ApiResultCode.Success) {
+      Message.success("已设为简介");
+      const index = renderData.value?.Index.findIndex(chap => chap.IndexId === cid);
+      if (index !== undefined && index !== -1) {
+        renderData.value?.Index.splice(index, 1);
+      }
+    } else Message.error("设为简介失败：" + result.msg)
+  }).catch(err => {
+    Message.error("设为简介出错：" + err);
   })
 }
 

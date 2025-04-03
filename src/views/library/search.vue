@@ -178,7 +178,7 @@ function RenderResult(data) {
             HitCount: groupedResults[key].reduce((sum, item) => sum + item.HitCount, 0),
         });
     }
-
+    showResult.sort((a, b) => b.HitCount - a.HitCount);// 按照命中次数排序
     results.value = showResult;
     bookCount.value = bookSet.size;
     hitCount.value = sumCount;
