@@ -34,7 +34,7 @@
                         </a-radio-group>
                     </a-form-item>
                     <a-form-item v-if="form.coverType == '线装本'" field="bookCover" tooltip="">
-                        <a-color-picker v-model="form.bookCover" size="mini" >
+                        <a-color-picker v-model="form.bookCover" size="mini" showHistory :historyColors="history">
                             <BookCover :book-name="form.name" :cover-img="form.bookCover" />
                         </a-color-picker>
                     </a-form-item>
@@ -65,6 +65,7 @@ const prop = defineProps<{
     bookId: number,
 }>();
 let oldBookMeta = {} as any;       // 保存旧的书籍元数据
+const history = ref(['#0b3154','#cb1f2f','#f2e3a4','#212f30']); // 封面预设色
 
 /**
  * 加载数据

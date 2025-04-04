@@ -6,14 +6,14 @@
                     {{ chapter.Title }}
                 </a-checkbox>
             </a-button>
-            <a-dropdown>
+            <a-dropdown :popup-max-height="false">
                 <a-button type="dashed">
                     <icon-settings />
                 </a-button>
                 <template #content>
                     <a-doption :disabled="chapter.IsHasContent ? false : true"
                         @click="gotoChapter(chapter.IndexId, true)">阅读</a-doption>
-                    <a-doption>隐藏本章</a-doption>
+                    <a-doption @click="onToggleHideChapter(chapter.IndexId)">隐藏本章</a-doption>
                     <a-doption @click="isUrlDialogVisible = true">管理来源</a-doption>
                     <a-doption @click="OpenWin">打开来源网页</a-doption>
                     <a-doption>属性</a-doption>
@@ -54,13 +54,15 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from 'vue';
-import { updateWebBookChapterSourcesById } from '@/api/book';
+import { ref } from 'vue';
+import { updateWebBookChapterSourcesById, toggleChapterHide, } from '@/api/book';
 import { openWindow } from '@/utils';
-// import { Message } from '@arco-design/web-vue';
+import { Message } from '@arco-design/web-vue';
 
 //类型
 import type { WebChapter } from '@/types/book';
+import type { HttpResponse } from '@/types/global';
+import { ApiResultCode } from '@/types/global';
 
 //操作
 import useBookHelper from '@/hooks/book-helper';
@@ -93,9 +95,30 @@ defineExpose({
 let updateStatus = ref<"normal" | "success" | "warning" | "danger" | undefined>(props.chapter.IsHasContent ? 'normal' : 'warning');
 
 //操作定义
+/**
+ * 切换选中状态
+ */
 function onToggle() {
     isChecked.value = !isChecked.value;
     emit("toggle", isChecked.value, props.chapter.IndexId);
+}
+
+/**
+ * 切换章节隐藏状态
+ * @param {number} cid 章节ID
+ */
+function onToggleHideChapter(cid: number) {
+    toggleChapterHide(cid).then((result: HttpResponse<boolean>) => {
+        if (result.code == ApiResultCode.Success) {
+            Message.success("已隐藏");
+            // const index = renderData.value?.Index.findIndex(chap => chap.IndexId === cid);
+            // if (index !== undefined && index !== -1) {
+            //     renderData.value?.Index.splice(index, 1);
+            // }
+        } else Message.error("隐藏章节失败：" + result.msg)
+    }).catch(err => {
+        Message.error("隐藏章节出错：" + err);
+    })
 }
 
 function OpenWin() {

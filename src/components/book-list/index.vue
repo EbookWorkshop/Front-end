@@ -15,7 +15,7 @@
               <!-- 一行 -->
               <a-col v-for="item in renderData" :key="item.BookId" class="list-col" :xs="24" :sm="12" :md="12" :lg="6"
                 :xl="6" :xxl="4" @click="goto(item.BookId)">
-                <a-dropdown trigger="contextMenu" alignPoint :style="{ display: 'block' }">
+                <a-dropdown trigger="contextMenu" alignPoint :style="{ display: 'block' }" :popup-max-height="false">
                   <BookCover :loading="loading" :book-name="item.BookName" :cover-img="item.CoverImg">
                   </BookCover>
                   <template #content>

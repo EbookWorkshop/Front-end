@@ -10,7 +10,8 @@
                 <a-button type="primary" @click="resetForm">新增新方案</a-button>
                 <a-button type="primary" @click="showWebList">编辑现有方案</a-button>
                 <a-button type="primary" @click="CheckSiteAccessibility">检查站点存活情况</a-button>
-                <a-button type="primary" status="success" html-type="submit" :disabled="form.hostname.length == 0">保存当前方案</a-button>
+                <a-button type="primary" status="success" html-type="submit"
+                  :disabled="form.hostname.length == 0">保存当前方案</a-button>
                 <a-popconfirm content="你确定要删除当前站点配置？这将无法恢复。" type="warning" @ok="DeleteIt">
                   <a-button type="primary" status="danger" :disabled="form.hostname.length == 0">删除当前方案</a-button>
                 </a-popconfirm>
@@ -47,11 +48,11 @@
                   </a-input-search>
                 </a-form-item>
                 <a-form-item label="超时设置" field="timeout">
-                  <a-input v-model="form.timeout" placeholder="不填默认就是3000ms" allow-clear>
+                  <a-input-number v-model="form.timeout" placeholder="不填默认就是30_000ms" allow-clear>
                     <template #append>
                       ms
                     </template>
-                  </a-input>
+                  </a-input-number>
                 </a-form-item>
                 <a-form-item field="rulename" label="添加规则" :rules="[{ required: true, message: '至少得有一个规则' }]"
                   :validate-trigger="['change', 'input']">
@@ -99,13 +100,13 @@
                         </a-form-item>
                         <a-button v-if="isUseVisModel" status="warning" @click="VisRuleSetting(rule)">预览规则：{{
                           rule.ruleShowName
-                          }}</a-button>
+                        }}</a-button>
                       </a-space>
                     </a-form-item>
                     <a-form-item>
                       <a-button type="primary" status="success" html-type="submit">{{
                         $t('system.form.save')
-                        }}</a-button>
+                      }}</a-button>
                     </a-form-item>
                   </a-col>
                 </a-row>
@@ -177,7 +178,7 @@ const isTableModalVisible = ref(false);
 // 绑定数据的规则配置表单
 const form = reactive({
   hostname: '',
-  timeout: 4000,
+  timeout: 40_000,
   rulename: ['BookName'], // ,"ChapterList","Content"],
   rules: [
     {
@@ -223,6 +224,10 @@ const setFormWithSetting = (setting: any) => {
   form.rulename = [];
   const temform: any[] = [];
   setting.map((item: any) => {
+    if (item.ruleName === 'Timeout') {
+      form.timeout = item.selector;
+      return 0;
+    }
     form.rulename.push(item.ruleName);
     temform.push({
       ruleShowName: findOptionName(item.ruleName),
@@ -307,6 +312,13 @@ function Submit({ values, errors }: any) {
     myRule.push({ host: values.hostname, ...item });
     return 0;
   });
+
+  //加入超时设置
+  myRule.push({
+    host: values.hostname,
+    ruleName: 'Timeout',
+    selector: form.timeout,
+  })
 
   dataLoading.value = true;
   saveHostSetting(myRule)

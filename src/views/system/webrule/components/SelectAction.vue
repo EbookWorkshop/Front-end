@@ -43,7 +43,7 @@ const emit = defineEmits(['update:modelValue']);
 
 const valueParts = computed({
     get: () => {
-        console.log('get', props.modelValue);
+        // console.log('get', props.modelValue);
         const parts = props.modelValue?.split('/') || [];
         return [parts[0] || '', parts[1] || '', parts[2] || ''];
     },
