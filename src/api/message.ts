@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { VNode } from 'vue';
 
 export interface MessageRecord {
   id: number;
@@ -6,7 +7,7 @@ export interface MessageRecord {
   title: string;
   subTitle: string;
   avatar?: string;//头像地址
-  content: string;
+  content: string | VNode;
   time: string;
   /**
    * 0未读、1已读

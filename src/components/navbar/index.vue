@@ -100,8 +100,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, inject, reactive, watch } from 'vue';
-import { Message, Notification } from '@arco-design/web-vue';
+import { computed, ref, inject, reactive, watch, h } from 'vue';
+import { useRouter } from 'vue-router';
+import { Button, Message, Notification } from '@arco-design/web-vue';
 import { useDark, useToggle, useFullscreen } from '@vueuse/core';
 import { useAppStore, useUserStore } from '@/store';
 import { LOCALE_OPTIONS } from '@/locale';
@@ -118,7 +119,7 @@ const logoLight = new URL('@/assets/logo.svg', import.meta.url).href;
 const logoDark = new URL('@/assets/logo-dark.svg', import.meta.url).href;
 
 const socket = useSocket();
-
+const router = useRouter();
 const appStore = useAppStore();
 const userStore = useUserStore();
 const { logout } = useUser();
@@ -204,7 +205,14 @@ socket.io.on(
       id: bookid,
       type: 'notice',
       title: `《${bookName}》已导入完成。`,
-      content: "",
+      content: h(Button, {
+        type: "primary",
+        status: "success",
+        size: "small",
+        onClick: () => {
+          router.push({ path: `/workshop/webbook/edit/${bookid}` });
+        },
+      }, "前往查看"),
       time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
       avatar: '/src/assets/logo.svg?t=12312213',
       status: 1,
@@ -228,7 +236,7 @@ watch(messageList, (newValue, oldValue) => {
     Notification.info({
       id: lastMsg.id.toString(),
       title: lastMsg.title,
-      content: lastMsg.content,
+      content: typeof lastMsg.content === 'string' ? lastMsg.content : () => lastMsg.content,
       duration: 0,
       showIcon: true,
       closable: true,
