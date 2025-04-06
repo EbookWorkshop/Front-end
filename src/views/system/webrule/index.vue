@@ -410,6 +410,8 @@ function VisRuleSetting(rule: any) {
     case 'BookName':
     case 'ChapterList':
     case 'IndexNextPage':
+    case 'Author':
+    case 'Introduction':
       url = formUrlForVis.indexUrl;
       break;
     case 'CapterTitle':
@@ -418,6 +420,7 @@ function VisRuleSetting(rule: any) {
       url = formUrlForVis.contentUrl;
       break;
     default:
+      alert("没有预览地址，请先设置预览地址！");
       break;
   }
   visRuleSetting(url, rule).then((data) => {

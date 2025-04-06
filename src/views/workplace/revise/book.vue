@@ -164,6 +164,10 @@ const onClickChapter = (cid: number) => {
   });
 }
 
+/**
+ * 打开合并章节窗口
+ * @param cid 被合并进的章节ID
+ */
 const onMargeChapter = async (cid: number) => {
   isEdit.value = true;
   // 获取当前章节在列表中的位置
@@ -175,6 +179,7 @@ const onMargeChapter = async (cid: number) => {
     return;
   }
   toDeleteChapterId = cidNext;
+  curChapId.value = cid;
 
   try {
     let result = await queryChapterById(cid);

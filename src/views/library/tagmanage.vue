@@ -6,7 +6,7 @@
         <a-space>
           <a-button status="success" @click="createNewRule">添加</a-button>
         </a-space>
-        <a-table :data="renderData" :loading="tableLoading">
+        <a-table :data="renderData" :loading="tableLoading" :pagination="{ pageSize: 20 }">
           <template #columns>
             <a-table-column title="id" data-index="id" :width="80"></a-table-column>
             <a-table-column title="标签" data-index="Text"></a-table-column>

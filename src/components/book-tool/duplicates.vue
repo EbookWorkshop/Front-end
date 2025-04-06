@@ -1,5 +1,5 @@
 <template>
-    <a-modal width="auto" :visible="show" @before-open="loadData" @cancel="close" unmount-on-close>
+    <a-modal width="auto" :visible="show" @before-open="loadData" @cancel="close" unmount-on-close draggable>
         <template #title> 重复内容检测 </template>
         <a-table :columns="columns" :data="resultData" show-empty-tree :default-expanded-keys="expandedKeys"
             style="margin-top: 20px" :stripe="true" :loading="loading" />
