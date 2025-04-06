@@ -1,5 +1,6 @@
 import { DEFAULT_LAYOUT } from '../base';
 import { AppRouteRecordRaw } from '../types';
+import {h} from 'vue';
 
 const SYSTEM: AppRouteRecordRaw = {
   path: '/system',
@@ -12,6 +13,17 @@ const SYSTEM: AppRouteRecordRaw = {
     order: 8,
   },
   children: [
+    {
+      path: 'usestate',
+      name: 'UseState',
+      component: () => h("div","当前书库数据库一些情况统计：比如有多少本书，分别多少万字……"),
+      meta: {
+        locale: 'menu.system.usestate',
+        icon: 'icon-bar-chart',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
     {
       path: 'workerpool',
       name: 'workerpool',
@@ -59,7 +71,7 @@ const SYSTEM: AppRouteRecordRaw = {
     {
       path: 'preferences',
       name: 'Preferences',
-      component: () => import('@/views/result/success/index.vue'),
+      component: () => h("div","一些可以设置的选项，用户偏好设置等，比如默认字体"),
       meta: {
         locale: 'menu.system.preferences',
         icon: 'icon-star',

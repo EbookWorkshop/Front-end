@@ -146,7 +146,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, computed, watch } from 'vue';
+import { reactive, ref, computed, watch, h } from 'vue';
 import { ApiResultCode } from '@/types/global';
 import { checkSiteAccessibility } from '@/api/system';
 import {
@@ -157,7 +157,7 @@ import {
   exportSecheme,
   ASSETS_HOST
 } from '@/api/webbot';
-import { FileItem, Message, Spin } from '@arco-design/web-vue';
+import { FileItem, Message, Modal } from '@arco-design/web-vue';
 import WebList from './components/web-list.vue';
 import { rulesOptions } from './data';  // 规则类型选项
 import useRequest from '@/hooks/request';
@@ -424,7 +424,11 @@ function VisRuleSetting(rule: any) {
       break;
   }
   visRuleSetting(url, rule).then((data) => {
-    console.log(data); // TODO：结果可视化，前端显示
+    console.log(data)
+    Modal.info({
+      title: '测试执行结果',
+      content: () => h("pre",JSON.stringify(data, null, 2)),
+    });
   });
 }
 

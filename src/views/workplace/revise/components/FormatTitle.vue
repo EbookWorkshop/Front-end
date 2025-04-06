@@ -36,7 +36,7 @@
         :class="chapterTitles.length > 200 ? 'L' : (chapterTitles.length > 80 ? 'M' : 'S')">
         <a-card v-if="!isShowDiffOnly || (isShowDiffOnly && item.OldTitle != item.NewTitle)" :bordered="false"
           :title="''">
-          <a-typography-paragraph>
+          <a-typography-paragraph @click="item.NewTitle = item.OldTitle" style="cursor: pointer;">
             <a-typography-text type="secondary">{{ item.OldTitle }}</a-typography-text>
           </a-typography-paragraph>
           <a-typography-text v-if="item.NewTitle != item.OldTitle" type="danger">

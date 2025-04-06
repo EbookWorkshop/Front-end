@@ -16,6 +16,7 @@
                     <a-doption @click="onToggleHideChapter(chapter.IndexId)">隐藏本章</a-doption>
                     <a-doption @click="isUrlDialogVisible = true">管理来源</a-doption>
                     <a-doption @click="OpenWin">打开来源网页</a-doption>
+                    <a-doption>直接录入/修正</a-doption>
                     <a-doption>属性</a-doption>
                 </template>
             </a-dropdown>

@@ -35,6 +35,9 @@
                   <a-dgroup title="---------转换---------">
                     <a-doption @click="onSetChapter2Introduction(item.IndexId)">设为简介</a-doption>
                   </a-dgroup>
+                  <a-dgroup title="---------☆---------">
+                    <a-doption @click="gotoChapter(item.IndexId,true)">阅读</a-doption>
+                  </a-dgroup>
                 </template>
               </a-dropdown>
             </a-button-group>
@@ -105,7 +108,7 @@ import SplitTool from "./components/SplitTool.vue";
 import useBookHelper from '@/hooks/book-helper';
 
 
-const { bookId } = useBookHelper();
+const { bookId, gotoChapter } = useBookHelper();
 
 const loading = ref(true);
 const renderData = ref<Book | null>(null);//完整的 - 书本信息

@@ -5,6 +5,7 @@ export default {
   'menu.system.webrule': '爬站规则',
   'menu.system.fontmanager': '字体管理',
   'menu.system.preferences': '偏好设置',
+  'menu.system.usestate': '使用状态',
 
   'system.form.save': '保存',
 };

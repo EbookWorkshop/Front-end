@@ -71,11 +71,13 @@
       overflow: hidden;
       border-radius: 4px;
 
-      .arco-card-body {
+      .arco-card-body {/* 标题部分 */
         position: absolute;
-        bottom: -60px;
         width: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: rgba(0, 0, 0, 0.9);
+        bottom:0;
+        opacity: 0.6;
+        font-weight: bold;
 
         .arco-space {
           width: 100%;
@@ -90,7 +92,7 @@
 
       &:hover {
         .arco-card-body {
-          bottom: 0;
+          opacity: 1;
         }
       }
     }

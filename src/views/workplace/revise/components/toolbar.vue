@@ -8,6 +8,7 @@
                     <a-button @click="isEditBookInfo = true"> <icon-pen /> 元数据 </a-button>
                     <a-button @click="isFormatTitle = true"> 标题格式化 </a-button>
                     <a-button @click="checkDescriptions = true"> 内容重复检查 </a-button>
+                    <a-button> 已隐藏章节 </a-button>
 
                 </a-button-group>
             </a-space>
