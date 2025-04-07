@@ -26,7 +26,7 @@ const WORKPLACE: AppRouteRecordRaw = {
         {
           path: 'reviewbook',
           name: 'ReviewBook',
-          component: () => import('@/views/not-found/index.vue'),
+          component: () => import('@/views/workplace/review/index.vue'),
           meta: {
             icon: 'icon-robot',
             locale: 'menu.workplace.correction.reviewbook',

@@ -36,7 +36,7 @@
                     <a-doption @click="onSetChapter2Introduction(item.IndexId)">设为简介</a-doption>
                   </a-dgroup>
                   <a-dgroup title="---------☆---------">
-                    <a-doption @click="gotoChapter(item.IndexId,true)">阅读</a-doption>
+                    <a-doption @click="gotoChapter(item.IndexId, true)">阅读</a-doption>
                   </a-dgroup>
                 </template>
               </a-dropdown>
@@ -59,80 +59,56 @@
           </template>
         </ChapterList>
       </keep-alive>
-      <!-- 编辑章节内容的弹出窗口 -->
-      <a-modal fullscreen :visible="isEdit" @cancel="() => isEdit = false"
-        :title="curChapId == -1 ? '新增章节' : form.chapTitle"
-        @ok="() => { return toDeleteChapterId > 0 ? onSaveChapter() : onSubmit() }">
-        <a-form :model="form" layout="vertical">
-          <a-form-item field="chapTitle" label="章节标题">
-            <a-input v-model="form.chapTitle" />
-          </a-form-item>
-          <a-form-item field="content" label="章节正文">
-            <a-textarea v-model="form.content" :auto-size="{ minRows: 20 }" show-word-limit />
-          </a-form-item>
-        </a-form>
-      </a-modal>
 
+      <ChapterEdit :isShow="isEdit" :bookId="bookId" :chapterId="curChapId" :toMergeChapterId="toMergeChapterId"
+        @close="isEdit = false" @reload="reloadBook" />
       <SplitTool v-model:model-value="isSplit" :id="splitId" :bookId="bookId" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import type { Book, Chapter } from "@/types/book";
+import type { Book } from "@/types/book";
 import type { HttpResponse } from "@/types/global";
 import { ApiResultCode } from "@/types/global";
 import Sortable from 'sortablejs';
 
-import { ref, reactive, nextTick } from "vue";
+import { ref, nextTick } from "vue";
 import {
-  queryChapterById,
   queryBookById,
   updateChapterOrder,
-  editChapter,
   deleteChapter,
-  restructureChapter,
   toggleChapterHide,
   chapter2Introduction,
 } from '@/api/book';
-import { AxiosResponse } from 'axios';
 
 //组件
 import { Message, } from '@arco-design/web-vue';
 import BookInfo from "@/components/book-info/index.vue";
 import ChapterList from '@/components/chapter-list/index.vue';
+import ChapterEdit from "@/components/chapter/edit.vue";
 import Toolbar from "./components/toolbar.vue";
 import SplitTool from "./components/SplitTool.vue";
 
-// import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
-
 
 const { bookId, gotoChapter } = useBookHelper();
 
 const loading = ref(true);
 const renderData = ref<Book | null>(null);//完整的 - 书本信息
 let maxOrderNum = 0;    //最大章节序号
-let toDeleteChapterId = 0;  //合并章节时用-合并删除的章节
+let toMergeChapterId = ref(0);  //合并章节时用-合并删除的章节
 
 nextTick(() => {
   loading.value = true;
-  queryBookById(bookId).then((result: AxiosResponse<Book>) => {
+  queryBookById(bookId).then((result: HttpResponse<Book>) => {
     renderData.value = result.data;
   }).finally(() => {
     loading.value = false;
   });
 });
 
-const form = reactive({
-  chapTitle: '',
-  content: '',
-});
-
-//状态区
-const curChapId = ref(0);
-let defTitle: String = ""
-let defContent: String = "";
+const curChapId = ref(0); //要修改的章节
 const isEdit = ref(false);
 const isSplit = ref(false);
 const splitId = ref(0); // 新增响应式变量存储当前分割章节ID
@@ -141,30 +117,13 @@ let sortChapterList = null as any;
 const orderList = [] as Array<any>;
 
 /**
- * 点击章节列表
+ * 点击章节列表-打开修改章节
  * @param cid 修改的章节ID，如果是-1则为新增章节
  */
 const onClickChapter = (cid: number) => {
   curChapId.value = cid;
   isEdit.value = true;
-  toDeleteChapterId = 0;
-
-  if (cid == -1) {
-    form.chapTitle = "";
-    form.content = "";
-    defTitle = "";
-    defContent = "";
-    return;
-  }
-
-  queryChapterById(cid).then((result: AxiosResponse<Chapter>) => {
-    form.chapTitle = result.data.Title as any
-    form.content = result.data.Content as any;
-    defTitle = result.data.Title;
-    defContent = result.data.Content ?? "";
-  }).catch(result => {
-    form.chapTitle = result.value;
-  });
+  toMergeChapterId.value = 0;
 }
 
 /**
@@ -181,91 +140,32 @@ const onMargeChapter = async (cid: number) => {
     Message.error("没有找到可合并的下一章节");
     return;
   }
-  toDeleteChapterId = cidNext;
+  toMergeChapterId.value = cidNext;
   curChapId.value = cid;
-
-  try {
-    let result = await queryChapterById(cid);
-    form.chapTitle = result.data.Title as any
-    form.content = result.data.Content as any;
-    defTitle = result.data.Title;
-    defContent = result.data.Content ?? "";
-
-    result = await queryChapterById(cidNext);
-    form.content = form.content + result.data.Title + result.data.Content as any;
-  } catch (err: any) {
-    form.chapTitle = err.message || err;
-  }
 }
 
-
+/**
+ * 打开分割章节窗口
+ * @param cid 被分割的章节ID
+ */
 const onClickSplit = (cid: number) => {
   isSplit.value = true;
   splitId.value = cid; // 设置当前要分割的章节ID
 }
 
 /**
- * 提交修改-单独修改单独章节标题/内容
+ * 重载当前章节
  */
-const onSubmit = () => {
-  // console.log("保存", deleteChapter)
-  let result = {} as Chapter;
-  let change = false;
-  let reload = false;
-  if (defTitle !== form.chapTitle) {
-    change = true;
-    result.Title = form.chapTitle;
-    reload = true;
-  }
-  if (defContent !== form.content) {
-    change = true;
-    result.Content = form.content;
-  }
-  if (curChapId.value == -1) {
-    result.BookId = bookId;
-    reload = true;
-  }
-
-  if (change) {
-    result.IndexId = curChapId.value;
-    editChapter(result).then(rsl => {
-      // console.log(rsl);
-      Message.success("更新成功！");
-      isEdit.value = false;
-
-      if (reload) {
-        queryBookById(bookId).then((result: AxiosResponse<Book>) => {
-          renderData.value = result.data;
-        });
-      }
-    });
-    return;
-  }
+function reloadBook() {
+  queryBookById(bookId).then((result: HttpResponse<Book>) => {
+    renderData.value = result.data;
+  });
 }
 
 /**
- * 合并章节保存
+ * 删除章节
+ * @param cid 章节ID
  */
-function onSaveChapter() {
-  // console.log("合并章节保存", deleteChapter)
-  if (toDeleteChapterId <= 0) return;
-  restructureChapter({
-    "bookId": bookId,
-    "baseChapter": {
-      "chapterId": curChapId.value,
-      "content": form.content,
-      "title": form.chapTitle
-    },
-    "operations": [{
-      "operationType": "delete",
-      "chapters": [toDeleteChapterId]
-    }]
-  }).then(rsl => {
-    Message.success("更新成功！");
-    isEdit.value = false;
-  })
-}
-
 function onDeleteChapter(cid: number) {
   deleteChapter(cid).then((result: HttpResponse<string>) => {
     if (result.code == ApiResultCode.Success) {
@@ -280,6 +180,10 @@ function onDeleteChapter(cid: number) {
   })
 }
 
+/**
+ * 设置隐藏/显示章节
+ * @param cid 章节ID
+ */
 function onToggleHideChapter(cid: number) {
   toggleChapterHide(cid).then((result: HttpResponse<boolean>) => {
     if (result.code == ApiResultCode.Success) {
@@ -294,6 +198,10 @@ function onToggleHideChapter(cid: number) {
   })
 }
 
+/**
+ * 把一个章节改为简介
+ * @param cid 章节ID
+ */
 function onSetChapter2Introduction(cid: number) {
   chapter2Introduction(cid).then((result: HttpResponse<boolean>) => {
     if (result.code == ApiResultCode.Success) {
@@ -348,7 +256,7 @@ function onChangeOrdering(ordering: boolean) {
     loading.value = true;
     updateChapterOrder(edit).then(result => {
       // console.log("修改排序结果", result);
-      queryBookById(bookId).then((result: AxiosResponse<Book>) => {
+      queryBookById(bookId).then((result: HttpResponse<Book>) => {
         renderData.value = result.data;
       });
     }).catch(err => {
