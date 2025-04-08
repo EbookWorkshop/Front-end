@@ -15,7 +15,8 @@
         <a-divider />
         <ChapterList :loading="loading" :Chapters="bookData.Index">
           <template #content="{ item }">
-            <ChapterOpt :chapter="item as WebChapter" @toggle="OnToggleChapter" :ref="chapterRefMap.get(item.IndexId)" />
+            <ChapterOpt :chapter="item as WebChapter" @toggle="OnToggleChapter" :ref="chapterRefMap.get(item.IndexId)"
+              @hide="onHideChapter(item.IndexId)" />
           </template>
         </ChapterList>
       </a-spin>
@@ -80,6 +81,14 @@ const { io: socket } = useSocket();
 function OnToggleChapter(isChecked: boolean, chapterId: number) {
   hasCheckChapter.set(chapterId, isChecked);
   toolbarRef.value.updateChecked();
+}
+
+function onHideChapter(chapterId: number) {
+  console.log(`隐藏章节：${chapterId}`);
+  const index = bookData.value?.Index.findIndex(chap => chap.IndexId === chapterId);
+  if (index !== undefined && index !== -1) {
+    bookData.value?.Index.splice(index, 1);
+  }
 }
 
 /**

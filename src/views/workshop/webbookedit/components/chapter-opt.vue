@@ -16,7 +16,7 @@
                     <a-doption @click="onToggleHideChapter(chapter.IndexId)">隐藏本章</a-doption>
                     <a-doption @click="isUrlDialogVisible = true">管理来源</a-doption>
                     <a-doption @click="OpenWin">打开来源网页</a-doption>
-                    <a-doption>直接录入/修正</a-doption>
+                    <a-doption @click="isEdit = true">直接录入/修正</a-doption>
                     <a-doption>属性</a-doption>
                 </template>
             </a-dropdown>
@@ -51,6 +51,9 @@
                 </template>
             </a-table>
         </a-modal>
+
+        <ChapterEdit :isShow="isEdit" :bookId="chapter.BookId" :chapterId="chapter.IndexId" @close="isEdit = false"
+            @reload="" />
     </div>
 </template>
 
@@ -59,6 +62,7 @@ import { ref } from 'vue';
 import { updateWebBookChapterSourcesById, toggleChapterHide, } from '@/api/book';
 import { openWindow } from '@/utils';
 import { Message } from '@arco-design/web-vue';
+import ChapterEdit from "@/components/chapter/edit.vue";
 
 //类型
 import type { WebChapter } from '@/types/book';
@@ -71,8 +75,10 @@ const { gotoChapter } = useBookHelper();
 
 //变量范围
 const isChecked = ref(false);
+const isEdit = ref(false);
+
 //出参定义
-const emit = defineEmits(['toggle']);
+const emit = defineEmits(['toggle', 'hide']);
 
 //入参定义
 const props = defineProps<{
@@ -112,10 +118,7 @@ function onToggleHideChapter(cid: number) {
     toggleChapterHide(cid).then((result: HttpResponse<boolean>) => {
         if (result.code == ApiResultCode.Success) {
             Message.success("已隐藏");
-            // const index = renderData.value?.Index.findIndex(chap => chap.IndexId === cid);
-            // if (index !== undefined && index !== -1) {
-            //     renderData.value?.Index.splice(index, 1);
-            // }
+            emit("hide");
         } else Message.error("隐藏章节失败：" + result.msg)
     }).catch(err => {
         Message.error("隐藏章节出错：" + err);
