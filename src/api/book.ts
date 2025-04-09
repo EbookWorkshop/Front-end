@@ -30,7 +30,11 @@ export function queryBookInfo(id: number) {
   return axios.get(`/library/book/metadata?bookid=${id}`);
 }
 export function patchBookInfo(metadata: any) {
-  return axios.patch(`/library/book/metadata`, metadata);
+  return axios.patch(`/library/book/metadata`, metadata, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
 }
 
 

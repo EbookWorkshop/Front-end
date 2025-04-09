@@ -39,11 +39,12 @@
                         </a-color-picker>
                     </a-form-item>
                     <a-form-item v-if="form.coverType == '图片'" field="bookCover" tooltip="">
-                        <a-upload v-model="form.bookCover" :show-file-list="false" :auto-upload="false">
+                        <a-upload v-model="form.bookCover" :show-file-list="false" :auto-upload="false"
+                            :on-before-upload="onSetConverFile">
                             <template #upload-button>
                                 <BookCover :book-name="form.name" :cover-img="form.bookCover" />
                             </template>
-                        </a-upload>                        
+                        </a-upload>
                     </a-form-item>
                 </template>
             </a-split>
@@ -65,7 +66,8 @@ const prop = defineProps<{
     bookId: number,
 }>();
 let oldBookMeta = {} as any;       // 保存旧的书籍元数据
-const history = ref(['#0b3154','#cb1f2f','#f2e3a4','#212f30']); // 封面预设色
+const history = ref(['#0b3154', '#cb1f2f', '#f2e3a4', '#212f30']); // 封面预设色
+let tempConverFile = ref<File>(); // 临时封面文件
 
 /**
  * 加载数据
@@ -97,18 +99,33 @@ const form = reactive<any>({
     coverType: "线装本",
 });
 
-function handleBeforeOk(callback: any) {
-    let metadata = { id: form.id } as any;
+/**
+ * 提交修改
+ * @param callback 
+ */
+async function handleBeforeOk(callback: any) {
+    let metaForm = new FormData();
+    metaForm.append('id', form.id);
+    if (form.bookCover.startsWith("blob:")) {
+        await fetch(form.bookCover).then(res => res.blob()).then(blob => {
+            metaForm.append('coverFile', blob, form.name + ".jpg");
+        });
+        form.bookCover = oldBookMeta.bookCover;//还原，跳过设置，直接用文件
+    }
+
     for (let key in form) {
         if (form[key] !== oldBookMeta[key]) {
-            metadata[key] = form[key];
+            metaForm.append(key, form[key]);
         }
     }
 
-    patchBookInfo(metadata).then(() => {
+    patchBookInfo(metaForm).then(() => {
         Message.success('修改成功');
         callback(true); // 关闭弹窗
     }).finally(() => {
+        if (form.bookCover.startsWith("blob:")) {
+            URL.revokeObjectURL(form.bookCover);
+        }
         emit('cancel');
     });
 }
@@ -119,5 +136,19 @@ async function InitFont() {
 }
 InitFont();
 
+/**
+ * 设置修改了封面图片
+ * @param {File} file 
+ */
+function onSetConverFile(file: File) {
+    if (!file) return;
+    if (form.bookCover.startsWith("blob:")) {
+        URL.revokeObjectURL(form.bookCover);
+    }
+    let tempFileUrl = URL.createObjectURL(file);
+    // console.log('set file', tempFileUrl, file);
+    tempConverFile.value = file;
+    form.bookCover = tempFileUrl;
+}
 
 </script>
