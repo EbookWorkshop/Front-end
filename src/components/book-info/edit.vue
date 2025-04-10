@@ -81,6 +81,7 @@ async function LoadData() {
         form.author = bookInfo.Author ?? '佚名';
         form.font = bookInfo.FontFamily;
         form.introduction = bookInfo.Introduction;
+        if (!bookInfo.CoverImg) bookInfo.CoverImg = "#000000";
         form.bookCover = bookInfo.CoverImg;
         form.coverType = bookInfo.CoverImg.startsWith("#") ? "线装本" : "图片";
         oldBookMeta = { ...form };
@@ -106,10 +107,8 @@ const form = reactive<any>({
 async function handleBeforeOk(callback: any) {
     let metaForm = new FormData();
     metaForm.append('id', form.id);
-    if (form.bookCover.startsWith("blob:")) {
-        await fetch(form.bookCover).then(res => res.blob()).then(blob => {
-            metaForm.append('coverFile', blob, form.name + ".jpg");
-        });
+    if (form.bookCover?.startsWith("blob:")) {
+        metaForm.append('coverFile', tempConverFile.value ?? "");
         form.bookCover = oldBookMeta.bookCover;//还原，跳过设置，直接用文件
     }
 
@@ -119,13 +118,12 @@ async function handleBeforeOk(callback: any) {
         }
     }
 
-    patchBookInfo(metaForm).then(() => {
+    patchBookInfo(metaForm).then(async () => {
         Message.success('修改成功');
-        callback(true); // 关闭弹窗
+        callback(true); // 
+        await LoadData();
+        emit('submit', form); // 提交数据
     }).finally(() => {
-        if (form.bookCover.startsWith("blob:")) {
-            URL.revokeObjectURL(form.bookCover);
-        }
         emit('cancel');
     });
 }
@@ -142,11 +140,11 @@ InitFont();
  */
 function onSetConverFile(file: File) {
     if (!file) return;
-    if (form.bookCover.startsWith("blob:")) {
-        URL.revokeObjectURL(form.bookCover);
-    }
+
     let tempFileUrl = URL.createObjectURL(file);
-    // console.log('set file', tempFileUrl, file);
+    setTimeout(() => {
+        URL.revokeObjectURL(form.bookCover);
+    }, 1000);
     tempConverFile.value = file;
     form.bookCover = tempFileUrl;
 }

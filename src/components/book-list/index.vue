@@ -40,7 +40,8 @@
     </a-row>
   </a-spin>
 
-  <EditBookInfo :visible="curEditBookId != 0" :bookId="curEditBookId" @cancel="curEditBookId = 0" />
+  <EditBookInfo :visible="curEditBookId != 0" :bookId="curEditBookId" @cancel="curEditBookId = 0"
+    @submit="onUpdateMeta" />
 </template>
 
 <script lang="ts" setup>
@@ -82,6 +83,25 @@ const goto = (bookid: number) => {
     path: `/${props.nextRouter}/${bookid}`,
   });
 };
+
+function onUpdateMeta(form: any) {
+  /**
+       id: prop.bookId,
+      name: '',
+      author: '',
+      font: '',
+      introduction: '',
+      bookCover: '',
+      coverType: "线装本",
+   */
+
+  const curBook = renderData.value.find(item => item.BookId == form.id);
+  if (curBook) {
+    curBook.BookName = form.name;
+    curBook.Author = form.author;
+    curBook.CoverImg = form.bookCover;
+  }
+}
 
 function DeleteABook(bookid: number) {
   loading.value = true;

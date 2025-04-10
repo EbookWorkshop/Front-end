@@ -142,9 +142,6 @@ const cancelEdit = () => {
 const saveEdit = (index: number) => {
     editingIndex.value = -1;
 
-    // console.log(urlList.value[index], props.chapter.URL[index]);
-    // if (urlList.value[index].Path == props.chapter.URL[index].Path) return;
-
     let urlSetting = {
         id: urlList.value[index].id,
         url: urlList.value[index].Path
