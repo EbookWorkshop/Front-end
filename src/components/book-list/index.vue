@@ -15,17 +15,22 @@
               <!-- 一行 -->
               <a-col v-for="item in renderData" :key="item.BookId" class="list-col" :xs="24" :sm="12" :md="12" :lg="6"
                 :xl="6" :xxl="4" @click="goto(item.BookId)">
-                <a-dropdown trigger="contextMenu" alignPoint :style="{ display: 'block' }" :popup-max-height="false">
+                <a-dropdown trigger="contextMenu" alignPoint :style="{ display: 'block' }" :popup-max-height="false" >
                   <BookCover :loading="loading" :book-name="item.BookName" :cover-img="item.CoverImg">
                   </BookCover>
                   <template #content>
-                    <a-doption>
+                    <a-dgroup title="标签">
+                      <a-doption disabled>
+                        <TagTool :book-id="item.BookId"></TagTool>
+                      </a-doption>
+                    </a-dgroup>
+                    <a-doption >
                       <template #icon> <icon-delete /> </template>
                       <template #default>
                         <a-button type="text" status="danger" @click="DeleteABook(item.BookId)">删除书本</a-button>
                       </template>
                     </a-doption>
-                    <a-doption>
+                    <a-doption >
                       <template #icon> <icon-pen /> </template>
                       <template #default><a-button type="text"
                           @click="curEditBookId = item.BookId">修改元数据</a-button></template>
@@ -40,8 +45,7 @@
     </a-row>
   </a-spin>
 
-  <EditBookInfo :visible="curEditBookId != 0" :bookId="curEditBookId" @cancel="curEditBookId = 0"
-    @submit="onUpdateMeta" />
+  <EditBookInfo :visible="curEditBookId != 0" :bookId="curEditBookId" @cancel="curEditBookId = 0" @submit="onUpdateMeta" />
 </template>
 
 <script lang="ts" setup>
@@ -51,6 +55,7 @@ import { ListQueryApi, deleteABook } from '@/api/library';
 import { Book } from '@/types/book';
 import useRequest from '../../hooks/request';
 import BookCover from '../book-cover/index.vue';
+import TagTool from '../tag-toolbar/index.vue';
 import TagList from '../tag-toolbar/list.vue';
 import EditBookInfo from '../book-info/edit.vue';
 
@@ -65,6 +70,7 @@ const props = defineProps({
   }
 });
 
+// 内部状态管理
 const defaultValue: Book[] = new Array().fill({});
 const curEditBookId = ref(0);
 
@@ -85,16 +91,6 @@ const goto = (bookid: number) => {
 };
 
 function onUpdateMeta(form: any) {
-  /**
-       id: prop.bookId,
-      name: '',
-      author: '',
-      font: '',
-      introduction: '',
-      bookCover: '',
-      coverType: "线装本",
-   */
-
   const curBook = renderData.value.find(item => item.BookId == form.id);
   if (curBook) {
     curBook.BookName = form.name;

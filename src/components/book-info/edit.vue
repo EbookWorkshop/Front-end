@@ -59,8 +59,8 @@ import { Message } from '@arco-design/web-vue';
 
 import BookCover from "@/components/book-cover/index.vue";
 
-let fontDataMap = new Map();
-let fontData: Array<any> = [];
+// let fontDataMap = new Map();
+let fontData: Array<any> = [];      //系统已安装字体
 const prop = defineProps<{
     visible: boolean,
     bookId: number,
@@ -68,25 +68,6 @@ const prop = defineProps<{
 let oldBookMeta = {} as any;       // 保存旧的书籍元数据
 const history = ref(['#0b3154', '#cb1f2f', '#f2e3a4', '#212f30']); // 封面预设色
 let tempConverFile = ref<File>(); // 临时封面文件
-
-/**
- * 加载数据
- */
-async function LoadData() {
-    if (prop.bookId !== 0) {
-        const result = await queryBookInfo(prop.bookId);
-        const bookInfo = result.data;
-        form.id = bookInfo.id;
-        form.name = bookInfo.BookName;
-        form.author = bookInfo.Author ?? '佚名';
-        form.font = bookInfo.FontFamily;
-        form.introduction = bookInfo.Introduction;
-        if (!bookInfo.CoverImg) bookInfo.CoverImg = "#000000";
-        form.bookCover = bookInfo.CoverImg;
-        form.coverType = bookInfo.CoverImg.startsWith("#") ? "线装本" : "图片";
-        oldBookMeta = { ...form };
-    }
-};
 
 const emit = defineEmits(["submit", "cancel"]);
 
@@ -99,6 +80,29 @@ const form = reactive<any>({
     bookCover: '',
     coverType: "线装本",
 });
+
+/**
+ * 加载数据
+ */
+ async function LoadData() {
+    if (prop.bookId !== 0) {
+        const result = await queryBookInfo(prop.bookId);
+        const bookInfo = result.data;
+        form.id = bookInfo.id;
+        form.name = bookInfo.BookName;
+        form.author = bookInfo.Author ?? '佚名';
+        form.font = bookInfo.FontFamily;
+        form.introduction = bookInfo.Introduction;
+        if (!bookInfo.CoverImg) bookInfo.CoverImg = "#000000";
+        form.bookCover = bookInfo.CoverImg;
+        form.coverType = bookInfo.CoverImg.startsWith("#") ? "线装本" : "图片";
+        oldBookMeta = { ...form };
+
+    }
+    if(fontData.length == 0) {
+        await InitFont();
+    }
+};
 
 /**
  * 提交修改
@@ -130,9 +134,8 @@ async function handleBeforeOk(callback: any) {
 
 async function InitFont() {
     fontData = await queryFontList();
-    fontDataMap = new Map(fontData.map(t => [t.name, t]));
+    // fontDataMap = new Map(fontData.map(t => [t.name, t]));
 }
-InitFont();
 
 /**
  * 设置修改了封面图片
