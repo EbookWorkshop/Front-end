@@ -64,13 +64,13 @@
                     </a-col>
                     <a-col :span="4">
                         <a-space direction="horizontal" wrap>
-                            <a-button type="primary" @click="onTryIt">更新预览</a-button>
+                            <a-button type="primary" @click="onTryIt" :loading="visBtLoading">更新预览</a-button>
                             <a-button type="primary" status="success" @click="onSave">应用到所有章节</a-button>
                             <a-dropdown @select="" :popup-max-height="false">
                                 <a-button>更多 <icon-down /></a-button>
                                 <template #content>
                                     <a-doption @click="onViewChapter">章节载入预览（已校阅的结果）</a-doption>
-                                    <a-doption></a-doption>
+                                    <a-doption>只应用到预览章节</a-doption>
                                     <a-doption></a-doption>
                                 </template>
                             </a-dropdown>
@@ -88,6 +88,7 @@
                 </div>
                 <a-typography-paragraph v-for="(item, index) in saveResult" :key="index">
                     <a-typography-text>章节标题： {{ item.title }} </a-typography-text>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
                     <a-typography-text>更新结果： {{ item.updateRsl }} </a-typography-text>
                 </a-typography-paragraph>
                 <a-typography v-if="viewChapter?.id != 0">
@@ -143,6 +144,8 @@ const viewChapter = ref<{
     title: string;
     content: string;
 }>({ id: 0, title: "", content: "" });    //预览的章节
+//控件状态
+const visBtLoading = ref<boolean>(false);
 
 /**
  * 清空所有预览数据
@@ -187,13 +190,14 @@ async function onTryIt() {
     if (form.chapterId.length == 0 || form.curRegex == '') {
         return;
     }
-
+    visBtLoading.value = true;
     let result = await tryARuleOnBook({
         bookid: form.bookId,
         chapterids: form.chapterId,
         regex: form.curRegex,
         replace: form.curReplace,
     });
+    visBtLoading.value = false;
     if (result.code != ApiResultCode.Success) return;
     CleanView();
     diffResult.value = result.data;
