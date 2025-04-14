@@ -4,36 +4,40 @@
     <div class="wrapper">
       <a-spin dot :loading="dataLoading">
         <a-form ref="formRef" :model="form" @submit="Submit">
-          <a-row>
+          <a-row :gutter="16">
             <a-col :span="20" :offset="2">
               <a-space>
-                <a-button type="primary" @click="resetForm">新增新方案</a-button>
-                <a-button type="primary" @click="showWebList">编辑现有方案</a-button>
-                <a-button type="primary" @click="CheckSiteAccessibility">检查站点存活情况</a-button>
-                <a-button type="primary" status="success" html-type="submit"
-                  :disabled="form.hostname.length == 0">保存当前方案</a-button>
-                <a-popconfirm content="你确定要删除当前站点配置？这将无法恢复。" type="warning" @ok="DeleteIt">
-                  <a-button type="primary" status="danger" :disabled="form.hostname.length == 0">删除当前方案</a-button>
-                </a-popconfirm>
+                <a-button-group>
+                  <a-button type="primary" @click="resetForm">新增新方案</a-button>
+                  <a-button type="primary" @click="showWebList">编辑现有方案</a-button>
+                </a-button-group>
+                <a-button @click="CheckSiteAccessibility">检查站点存活情况</a-button>
+                <a-button-group>
+                  <a-button type="primary" status="success" html-type="submit"
+                    :disabled="form.hostname.length == 0">保存当前方案</a-button>
+                  <a-popconfirm content="你确定要删除当前站点配置？这将无法恢复。" type="warning" @ok="DeleteIt">
+                    <a-button type="primary" status="danger" :disabled="form.hostname.length == 0">删除当前方案</a-button>
+                  </a-popconfirm>
+                </a-button-group>
                 <a-button-group>
                   <a-button type="primary" @click="exportScheme"
-                    :disabled="form.hostname.length == 0">导出当前方案（json）</a-button>
+                    :disabled="form.hostname.length == 0">导出当前方案</a-button>
                   <a-upload :action="ASSETS_HOST + '/services/botrule/import'" :show-file-list="false" :accept="'.json'"
                     name="data" @success="importScheme">
                     <template #upload-button>
-                      <a-button type="primary">导入方案（json）</a-button>
+                      <a-button type="primary">导入方案</a-button>
                     </template>
                   </a-upload>
                 </a-button-group>
                 <a-button :status="isUseVisStatus" @click="toggleFormUrl4Vis">
-                  <template #icon><icon-eye /></template>
+                  <template #icon><icon-eye style="color:rgb(var(--orange-6))"/></template>
                   <template #default>启用预览辅助配置模式</template>
                 </a-button>
               </a-space>
             </a-col>
           </a-row>
           <a-row style="margin-top: 50px;">
-            <a-col :span="20">
+            <a-col :span="24">
               <!--方案表单 -->
               <a-space direction="vertical" size="large" :style="{ width: '100%' }">
                 <a-form-item field="hostname" label="网站域名" :rules="[{ required: true, message: '网站名为必填' }]"
@@ -427,7 +431,7 @@ function VisRuleSetting(rule: any) {
     console.log(data)
     Modal.info({
       title: '测试执行结果',
-      content: () => h("pre",JSON.stringify(data, null, 2)),
+      content: () => h("pre", JSON.stringify(data, null, 2)),
     });
   });
 }

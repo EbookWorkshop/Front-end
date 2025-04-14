@@ -50,11 +50,13 @@
                 <a-select placeholder="常见章节规则推荐" :trigger-props="{ autoFitPopupMinWidth: true }"
                   @change="form.titleRule = $event as string">
                   <a-optgroup label="含章节标题">
-                    <a-option value="((第\S+?[回章][^\n]+?)|后记)\r?\n">第x章/回或后记-独立分行</a-option>
+                    <a-option value="((第\S+?章[^。，\n]+?)|(简介：))\r?\n">第x章 XXXX|简介</a-option>
+                    <a-option value="((第\S+?回[^。，\n]+?)|(后记)|(简介：))\r?\n">第x回 XXXX|后记|简介</a-option>
+                    <a-option value="((第\S+?回[^。，\n]+?)|(后记)|(简介：))\r?\n">第x回 XXXX|后记|简介</a-option>
                   </a-optgroup>
                   <a-optgroup label="无章节标题">
-                    <a-option value="((第\S+?章)|后记)\r?\n">第x章或后记-独立分行</a-option>
-                    <a-option value="\n\s?(\S.{1,4})\s?\r?\n">任意内容5字以内的-独立分行</a-option>
+                    <a-option value="((第\S+?章)|后记)\r?\n">第x章|后记</a-option>
+                    <a-option value="\n\s?(\S.{1,4})\s?\r?\n">任意内容5字以内的</a-option>
                   </a-optgroup>
                 </a-select>
                 <a-button status="warning" @click="testCutRule">测试分割章节规则</a-button>

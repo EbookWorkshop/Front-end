@@ -71,7 +71,7 @@ const SYSTEM: AppRouteRecordRaw = {
     {
       path: 'preferences',
       name: 'Preferences',
-      component: () => h("div","一些可以设置的选项，用户偏好设置等，比如默认字体"),
+      component: () => h("div","一些可以设置的选项，用户偏好设置等，比如阅读默认字体；UI字体；"),
       meta: {
         locale: 'menu.system.preferences',
         icon: 'icon-star',
