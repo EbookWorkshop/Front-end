@@ -1,43 +1,41 @@
 <template>
-  <BookWrap
-    v-if="coverImg && !coverImg?.startsWith('#')"
-    :loading="loading"
-    :title="bookName"
-    :cover-img="coverImg"
-  >
-    <a-descriptions
-      style="margin-top: 16px"
-      layout="inline-horizontal"
-      :column="2"
-    />
+  <BookWrap v-if="curCover && !curCover?.startsWith('#')" :loading="loading" :title="bookName" :cover-img="curCover"
+    @error="CoverImgError">
+    <a-descriptions style="margin-top: 16px" layout="inline-horizontal" :column="2" />
   </BookWrap>
-  <BookClassical
-    v-else
-    :loading="loading"
-    :title="bookName"
-    :title-show="bookName.replace(/[\(（)].*$/, '')"
-    :conver-color="coverImg?.startsWith('#') ? coverImg : undefined"
-  >
+  <BookClassical v-else :loading="loading" :title="bookName" :title-show="bookName.replace(/[\(（)].*$/, '')"
+    :conver-color="curCover?.startsWith('#') ? curCover : undefined">
   </BookClassical>
 </template>
 
 <script lang="ts" setup>
-  import BookWrap from './components/book-wrap.vue'; // 带封面图书
-  import BookClassical from './components/book-classical.vue'; // 古典线装书风格封面
+import { ref } from "vue";
+import BookWrap from './components/book-wrap.vue'; // 带封面图书
+import BookClassical from './components/book-classical.vue'; // 古典线装书风格封面
 
-  // 定义组件入参
-  defineProps({
-    loading: {
-      type: Boolean,
-      default: false,
-    },
-    bookName: {
-      type: String,
-      default: '',
-    },
-    coverImg: {
-      type: String,
-      default: '',
-    },
-  });
+// 定义组件入参
+const props = defineProps({
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+  bookName: {
+    type: String,
+    default: '',
+  },
+  coverImg: {
+    type: String,
+    default: '',
+  },
+});
+
+const curCover = ref(props.coverImg);
+
+/**
+ * 当图片出错时，切换为线装本样式显示
+ * @param event 
+ */
+function CoverImgError(event: Event) {
+  curCover.value="#2e2e2e"
+}
 </script>

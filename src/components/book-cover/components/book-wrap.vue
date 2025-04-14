@@ -8,7 +8,7 @@
         <div :style="{
           overflow: 'hidden',
         }">
-          <img :style="{ width: '100%' }" :alt="title" :src=showImageUrl />
+          <img :style="{ width: '100%' }" :alt="title" :src=showImageUrl @error="imgError" />
         </div>
       </template>
       <a-space align="start">
@@ -42,6 +42,7 @@ const props = defineProps({
     default: '',
   },
 });
+const emiter = defineEmits(["error"]);
 
 const showImageUrl = computed<string>(() => {
   if (props.coverImg.startsWith('blob:')) {
@@ -50,6 +51,10 @@ const showImageUrl = computed<string>(() => {
     return ASSETS_HOST + props.coverImg;
   }
 });
+
+function imgError(event: Event) {
+  emiter("error", event);
+}
 </script>
 
 <style scoped lang="less">
