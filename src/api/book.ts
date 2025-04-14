@@ -127,6 +127,14 @@ export function chapter2Introduction(chapterId: number) {
 export function toggleChapterHide(chapterid: number) {
   return axios.patch<HttpResponse<boolean>>('/library/book/chapter/toggleHide', { chapterId: chapterid });
 }
+/**
+ * 列出已隐藏的章节
+ * @param bookid 书ID
+ * @returns 
+ */
+export function listHiddenChapters(bookid: number) {
+  return axios.get<HttpResponse<any[]>>(`/library/book/chapter/listhidden?bookid=${bookid}`);
+}
 
 /**
  * 找到相邻的章节
