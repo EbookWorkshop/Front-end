@@ -144,6 +144,7 @@ import SelectBook from '@/components/select-book/index.vue'
 
 import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';
 import { queryFontList, } from '@/api/font';
+import { getKindleInbox } from '@/api/system';
 import { ApiResultCode } from '@/types/global'
 
 const saving = ref(false);
@@ -186,10 +187,20 @@ const onNext = async () => {
       }
     });
     return;
+  } else if (current.value == 2) {
+    setDefaultSendMail();
   }
 
   current.value = Math.min(4, current.value + 1);
 };
+
+function setDefaultSendMail() {
+  getKindleInbox().then(res => {
+    if (res.code === ApiResultCode.Success && res.data?.address) {
+      form.value.isSendEmail = true;
+    }
+  })
+}
 
 //字体加载、切换部分
 let fontDataMap = new Map();
