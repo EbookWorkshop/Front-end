@@ -12,7 +12,7 @@
                     <a-button @click="isShow = true" shape="round"> 区段选择 </a-button>
                 </a-button-group>
                 <a-button-group type="primary">
-                    <a-button shape="round"> 已隐藏章节 </a-button>
+                    <a-button shape="round" @click="showHiddenChapters(bookid ?? 0)"> 已隐藏章节 </a-button>
                     <a-button @click="checkDescriptions = true">查重</a-button>
                     <a-button shape="round">来源管理</a-button>
                 </a-button-group>
@@ -57,7 +57,7 @@
     </a-modal>
 
     <EditBookInfo :visible="isEditBookInfo" :bookId="bookid ?? 0" @cancel="isEditBookInfo = false" />
-    <Descriptions :bookId="bookid?? 0" :show="checkDescriptions" @close="checkDescriptions = false"/>
+    <Descriptions :bookId="bookid ?? 0" :show="checkDescriptions" @close="checkDescriptions = false" />
 </template>
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
@@ -65,6 +65,7 @@ import { Chapter } from '@/types/book';
 import { ApiResultCode } from '@/types/global';
 import { mergeWebBookIndex, updateChapter, queryBookDefaultSourcesById } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
+import useChapterHiddenHelper from "@/hooks/chapter-hidden";
 
 import EditBookInfo from '@/components/book-info/edit.vue';
 import Descriptions from '@/components/book-tool/duplicates.vue';
@@ -102,6 +103,7 @@ const props = defineProps({
     }
 });
 const emit = defineEmits(["ToggleCheck", "StartUpdateChapter"]);
+const { showHiddenChapters } = useChapterHiddenHelper();
 
 //定义回调函数
 defineExpose({

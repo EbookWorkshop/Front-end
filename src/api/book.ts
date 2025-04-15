@@ -122,10 +122,11 @@ export function chapter2Introduction(chapterId: number) {
 /**
  * 隐藏/取消隐藏章节
  * @param chapterid 章节id
+ * @param ishide 是否隐藏
  * @returns
  */
-export function toggleChapterHide(chapterid: number) {
-  return axios.patch<HttpResponse<boolean>>('/library/book/chapter/toggleHide', { chapterId: chapterid });
+export function updateChapterVisibility(chapterid: number, ishide: boolean) {
+  return axios.patch<HttpResponse<boolean>>('/library/book/chapter/toggleHide', { chapterId: chapterid, ishide });
 }
 /**
  * 列出已隐藏的章节

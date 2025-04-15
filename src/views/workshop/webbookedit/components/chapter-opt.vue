@@ -13,7 +13,7 @@
                 <template #content>
                     <a-doption :disabled="chapter.IsHasContent ? false : true"
                         @click="gotoChapter(chapter.IndexId, true)">阅读</a-doption>
-                    <a-doption @click="onToggleHideChapter(chapter.IndexId)">隐藏本章</a-doption>
+                    <a-doption @click="onToggleHideChapter">隐藏本章</a-doption>
                     <a-doption @click="isUrlDialogVisible = true">管理来源</a-doption>
                     <a-doption @click="OpenWin">打开来源网页</a-doption>
                     <a-doption @click="isEdit = true">直接录入/修正</a-doption>
@@ -59,19 +59,20 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { updateWebBookChapterSourcesById, toggleChapterHide, } from '@/api/book';
+import { updateWebBookChapterSourcesById } from '@/api/book';
 import { openWindow } from '@/utils';
-import { Message } from '@arco-design/web-vue';
 import ChapterEdit from "@/components/chapter/edit.vue";
+import useChapterHiddenHelper from "@/hooks/chapter-hidden";
+
 
 //类型
 import type { WebChapter } from '@/types/book';
-import type { HttpResponse } from '@/types/global';
-import { ApiResultCode } from '@/types/global';
+
 
 //操作
 import useBookHelper from '@/hooks/book-helper';
 const { gotoChapter } = useBookHelper();
+const { toggleChapterHidden } = useChapterHiddenHelper();
 
 //变量范围
 const isChecked = ref(false);
@@ -110,18 +111,9 @@ function onToggle() {
     emit("toggle", isChecked.value, props.chapter.IndexId);
 }
 
-/**
- * 切换章节隐藏状态
- * @param {number} cid 章节ID
- */
-function onToggleHideChapter(cid: number) {
-    toggleChapterHide(cid).then((result: HttpResponse<boolean>) => {
-        if (result.code == ApiResultCode.Success) {
-            Message.success("已隐藏");
-            emit("hide");
-        } else Message.error("隐藏章节失败：" + result.msg)
-    }).catch(err => {
-        Message.error("隐藏章节出错：" + err);
+function onToggleHideChapter() {
+    toggleChapterHidden(props.chapter.IndexId).then((res) => {
+        emit("hide", props.chapter.IndexId);
     })
 }
 

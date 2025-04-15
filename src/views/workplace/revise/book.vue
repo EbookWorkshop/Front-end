@@ -78,7 +78,6 @@ import {
   queryBookById,
   updateChapterOrder,
   deleteChapter,
-  toggleChapterHide,
   chapter2Introduction,
 } from '@/api/book';
 
@@ -91,8 +90,10 @@ import Toolbar from "./components/toolbar.vue";
 import SplitTool from "./components/SplitTool.vue";
 
 import useBookHelper from '@/hooks/book-helper';
+import useChapterHiddenHelper from "@/hooks/chapter-hidden";
 
 const { bookId, gotoChapter } = useBookHelper();
+const { toggleChapterHidden } = useChapterHiddenHelper();
 
 const loading = ref(true);
 const renderData = ref<Book | null>(null);//完整的 - 书本信息
@@ -185,16 +186,11 @@ function onDeleteChapter(cid: number) {
  * @param cid 章节ID
  */
 function onToggleHideChapter(cid: number) {
-  toggleChapterHide(cid).then((result: HttpResponse<boolean>) => {
-    if (result.code == ApiResultCode.Success) {
-      Message.success("已隐藏");
-      const index = renderData.value?.Index.findIndex(chap => chap.IndexId === cid);
-      if (index !== undefined && index !== -1) {
-        renderData.value?.Index.splice(index, 1);
-      }
-    } else Message.error("隐藏章节失败：" + result.msg)
-  }).catch(err => {
-    Message.error("隐藏章节出错：" + err);
+  toggleChapterHidden(cid, true).then((result: any) => {
+    const index = renderData.value?.Index.findIndex(chap => chap.IndexId === cid);
+    if (index !== undefined && index !== -1) {
+      renderData.value?.Index.splice(index, 1);
+    }
   })
 }
 
