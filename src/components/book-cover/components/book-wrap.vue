@@ -26,8 +26,8 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-
-const ASSETS_HOST = import.meta.env.VITE_API_BASE_URL;
+import { getApiBaseUrl } from '@/utils/config';
+const ASSETS_HOST = getApiBaseUrl();
 const props = defineProps({
   loading: {
     type: Boolean,

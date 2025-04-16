@@ -62,7 +62,8 @@ import useBookHelper from '@/hooks/book-helper';
 import ToolMenu from './components/toolmenu.vue'
 import ContentRenderer, { type ContentItem } from './components/ContentRenderer.vue'
 
-const ASSETS_HOST = import.meta.env.VITE_API_BASE_URL;
+import { getApiBaseUrl } from '@/utils/config';
+const ASSETS_HOST = getApiBaseUrl();
 const route = useRoute();
 
 //变量

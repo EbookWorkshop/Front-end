@@ -8,10 +8,10 @@ import type {
 import { Message } from '@arco-design/web-vue';
 // import { useUserStore } from '@/store';
 import { getToken } from '@/utils/auth';
+import { getApiBaseUrl } from '@/utils/config';
 
-if (import.meta.env.VITE_API_BASE_URL) {
-  axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-}
+axios.defaults.baseURL = getApiBaseUrl();
+
 // 请求拦截器 —— 统一加Token的逻辑
 axios.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {

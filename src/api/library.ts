@@ -7,10 +7,6 @@ export type ListQueryApi = (
   tagId: number | undefined
 ) => Promise<AxiosResponse<HttpResponse<Book[]>>>;
 
-if (import.meta.env.VITE_API_BASE_URL) {
-  axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-}
-
 export function queryBookList(tagId?: number) {
   let param = {};
   if (tagId) param = { params: { tagid: tagId } };

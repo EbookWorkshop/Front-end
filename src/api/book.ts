@@ -2,10 +2,6 @@ import axios from 'axios';
 import type { Chapter, ChapterOrderSetting } from '@/types/book';
 import { HttpResponse } from '@/types/global';
 
-if (import.meta.env.VITE_API_BASE_URL) {
-  axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-}
-
 /**
  * 拿到书 目录
  * @param id
