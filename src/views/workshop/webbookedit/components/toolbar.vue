@@ -25,13 +25,12 @@
                     <a-button status="success" @click="isMustUpdate = !isMustUpdate">
                         <a-checkbox :model-value="isMustUpdate">强制更新</a-checkbox>
                     </a-button>
-                    <a-button status="success" @click="UpdateChapter" :loading="btStatusGettingData">
+                    <a-button shape="round" status="success" @click="UpdateChapter" :loading="btStatusGettingData">
                         <template #icon><icon-robot /></template>
                         <a-badge :count="chapterHasCheckedNum" :max-count="99999" :offset="[15, -10]">
                             抓取选中章节
                         </a-badge>
                     </a-button>
-                    <a-button status="success" shape="round"><template #icon><icon-email /></template>发到默认邮箱</a-button>
                 </a-button-group>
             </a-space>
         </a-space>

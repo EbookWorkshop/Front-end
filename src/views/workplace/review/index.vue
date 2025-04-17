@@ -196,8 +196,10 @@ async function onTryIt() {
         chapterids: form.chapterId,
         regex: form.curRegex,
         replace: form.curReplace,
+    }).finally(() => {
+        visBtLoading.value = false;
     });
-    visBtLoading.value = false;
+    
     if (result.code != ApiResultCode.Success) return;
     CleanView();
     diffResult.value = result.data;
