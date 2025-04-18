@@ -5,7 +5,7 @@
       <ProcessBar :bookid="bookId" :begin-percent="curDoingProcent" />
       <a-spin :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%">
         <BookInfo :loading="loading" :bookId="bookId" :BookName="bookData.BookName" :convertImg="bookData.CoverImg"
-          :Author="bookData.Author">
+          :Author="bookData.Author" :Introduction="bookData.Introduction">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Chapters="bookData.Index"
               :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar"
@@ -15,7 +15,8 @@
         <a-divider />
         <ChapterList :loading="loading" :Chapters="bookData.Index">
           <template #content="{ item }">
-            <ChapterOpt :chapter="item as WebChapter" @toggle="OnToggleChapter" :ref="chapterRefMap.get(item.IndexId)" />
+            <ChapterOpt :chapter="item as WebChapter" @toggle="OnToggleChapter" :ref="chapterRefMap.get(item.IndexId)"
+              @hide="onHideChapter(item.IndexId)" />
           </template>
         </ChapterList>
       </a-spin>
@@ -80,6 +81,14 @@ const { io: socket } = useSocket();
 function OnToggleChapter(isChecked: boolean, chapterId: number) {
   hasCheckChapter.set(chapterId, isChecked);
   toolbarRef.value.updateChecked();
+}
+
+function onHideChapter(chapterId: number) {
+  console.log(`隐藏章节：${chapterId}`);
+  const index = bookData.value?.Index.findIndex(chap => chap.IndexId === chapterId);
+  if (index !== undefined && index !== -1) {
+    bookData.value?.Index.splice(index, 1);
+  }
 }
 
 /**

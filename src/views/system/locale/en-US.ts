@@ -5,6 +5,7 @@ export default {
   'menu.system.webrule': 'WebBot Rule',
   'menu.system.fontmanager': 'Fonts Manager',
   'menu.system.preferences': 'Preferences',
+  'menu.system.usestate': 'Use State',
 
   'system.form.save': 'Save',
 };

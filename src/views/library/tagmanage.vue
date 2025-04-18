@@ -6,16 +6,16 @@
         <a-space>
           <a-button status="success" @click="createNewRule">添加</a-button>
         </a-space>
-        <a-table :data="renderData" :loading="tableLoading">
+        <a-table :data="renderData" :loading="tableLoading" :pagination="{ pageSize: 20 }">
           <template #columns>
             <a-table-column title="id" data-index="id" :width="80"></a-table-column>
             <a-table-column title="标签" data-index="Text"></a-table-column>
-            <a-table-column title="颜色" data-index="Color" :width="320">
+            <a-table-column title="颜色" data-index="Color" :width="180">
               <template #cell="{ record }">
                 <a-color-picker v-if="record.Color" v-model="record.Color" :format="'hex'" showText disabled />
               </template>
             </a-table-column>
-            <a-table-column title="引用次数" data-index="Count" :width="220"></a-table-column>
+            <a-table-column title="引用次数" data-index="Count" :width="120"></a-table-column>
             <a-table-column title="操作" :width="250">
               <template #cell="{ record }">
                 <a-button @click="editRow(record)">编辑</a-button>
@@ -27,7 +27,7 @@
           </template>
         </a-table>
       </div>
-      <a-modal v-model:visible="visible" title="标签" @before-ok="handleBeforeOk">
+      <a-modal v-model:visible="visible" title="标签" @before-ok="handleBeforeOk" draggable unmount-on-close>
         <a-form :model="form">
           <input type="hidden" :value="form.id" />
           <a-form-item field="text" label="标签">

@@ -18,7 +18,8 @@
                   <a-select v-model="book.bookid" placeholder="请选择" @change="OnAddABook" allow-search>
                     <a-option v-for="item of allBookList" :value="item.BookId" :label="item.BookName" />
                   </a-select>
-                  <a-radio-group style="width:280px;text-align: center;" v-model:model-value="book.filetype">
+                  <a-radio-group style="width:210px;text-align: center;" v-model:model-value="book.filetype"
+                    type="button">
                     <a-radio value="pdf">PDF</a-radio>
                     <a-radio value="txt">TXT</a-radio>
                     <a-radio value="epub">EPUB</a-radio>
@@ -71,14 +72,14 @@ const emailForm = reactive({
   to: "",//收件人
   bookList: [{
     bookid: '请选择' as string | number,
-    filetype: "pdf"
+    filetype: "epub"
   }],
   fileList: [] as FileItem[]
 })
 
 function OnAddABook() {
   if (emailForm.bookList[emailForm.bookList.length - 1].bookid == "请选择") return;
-  emailForm.bookList.push({ bookid: '请选择', filetype: "pdf" });
+  emailForm.bookList.push({ bookid: '请选择', filetype: "epub" });
 }
 
 
@@ -87,7 +88,9 @@ function OnAddABook() {
  */
 function handleSubmit() {
   const formData = new FormData();
-  emailForm.fileList.map(t => formData.append("bookFiles", t.file as File));
+  emailForm.fileList.map((t: FileItem) => {
+    return formData.append("bookFiles", t.file as File)
+  });
   formData.append("sender", emailForm.from);
   formData.append("mailto", emailForm.to);
   formData.append("bookList", JSON.stringify(emailForm.bookList.filter(f => f.bookid != "请选择")));

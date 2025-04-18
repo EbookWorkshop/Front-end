@@ -138,13 +138,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, h } from 'vue';
-import { FormInstance } from '@arco-design/web-vue/es/form';
+import { ref } from 'vue';
+import type { FormInstance } from '@arco-design/web-vue';
 import SelectBook from '@/components/select-book/index.vue'
 
 import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';
 import { queryFontList, } from '@/api/font';
+import { getKindleInbox } from '@/api/system';
 import { ApiResultCode } from '@/types/global'
+import { getApiBaseUrl } from '@/utils/config';
+const ASSETS_HOST = getApiBaseUrl();
 
 const saving = ref(false);
 const formRef = ref<FormInstance>();
@@ -186,10 +189,20 @@ const onNext = async () => {
       }
     });
     return;
+  } else if (current.value == 2) {
+    setDefaultSendMail();
   }
 
   current.value = Math.min(4, current.value + 1);
 };
+
+function setDefaultSendMail() {
+  getKindleInbox().then(res => {
+    if (res.code === ApiResultCode.Success && res.data?.address) {
+      form.value.isSendEmail = true;
+    }
+  })
+}
 
 //字体加载、切换部分
 let fontDataMap = new Map();
@@ -235,10 +248,8 @@ const onSubmit = () => {
       if (form.value.isSendEmail) {
         resultData.value.msg = '已发送到您的邮箱';
       } else {
-        //goto download page
-        //Message.success('导出成功');
         resultData.value.msg = "正在准备下载..."
-        window.open(`${import.meta.env.VITE_API_BASE_URL}/assets/download/${encodeURIComponent(res.data.download)}`);
+        window.open(`${ASSETS_HOST}/assets/download/${encodeURIComponent(res.data.download)}`);
       }
     } else {
       resultData.value.result = 'error';

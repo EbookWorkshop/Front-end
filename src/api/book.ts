@@ -2,10 +2,6 @@ import axios from 'axios';
 import type { Chapter, ChapterOrderSetting } from '@/types/book';
 import { HttpResponse } from '@/types/global';
 
-if (import.meta.env.VITE_API_BASE_URL) {
-  axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-}
-
 /**
  * 拿到书 目录
  * @param id
@@ -30,7 +26,11 @@ export function queryBookInfo(id: number) {
   return axios.get(`/library/book/metadata?bookid=${id}`);
 }
 export function patchBookInfo(metadata: any) {
-  return axios.patch(`/library/book/metadata`, metadata);
+  return axios.patch(`/library/book/metadata`, metadata, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
 }
 
 
@@ -78,6 +78,17 @@ export function editChapter(chapter: Chapter) {
 }
 
 /**
+ * 删除章节
+ * @param chapterid 
+ * @returns 
+ */
+export function deleteChapter(chapterid: number) {
+  return axios.delete(`/library/book/chapter`, {
+    params: { chapterid }
+  })
+}
+
+/**
  * 修改章节信息
  * @param chapter 章节
  * @returns
@@ -93,6 +104,33 @@ export function updateChapterOrder(chapterOrderList: Array<ChapterOrderSetting>)
  */
 export function restructureChapter(setting: any) {
   return axios.patch('/library/book/chapters/restructure', setting);
+}
+
+/**
+ * 将指定章节设为书籍简介
+ * @param chapterId - 需要转换的章节ID
+ * @returns 包含操作结果的Promise
+ */
+export function chapter2Introduction(chapterId: number) {
+  return axios.post<HttpResponse<boolean>>('/library/book/chapter/tointroduction', { chapterId });
+}
+
+/**
+ * 隐藏/取消隐藏章节
+ * @param chapterid 章节id
+ * @param ishide 是否隐藏
+ * @returns
+ */
+export function updateChapterVisibility(chapterid: number, ishide: boolean) {
+  return axios.patch<HttpResponse<boolean>>('/library/book/chapter/toggleHide', { chapterId: chapterid, ishide });
+}
+/**
+ * 列出已隐藏的章节
+ * @param bookid 书ID
+ * @returns 
+ */
+export function listHiddenChapters(bookid: number) {
+  return axios.get<HttpResponse<any[]>>(`/library/book/chapter/listhidden?bookid=${bookid}`);
 }
 
 /**

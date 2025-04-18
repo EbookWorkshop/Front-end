@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { ApiResultCode, HttpResponse } from "@/types/global"
 
 /**
  * 校阅规则
@@ -30,7 +31,7 @@ export function deleteReviewRule(id: number) {
   return axios.delete(`/review/rule?id=${id}`);
 }
 /**
- * 测试一个规则
+ * 验证一个规则
  * @param id 
  * @param chapterId 
  * @returns 
@@ -42,6 +43,22 @@ export function tryARule(id: number, chapterId: number) {
   });
 }
 
+/**
+ * 在指定书中预览规则
+ * @param setting 
+ * @returns 
+ */
+export function tryARuleOnBook(setting: any) {
+  return axios.post<HttpResponse<any>>(`/review/book/try`, setting);
+}
+/**
+ * 将校阅的设置保存到书中
+ * @param setting 
+ * @returns 
+ */
+export function saveReviewOnBook(setting: any) {
+  return axios.post<HttpResponse<any>>(`/review/book/save`, setting);
+}
 
 /**
  * 每本书和规则的情况
@@ -59,6 +76,13 @@ export interface RuleAndBook {
  */
 export function queryReviewRuleUsingList() {
   return axios.get(`/review/bookwithrule/list`);
+}
+/**
+ * 按图书的找使用的校阅规则
+ * @returns
+ */
+export function queryReviewRuleOnBook(bookId: number) {
+  return axios.get(`/review/bookwithrule/book?bookid=${bookId}`);
 }
 /**
  * 更新图书使用的校阅规则

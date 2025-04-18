@@ -76,6 +76,7 @@ const WORKSHOP: AppRouteRecordRaw = {
       meta: {
         locale: 'menu.workshop.webbook',
         requiresAuth: true,
+        activeMenu: 'WebBookManage',
         roles: ['*'],
         hideInMenu: true
       },

@@ -7,7 +7,7 @@
         minWidth: '500px',
         marginTop: '40px',
         // border: '1px solid var(--color-border)'
-      }" min="80px" disabled size="0.618">
+      }" min="80px" disabled max="Infinity" size="0.618">
         <template #first>
           <a-card hoverable :style="{
             overflow: 'hidden',
@@ -50,11 +50,13 @@
                 <a-select placeholder="常见章节规则推荐" :trigger-props="{ autoFitPopupMinWidth: true }"
                   @change="form.titleRule = $event as string">
                   <a-optgroup label="含章节标题">
-                    <a-option value="((第\S+?[回章][^\n]+?)|后记)\r?\n">第x章/回或后记-独立分行</a-option>
+                    <a-option value="((第\S+?章[^。，\n]+?)|(简介：))\r?\n">第x章 XXXX|简介</a-option>
+                    <a-option value="((第\S+?回[^。，\n]+?)|(后记)|(简介：))\r?\n">第x回 XXXX|后记|简介</a-option>
+                    <a-option value="((第\S+?回[^。，\n]+?)|(后记)|(简介：))\r?\n">第x回 XXXX|后记|简介</a-option>
                   </a-optgroup>
                   <a-optgroup label="无章节标题">
-                    <a-option value="((第\S+?章)|后记)\r?\n">第x章或后记-独立分行</a-option>
-                    <a-option value="\n\s?(\S.{1,4})\s?\r?\n">任意内容5字以内的-独立分行</a-option>
+                    <a-option value="((第\S+?章)|后记)\r?\n">第x章|后记</a-option>
+                    <a-option value="\n\s?(\S.{1,4})\s?\r?\n">任意内容5字以内的</a-option>
                   </a-optgroup>
                 </a-select>
                 <a-button status="warning" @click="testCutRule">测试分割章节规则</a-button>
@@ -67,7 +69,8 @@
                   <dt>删除空行：</dt>
                   <dd><a-tag>^\s*\n</a-tag></dd>
                   <dt>删除胡乱换行：</dt>
-                  <dd><a-tag>{{ '(?<![.：。？！…”’])\\r?\\n(\\s+)?' }}</a-tag></dd>
+                  <dd><a-tag>(?&lt;![.：。？！…”’＊*])\r?\n(\s +)?</a-tag>
+                  </dd>
                 </dl>
               </dd>
             </dl>
@@ -80,8 +83,8 @@
 
 <script lang="ts" setup>
 import { PropType, reactive, ref, h } from 'vue';
-import { FileItem, Modal, Table, Tag, Space } from '@arco-design/web-vue';
-import { FormInstance } from '@arco-design/web-vue/es/form';
+import { Modal, Table, Tag, Space } from '@arco-design/web-vue';
+import type { FileItem, FormInstance } from '@arco-design/web-vue';
 import { IChapter, IForm, IStepResult } from './utils';
 import { cleanContent, cutContent } from './utils';
 import useLoading from '@/hooks/loading';
@@ -146,7 +149,7 @@ function testCleanRule() {
     });
     return;
   }
-  formRef.value?.validate((formOk) => {
+  formRef.value?.validate((formOk: FormInstance) => {
     if (formOk?.encoderType?.isRequiredError) return;
     let runRsl = cleanContent(contents, form.removeRule);
     let showResult: Array<{
@@ -195,7 +198,7 @@ function testCutRule() {
     });
     return;
   }
-  formRef.value?.validate((formOk) => {
+  formRef.value?.validate((formOk: FormInstance) => {
     if (formOk?.encoderType?.isRequiredError) return;
     let cutRsl = cutContent(contents, form.titleRule);
     let showTitle = cutRsl.map((c) => c.Title);

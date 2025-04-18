@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 
-export const ASSETS_HOST = import.meta.env.VITE_API_BASE_URL;
+import { getApiBaseUrl } from '@/utils/config';
+export const ASSETS_HOST = getApiBaseUrl();
 export interface ContentType {
   name: string;
   content: string;

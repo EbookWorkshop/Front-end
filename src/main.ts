@@ -15,7 +15,8 @@ import '@/api/interceptor';
 
 
 //禁用显示“水合不匹配信息”
-window.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = false;
+//这玩意又不出现了，先取消
+// window.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = false;
 
 const app = createApp(App);
 

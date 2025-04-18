@@ -1,5 +1,5 @@
 <template>
-    <a-row align="end" justify="center" style="height: 150px;">
+    <a-row align="end" justify="center">
         <a-space direction="vertical">
             <a-space>
                 <a-button-group type="primary">
@@ -12,7 +12,7 @@
                     <a-button @click="isShow = true" shape="round"> 区段选择 </a-button>
                 </a-button-group>
                 <a-button-group type="primary">
-                    <a-button shape="round"> 已隐藏章节 </a-button>
+                    <a-button shape="round" @click="showHiddenChapters(bookid ?? 0)"> 已隐藏章节 </a-button>
                     <a-button @click="checkDescriptions = true">查重</a-button>
                     <a-button shape="round">来源管理</a-button>
                 </a-button-group>
@@ -25,19 +25,18 @@
                     <a-button status="success" @click="isMustUpdate = !isMustUpdate">
                         <a-checkbox :model-value="isMustUpdate">强制更新</a-checkbox>
                     </a-button>
-                    <a-button status="success" @click="UpdateChapter" :loading="btStatusGettingData">
+                    <a-button shape="round" status="success" @click="UpdateChapter" :loading="btStatusGettingData">
                         <template #icon><icon-robot /></template>
                         <a-badge :count="chapterHasCheckedNum" :max-count="99999" :offset="[15, -10]">
                             抓取选中章节
                         </a-badge>
                     </a-button>
-                    <a-button status="success" shape="round"><template #icon><icon-email /></template>发到默认邮箱</a-button>
                 </a-button-group>
             </a-space>
         </a-space>
     </a-row>
 
-    <a-modal v-model:visible="isShow" title="区段选择" @ok="onSetChapter">
+    <a-modal v-model:visible="isShow" title="区段选择" @ok="onSetChapter" draggable unmount-on-close>
         <a-form :model="data" layout="vertical">
             <a-form-item field="cBegin" label="开始章节:" required>
                 <a-select v-model="data.cBegin" :options="Chapters" :field-names="{ value: 'IndexId', label: 'Title' }"
@@ -57,7 +56,7 @@
     </a-modal>
 
     <EditBookInfo :visible="isEditBookInfo" :bookId="bookid ?? 0" @cancel="isEditBookInfo = false" />
-    <Descriptions :bookId="bookid?? 0" :show="checkDescriptions" @close="checkDescriptions = false"/>
+    <Descriptions :bookId="bookid ?? 0" :show="checkDescriptions" @close="checkDescriptions = false" />
 </template>
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
@@ -65,6 +64,7 @@ import { Chapter } from '@/types/book';
 import { ApiResultCode } from '@/types/global';
 import { mergeWebBookIndex, updateChapter, queryBookDefaultSourcesById } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
+import useChapterHiddenHelper from "@/hooks/chapter-hidden";
 
 import EditBookInfo from '@/components/book-info/edit.vue';
 import Descriptions from '@/components/book-tool/duplicates.vue';
@@ -102,6 +102,7 @@ const props = defineProps({
     }
 });
 const emit = defineEmits(["ToggleCheck", "StartUpdateChapter"]);
+const { showHiddenChapters } = useChapterHiddenHelper();
 
 //定义回调函数
 defineExpose({

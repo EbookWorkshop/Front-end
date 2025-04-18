@@ -1,6 +1,8 @@
 import { reactive } from 'vue';
 import { io } from 'socket.io-client';
-const URL = import.meta.env.VITE_API_BASE_URL;
+
+import { getApiBaseUrl } from '@/utils/config';
+const URL = getApiBaseUrl();
 
 export const state = reactive({
   connected: false,

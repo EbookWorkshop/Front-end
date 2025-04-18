@@ -1,26 +1,21 @@
 <template>
   <div class="content-renderer">
-    <a-typography-paragraph 
-      v-for="(item, index) in content" 
-      :key="index"
-      class="paragraph"
-      :style="item.style"
-      v-html="item.text"
-    />
+    <a-typography-paragraph v-for="(item, index) in content" :key="index" class="paragraph" :style="item.style"
+      v-html="item.text" />
   </div>
 </template>
 
 <script lang="ts" setup>
-defineProps<{
-  content: Array<{
-    text: string
-    style: {
-      color: string
-      fontSize: string
-      fontFamily: string
-    }
-  }>
-}>()
+export interface ContentItem {
+  text: string
+  style: {
+    color: string
+    fontSize: string
+    fontFamily: string
+  }
+}
+defineProps<{ content: ContentItem[] }>()
+
 </script>
 
 <style scoped>

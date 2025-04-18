@@ -6,24 +6,25 @@
                     {{ chapter.Title }}
                 </a-checkbox>
             </a-button>
-            <a-dropdown>
+            <a-dropdown :popup-max-height="false">
                 <a-button type="dashed">
                     <icon-settings />
                 </a-button>
                 <template #content>
                     <a-doption :disabled="chapter.IsHasContent ? false : true"
                         @click="gotoChapter(chapter.IndexId, true)">阅读</a-doption>
-                    <a-doption>隐藏本章</a-doption>
+                    <a-doption @click="onToggleHideChapter">隐藏本章</a-doption>
                     <a-doption @click="isUrlDialogVisible = true">管理来源</a-doption>
                     <a-doption @click="OpenWin">打开来源网页</a-doption>
-                    <a-doption>属性</a-doption>
+                    <a-doption @click="isEdit = true">直接录入/修正</a-doption>
+                    <!-- <a-doption>属性</a-doption> -->
                 </template>
             </a-dropdown>
         </a-button-group>
 
         <!-- 原有按钮组保持不变... -->
         <a-modal v-model:visible="isUrlDialogVisible" :title="`来源管理-【${chapter.Title}】`" @ok="handleUrlConfirm"
-            width="50%">
+            width="50%" draggable unmount-on-close>
             <a-table :data="urlList" :pagination="false">
                 <template #columns>
                     <a-table-column title="操作" :width="180">
@@ -50,26 +51,35 @@
                 </template>
             </a-table>
         </a-modal>
+
+        <ChapterEdit :isShow="isEdit" :bookId="chapter.BookId" :chapterId="chapter.IndexId" @close="isEdit = false"
+            @reload="" />
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 import { updateWebBookChapterSourcesById } from '@/api/book';
 import { openWindow } from '@/utils';
-// import { Message } from '@arco-design/web-vue';
+import ChapterEdit from "@/components/chapter/edit.vue";
+import useChapterHiddenHelper from "@/hooks/chapter-hidden";
+
 
 //类型
 import type { WebChapter } from '@/types/book';
 
+
 //操作
 import useBookHelper from '@/hooks/book-helper';
 const { gotoChapter } = useBookHelper();
+const { toggleChapterHidden } = useChapterHiddenHelper();
 
 //变量范围
 const isChecked = ref(false);
+const isEdit = ref(false);
+
 //出参定义
-const emit = defineEmits(['toggle']);
+const emit = defineEmits(['toggle', 'hide']);
 
 //入参定义
 const props = defineProps<{
@@ -93,9 +103,18 @@ defineExpose({
 let updateStatus = ref<"normal" | "success" | "warning" | "danger" | undefined>(props.chapter.IsHasContent ? 'normal' : 'warning');
 
 //操作定义
+/**
+ * 切换选中状态
+ */
 function onToggle() {
     isChecked.value = !isChecked.value;
     emit("toggle", isChecked.value, props.chapter.IndexId);
+}
+
+function onToggleHideChapter() {
+    toggleChapterHidden(props.chapter.IndexId).then((res) => {
+        emit("hide", props.chapter.IndexId);
+    })
 }
 
 function OpenWin() {
@@ -114,9 +133,6 @@ const cancelEdit = () => {
 
 const saveEdit = (index: number) => {
     editingIndex.value = -1;
-
-    // console.log(urlList.value[index], props.chapter.URL[index]);
-    // if (urlList.value[index].Path == props.chapter.URL[index].Path) return;
 
     let urlSetting = {
         id: urlList.value[index].id,

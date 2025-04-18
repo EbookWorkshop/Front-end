@@ -11,11 +11,20 @@
           <a-button status="success" @click="createNewRule">添加</a-button>
         </a-space>
         <a-table :columns="columns" :data="renderData" :loading="tableLoading" :pagination="{ pageSize: 20 }">
+          <template #rulename-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
+            <a-card hoverable :style="{ width: '320px' }" title="规则名称-筛选">
+              <a-form-item>
+                <a-input-search v-model="filterValue[0]" placeholder="输入筛选内容" @search="handleFilterConfirm"
+                  @change="(value: any) => { setFilterValue([value]); handleFilterConfirm() }" />
+                <a-button @click="handleFilterReset">重置</a-button>
+              </a-form-item>
+            </a-card>
+          </template>
           <template #rule-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
             <a-card hoverable :style="{ width: '320px' }" title="规则-筛选">
               <a-form-item>
                 <a-input-search v-model="filterValue[0]" placeholder="输入筛选内容" @search="handleFilterConfirm"
-                  @change="(value: any) => {setFilterValue([value]);handleFilterConfirm()}" />
+                  @change="(value: any) => { setFilterValue([value]); handleFilterConfirm() }" />
                 <a-button @click="handleFilterReset">重置</a-button>
               </a-form-item>
             </a-card>
@@ -25,7 +34,7 @@
             <a-card hoverable :style="{ width: '320px' }" title="替换内容-筛选">
               <a-form-item>
                 <a-select v-model="filterValue[0]" allow-clear placeholder="请选择筛选内容" allow-search
-                  @change="(value) => { setFilterValue([value]); handleFilterConfirm() }">
+                  @change="(value: string) => { setFilterValue([value]); handleFilterConfirm() }">
                   <a-option v-for="item of uniqueRenderData" :value="item" :label="item" />
                 </a-select>
                 <a-button @click="handleFilterReset">重置</a-button>
@@ -41,7 +50,7 @@
           </template>
         </a-table>
       </div>
-      <a-modal v-model:visible="visible" title="设置规则" @before-ok="handleBeforeOk">
+      <a-modal v-model:visible="visible" title="设置规则" @before-ok="handleBeforeOk" draggable unmount-on-close>
         <a-form :model="form" ref="formRef" :rules="formRules">
           <input type="hidden" :value="form.id" />
           <a-form-item field="name" label="规则名" :rules="[{ required: true, message: '规则名必须填写' }]">
@@ -63,7 +72,7 @@
         <a-form :model="testForm">
           <a-form-item field="book" label="书">
             <SelectBook v-model="testForm.bookId"
-              @change="queryBookById(testForm.bookId).then((result) => { Chapters = result.data.Index.filter((i: any) => i.IsHasContent) })" />
+              @change="queryBookById(testForm.bookId).then((result: any) => { Chapters = result.data.Index.filter((i: any) => i.IsHasContent) })" />
           </a-form-item>
           <a-form-item field="chapter" label="章节">
             <a-select v-model="testForm.chapterId as number" :options="Chapters"
@@ -123,6 +132,11 @@ const columns = [
   {
     title: '规则名称',
     dataIndex: 'Name',
+    filterable: {
+      filter: (value: string, record: Rule) => record.Name.includes(value),
+      slotName: 'rulename-filter',
+      icon: () => h(IconSearch),
+    },
   },
   {
     title: '规则',
@@ -218,7 +232,7 @@ const uniqueRenderData = computed(() => {
 /**
  * 保存提交
  */
-const handleBeforeOk =async (callback: any) => {
+const handleBeforeOk = async (callback: any) => {
   let result = await formRef.value?.validate();
   if (result) { //校验不通过
     callback(false);
