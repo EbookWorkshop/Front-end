@@ -27,7 +27,7 @@
       </a-row>
       <ImportWeb :visible="isShow" @cancel="toImportClose" @ok="toImportClose" @check="handleBeforeOk">
       </ImportWeb>
-      <ImportText ref="textImportModal" @ok="handleImoprtSubmit"></ImportText>
+      <ImportText ref="textImportModal" @ok="handleImportSubmit"></ImportText>
       <AddDirect :visible="showAdd" @close="showAdd = false"></AddDirect>
     </div>
   </div>
@@ -79,8 +79,8 @@ const handleImportText = () => {
   // showTextImport.value = true;
   textImportModal?.value.show();
 };
-const handleImoprtSubmit = () => {
-  console.log('触发了确定-模窗');
+const handleImportSubmit = () => {
+  // console.log('触发了确定-模窗');
   // showTextImport.value = false;
 };
 </script>

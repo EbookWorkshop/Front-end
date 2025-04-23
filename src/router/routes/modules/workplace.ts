@@ -80,17 +80,6 @@ const WORKPLACE: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
-    // {
-    //   path: 'readtypeset',
-    //   name: 'readtypeset', // 调章节顺序
-    //   component: () => import('@/views/workplace/index.vue'),
-    //   meta: {
-    //     icon: 'icon-sort-ascending',
-    //     locale: 'menu.workplace.readtypeset',
-    //     requiresAuth: true,
-    //     roles: ['*'],
-    //   },
-    // },
   ],
 };
 
