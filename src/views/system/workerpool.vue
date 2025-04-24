@@ -3,7 +3,7 @@
     <Breadcrumb :items="['menu.system', 'menu.system.workerpool']" />
     <div class="wrapper">
       <div>
-        <a-button @click="Reflush"> 刷新 </a-button>
+        <a-button @click="Refresh"> 刷新 </a-button>
         <a-descriptions :data="workerData" />
       </div>
       <a-layout style="min-height: 600px;">
@@ -96,8 +96,8 @@ socket.on("WorkerPool.Status", (data) => {
   setWorkerPool(data.data);
 });
 
-function Reflush() {
-  socket.emit("WorkerPool.Status.On", { type: 'reflush' });
+function Refresh() {
+  socket.emit("WorkerPool.Status.On", { type: 'refresh' });
   console.log('WorkerPool.Status.On');
 }
 

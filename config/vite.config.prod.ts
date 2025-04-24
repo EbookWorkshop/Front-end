@@ -17,12 +17,24 @@ export default mergeConfig(
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            // arco: ['@arco-design/web-vue'],
-            // //chart: ['echarts', 'vue-echarts'],
-            // vue: ['vue', 'vue-router', 'pinia', '@vueuse/core', 'vue-i18n'],
+          manualChunks: (id) => {
+            const backList = [  //频率比较低的单独打成一个包
+
+            ];
+
+            if (id.includes('node_modules')) {
+              if (backList.length > 0 && backList.some((item) => id.includes(item))) {
+                return "vender-low-frequency";
+              }
+              return "vender";
+            } else if (id.includes('src/views') || id.includes("src/layout")) {
+              return "views";
+            }
           },
         },
+      },
+      commonjsOptions: {
+        requireReturnsDefault: "auto" // 添加此配置
       },
       chunkSizeWarningLimit: 2000,
     },

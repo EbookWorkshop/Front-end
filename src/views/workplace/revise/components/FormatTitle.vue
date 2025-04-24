@@ -22,7 +22,7 @@
               </a-form-item>
             </a-col>
             <a-col :span="24" style="text-align: center; margin-top: 10px;">
-              <a-button @click="Reflush">刷新预览</a-button>
+              <a-button @click="Refresh">刷新预览</a-button>
               <a-button @click="ResetForm">重置</a-button>
               <a-button style="margin-left: 2px;" @click="isShowDiffOnly = !isShowDiffOnly">只看调整的</a-button>
               <a-button style="margin-left: 10px;" type="primary" status="success" @click="submit">应用</a-button>
@@ -120,7 +120,7 @@ const submit = async () => {
   }
 }
 
-function Reflush() {
+function Refresh() {
   const reg = new RegExp(formModel.replaceReg, 'g');
   chapterTitles.forEach((item) => {
     item.NewTitle = item.NewTitle.replace(reg, formModel.replaceStr);
