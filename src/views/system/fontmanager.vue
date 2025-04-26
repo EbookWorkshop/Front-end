@@ -19,13 +19,13 @@
               :min="10" :max="64" />
           </a-form-item>
         </a-col>
-        <a-col v-if="viewModel == 'web'" :span="6">
+        <a-col v-if="activeViewModel == 'web'" :span="6">
           <a-form-item field="showSize" label="列数" label-col-flex="100px">
             <a-slider v-model:model-value="colNum as number" :default-value="4" :style="{ width: '100%' }" :min="1"
               :max="12" :marks="{ 2: '2', 4: '4', 6: '6', 8: '8', 10: '10', 12: '12' }" @change="ResetCol" />
           </a-form-item>
         </a-col>
-        <a-col v-else-if="viewModel == 'pdf'" :span="6">
+        <a-col v-else-if="activeViewModel == 'pdf'" :span="6">
           <a-form-item field="showFont" label="字体" label-col-flex="100px">
             <a-select id="showFont" v-model="font as string" :default-value="fontData[0]?.name" allow-search>
               <a-option v-for="t in fontData" :key="t.name" :value="t.name">{{
@@ -44,7 +44,7 @@
         </a-col>
       </a-row>
 
-      <a-tabs default-active-key="web" type="card-gutter" lazy-load @change="(type: any) => (viewModel = type)">
+      <a-tabs default-active-key="web" type="card-gutter" lazy-load v-model:activeKey="activeViewModel">
         <a-tab-pane key="web" title="在网页预览">
           <div :style="{
             boxSizing: 'border-box',
@@ -61,6 +61,7 @@
                       <template #content>
                         <a-doption
                           @click="setDefaultFont(f.name).then((rsl: any) => defaultFont = rsl.data.Value)">设置为默认字体</a-doption>
+                        <a-doption @click="viewOnPDF(f)">在PDF中预览</a-doption>
                         <a-popconfirm content="确认删除？此操作将无法恢复！" @ok="onDeleteFont(f.fontFile)">
                           <a-button status="danger" long>删除字体</a-button>
                         </a-popconfirm>
@@ -132,7 +133,7 @@ const font = ref(fontData[0]?.name); // 当前预览字体
 const defaultFont = ref("无");//默认字体
 const pdfFrame = ref(null) as any;
 
-const viewModel = ref('web'); // 预览模式
+const activeViewModel = ref('web'); // 激活的预览模式
 
 getDefaultFont().then(rsl => defaultFont.value = rsl.data);
 
@@ -190,6 +191,14 @@ async function Init() {
 // const onContentChange = (value: any) => {
 //   contentIndex.value = value as number;
 // };
+
+function viewOnPDF(f: FontFace) {
+  activeViewModel.value = 'pdf';
+  font.value = f.name;
+  // pdfFrame.value.src = `${ASSETS_HOST}/services/pdf/view?content=${encodeURIComponent(
+  //   demoContext[contentIndex.value]?.content
+  // )}&fontsize=${fontSize.value}&fontfamily=${f.fontFamily}`;
+}
 
 Init();
 </script>
