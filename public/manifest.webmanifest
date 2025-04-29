@@ -1,0 +1,15 @@
+{
+  "name": "EBookWorkshop",
+  "short_name": "EBW",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "logo-144.svg",
+      "sizes": "144x144",
+      "type": "image/svg+xml"
+    }
+  ]
+}

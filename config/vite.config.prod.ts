@@ -4,6 +4,7 @@ import configCompressPlugin from './plugin/compress';
 import configVisualizerPlugin from './plugin/visualizer';
 import configArcoResolverPlugin from './plugin/arcoResolver';
 import configImageminPlugin from './plugin/imagemin';
+import configPwa from './plugin/pwa';
 
 export default mergeConfig(
   {
@@ -13,6 +14,7 @@ export default mergeConfig(
       configVisualizerPlugin(),
       configArcoResolverPlugin(),
       configImageminPlugin(),
+      configPwa()
     ],
     build: {
       rollupOptions: {
