@@ -36,6 +36,12 @@
                       <template #default><a-button type="text" long
                           @click="curEditBookId = item.BookId">修改元数据</a-button></template>
                     </a-doption>
+                    <a-doption>
+                      <template #icon> <icon-export /> </template>
+                      <template #default>
+                        <a-button type="text" long @click="gotoExport(item.BookId)">导出</a-button>
+                      </template>
+                    </a-doption>
                   </template>
                 </a-dropdown>
               </a-col>
@@ -91,6 +97,12 @@ const router = useRouter();
 const goto = (bookid: number) => {
   router.push({
     path: `/${props.nextRouter}/${bookid}`,
+  });
+};
+
+const gotoExport = (bookid: number) => {
+  router.push({
+    path: `/workshop/export/exportguide/${bookid}`,
   });
 };
 

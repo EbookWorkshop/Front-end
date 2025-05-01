@@ -203,7 +203,8 @@ export function createPDF(
   chapterIds: number[],
   isSendEmail: boolean,
   fontFamily: string,
-  embedTitle: boolean
+  embedTitle: boolean,
+  enableIndent: boolean,
 ) {
   return axios.post(`/export/pdf`, {
     bookId: bookid,
@@ -228,7 +229,8 @@ export function createTXT(
   chapterIds: number[],
   isSendEmail: boolean,
   fontFamily: string,
-  embedTitle: boolean
+  embedTitle: boolean,
+  enableIndent: boolean,
 ) {
   return axios.post(`/export/txt`, {
     bookId: bookid,
@@ -252,7 +254,8 @@ export function createEPUB(
   chapterIds: number[],
   isSendEmail: boolean,
   fontFamily: string,
-  embedTitle: boolean
+  embedTitle: boolean,
+  enableIndent: boolean,
 ) {
   return axios.post(`/export/epub`, {
     bookId: bookid,
@@ -260,5 +263,6 @@ export function createEPUB(
     sendByEmail: isSendEmail,
     fontFamily,
     embedTitle,
+    enableIndent,
   });
 }

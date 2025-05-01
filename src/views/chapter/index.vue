@@ -136,10 +136,6 @@ function togglePDF() { pdfModel.value = !pdfModel.value; }
   font-size: var(--font-size-body-3);
 }
 
-.paragraph::before {
-  content: '　　';
-}
-
 .toolbar {
   margin: 48px auto;
 }

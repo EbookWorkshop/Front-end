@@ -2,7 +2,7 @@
   <div class="navbar">
     <div class="left-side">
       <a-space>
-        <img alt="logo" :src="isDark ? logoDark : logoLight" width="32" />
+        <img alt="logo" :src="isDark ? logoDark : logoLight" width="40" class="logo-image"/>
         <a-typography-title :style="{ margin: 0, fontSize: '18px' }" :heading="5" v-show="appStore.device !== 'mobile'">
           Ebook Workshop
         </a-typography-title>
@@ -306,6 +306,12 @@ watch(messageList, (newValue, oldValue) => {
 .message-popover {
   .arco-popover-content {
     margin-top: 0;
+  }
+}
+.logo-image {
+  transition: transform 0.3s ease;
+  &:hover {
+    transform: scale(1.2);  // 添加悬停缩放效果
   }
 }
 </style>

@@ -1,7 +1,7 @@
 {
   "name": "ebookworkshop",
   "description": " Ebook Workshop,Base from Arco Design Pro for Vue",
-  "version": "3.8.2",
+  "version": "3.9.0-α",
   "private": true,
   "author": "c0618c",
   "license": "MIT",
@@ -66,7 +66,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^9.6.0",
-    "husky": "^8.0.1",
+    "husky": "^9.1.7",
     "less": "^4.2.2",
     "lint-staged": "^13.0.3",
     "postcss-html": "^1.5.0",

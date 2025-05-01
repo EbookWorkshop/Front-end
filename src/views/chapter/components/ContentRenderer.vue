@@ -24,7 +24,11 @@ defineProps<{ content: ContentItem[] }>()
   letter-spacing: 0.05em;
 }
 
+.paragraph {
+  text-indent: 2em;
+}
+/* 
 .paragraph::before {
   content: '　　';
-}
+} */
 </style>

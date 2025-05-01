@@ -53,6 +53,9 @@
                   <a-form-item label="嵌入章节标题">
                     <a-switch v-model="form.isEmbedTitle" />
                   </a-form-item>
+                  <a-form-item label="段首强制缩进">
+                    <a-switch v-model="form.isEnableIndent" />
+                  </a-form-item>
                   <a-form-item label="发送到默认邮箱">
                     <a-switch v-model="form.isSendEmail" />
                   </a-form-item>
@@ -140,6 +143,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import type { FormInstance } from '@arco-design/web-vue';
+import { useRoute } from 'vue-router';
 import SelectBook from '@/components/select-book/index.vue'
 
 import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';
@@ -148,14 +152,17 @@ import { getKindleInbox } from '@/api/system';
 import { ApiResultCode } from '@/types/global'
 import { getApiBaseUrl } from '@/utils/config';
 const ASSETS_HOST = getApiBaseUrl();
+const route = useRoute();
+const bookid = Number(route.params.bookid);
 
 const saving = ref(false);
 const formRef = ref<FormInstance>();
 const form = ref({
-  bookId: undefined as number | undefined,
+  bookId: bookid as number | undefined,
   isCheckAll: true,
   chapterRange: '',
   fontFamily: '',
+  isEnableIndent: false,
   cBegin: undefined as number | undefined,
   cEnd: undefined as number | undefined,
   fileType: "epub",
@@ -240,7 +247,7 @@ const onSubmit = () => {
   }
   saving.value = true;
 
-  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle).then((res: any) => {
+  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle,form.value.isEnableIndent).then((res: any) => {
     saving.value = false;
     current.value = 4;
     if (res.code === ApiResultCode.Success) {
