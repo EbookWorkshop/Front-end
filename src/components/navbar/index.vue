@@ -2,7 +2,7 @@
   <div class="navbar">
     <div class="left-side">
       <a-space>
-        <img alt="logo" :src="isDark ? logoDark : logoLight" width="40" class="logo-image"/>
+        <img alt="logo" :src="isDark ? logoDark : logoLight" width="40" class="logo-image" />
         <a-typography-title :style="{ margin: 0, fontSize: '18px' }" :heading="5" v-show="appStore.device !== 'mobile'">
           Ebook Workshop
         </a-typography-title>
@@ -115,8 +115,11 @@ import { useSocket, getSocketState } from '@/hooks/socket';
 import MessageBox from '../message-box/index.vue';
 import ConnectStatus from './connect-status.vue';
 
-const logoLight = new URL('@/assets/logo.svg', import.meta.url).href;
-const logoDark = new URL('@/assets/logo-dark.svg', import.meta.url).href;
+// const logoLight = new URL('@/assets/logo.svg', import.meta.url).href;
+// const logoDark = new URL('@/assets/logo-dark.svg', import.meta.url).href;
+const logoLight = "/logo.svg?t=navbar";
+const logoDark = "/logo-dark.svg?t=navbar";
+
 
 const socket = useSocket();
 const router = useRouter();
@@ -194,7 +197,7 @@ socket.io.on(
       content: `其中，成功：${doneNum}失败：${failNum}。`,
       time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
       status: 0,
-      avatar: '/src/assets/logo.svg?t=12312213',
+      avatar: 'logo.svg?t=msg',
     });
   }
 );
@@ -214,7 +217,7 @@ socket.io.on(
         },
       }, "前往查看"),
       time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
-      avatar: '/src/assets/logo.svg?t=12312213',
+      avatar: 'logo.svg?t=msg',
       status: 1,
       subTitle: '',
     });
@@ -308,10 +311,12 @@ watch(messageList, (newValue, oldValue) => {
     margin-top: 0;
   }
 }
+
 .logo-image {
   transition: transform 0.3s ease;
+
   &:hover {
-    transform: scale(1.2);  // 添加悬停缩放效果
+    transform: scale(1.2); // 添加悬停缩放效果
   }
 }
 </style>

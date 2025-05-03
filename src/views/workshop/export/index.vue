@@ -158,7 +158,7 @@ const bookid = Number(route.params.bookid);
 const saving = ref(false);
 const formRef = ref<FormInstance>();
 const form = ref({
-  bookId: bookid as number | undefined,
+  bookId: bookid || undefined as number | undefined,
   isCheckAll: true,
   chapterRange: '',
   fontFamily: '',
@@ -247,7 +247,7 @@ const onSubmit = () => {
   }
   saving.value = true;
 
-  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle,form.value.isEnableIndent).then((res: any) => {
+  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle, form.value.isEnableIndent).then((res: any) => {
     saving.value = false;
     current.value = 4;
     if (res.code === ApiResultCode.Success) {

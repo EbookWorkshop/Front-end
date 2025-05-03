@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="logo">
-      <img alt="logo" src="/src/assets/logo-dark.svg" width="32" />
+      <img alt="logo" src="/public/logo-dark.svg" width="32" />
       <div class="logo-text">EBook Workshop</div>
     </div>
     <LoginBanner />
