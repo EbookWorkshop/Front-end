@@ -211,7 +211,8 @@ export function createPDF(
     chapterIds,
     sendByEmail: isSendEmail,
     fontFamily,
-    embedTitle
+    embedTitle,
+    enableIndent,
   });
 }
 
@@ -237,6 +238,7 @@ export function createTXT(
     chapterIds,
     sendByEmail: isSendEmail,
     embedTitle,
+    enableIndent,
   });
 }
 
