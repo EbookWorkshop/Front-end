@@ -85,7 +85,7 @@ const handleImportSubmit = () => {
 };
 </script>
 
-<style>
+<style lang="less" scoped>
 .showBord {
   border: 1px solid red;
 }
@@ -98,5 +98,9 @@ const handleImportSubmit = () => {
 .col-align-center {
   display: flex;
   justify-content: center;
+
+  :deep(.arco-upload-wrapper) {
+    width: inherit;/* 修复PDF导入封面不居中的问题 */
+  }
 }
 </style>
