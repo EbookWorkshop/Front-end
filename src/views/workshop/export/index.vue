@@ -19,7 +19,8 @@
                   <a-form-item label="选择书籍" required>
                     <SelectBook v-model="form.bookId" :rules="[{ required: true, message: '必须设置文本编码' }]" />
                   </a-form-item>
-                  <BookCover v-if="form.bookId ?? 0 > 0" :book-id="form.bookId" />
+                  <BookCover v-show="form.bookId ?? 0 > 0" :book-id="form.bookId" ref="captureCover"
+                    @complete="onChangeBook" />
                 </div>
                 <div v-if="current == 2" class="main-content">
                   <a-form-item label="全部章节">
@@ -142,12 +143,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import type { FormInstance } from '@arco-design/web-vue';
 import { useRoute } from 'vue-router';
 import SelectBook from '@/components/select-book/index.vue'
 import BookCover from '@/components/book-cover/index.vue';
-
 
 import { HeatABook } from '@/api/library'
 import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';
@@ -155,6 +155,7 @@ import { queryFontList, } from '@/api/font';
 import { getKindleInbox } from '@/api/system';
 import { ApiResultCode } from '@/types/global'
 import { getApiBaseUrl } from '@/utils/config';
+import { captureElement } from '@/utils/screenshot';
 
 const ASSETS_HOST = getApiBaseUrl();
 const route = useRoute();
@@ -178,13 +179,26 @@ const current = ref(1);
 const Chapters = ref<Array<any>>([]);
 let fontData: Array<any> = [];
 const resultData = ref({} as any);
-
+const captureCover = ref<InstanceType<typeof BookCover> | null>(null); // 截图的封面
+const coverData = ref("");
 
 function getBookIndex() {
   if (!form.value.bookId || form.value.isCheckAll) return;
   queryBookById(form.value.bookId).then(res => {
     if (res.code === ApiResultCode.Success) {
       Chapters.value = res.data.Index;
+    }
+  })
+}
+
+function onChangeBook() {
+  nextTick(() => {
+    if (captureCover.value?.$el) {  // 使用$el访问组件根元素
+      captureElement(captureCover.value.$el).then(result => {
+        coverData.value = result;
+      }).catch(error => {
+        console.error('截图失败:', error);
+      });
     }
   })
 }
@@ -218,10 +232,10 @@ function setDefaultSendMail() {
 }
 
 //字体加载、切换部分
-let fontDataMap = new Map();
+// let fontDataMap = new Map();
 async function InitFont() {
   fontData = await queryFontList();
-  fontDataMap = new Map(fontData.map(t => [t.name, t]));
+  // fontDataMap = new Map(fontData.map(t => [t.name, t]));
 }
 InitFont();
 
@@ -253,7 +267,9 @@ const onSubmit = () => {
   }
   saving.value = true;
 
-  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle, form.value.isEnableIndent).then((res: any) => {
+  let imageData = coverData.value?.startsWith("data:image/png;base64,") ? coverData.value.replace("data:image/png;base64,", "") : "";
+
+  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle, form.value.isEnableIndent, imageData).then((res: any) => {
     saving.value = false;
     current.value = 4;
     if (res.code === ApiResultCode.Success) {

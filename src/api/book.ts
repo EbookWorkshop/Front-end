@@ -196,6 +196,9 @@ export function updateChapter(
  * @param chapterIds
  * @param isSendEmail 是否发到默认邮箱
  * @param fontFamily 创建PDF时的字体
+ * @param embedTitle 是否嵌入章节标题
+ * @param enableIndent 是否启用缩进
+ * @param coverImageData 封面图片base64数据
  * @returns
  */
 export function createPDF(
@@ -205,6 +208,7 @@ export function createPDF(
   fontFamily: string,
   embedTitle: boolean,
   enableIndent: boolean,
+  coverImageData?: string,
 ) {
   return axios.post(`/export/pdf`, {
     bookId: bookid,
@@ -213,6 +217,7 @@ export function createPDF(
     fontFamily,
     embedTitle,
     enableIndent,
+    coverImageData,
   });
 }
 
@@ -223,6 +228,8 @@ export function createPDF(
  * @param isSendEmail 
  * @param fontFamily 没用，对齐API用
  * @param embedTitle 是否嵌入章节标题
+ * @param enableIndent 是否启用缩进
+ * @param coverImageData 封面图片base64数据
  * @returns 
  */
 export function createTXT(
@@ -232,6 +239,7 @@ export function createTXT(
   fontFamily: string,
   embedTitle: boolean,
   enableIndent: boolean,
+  coverImageData?: string,
 ) {
   return axios.post(`/export/txt`, {
     bookId: bookid,
@@ -239,6 +247,7 @@ export function createTXT(
     sendByEmail: isSendEmail,
     embedTitle,
     enableIndent,
+    coverImageData,
   });
 }
 
@@ -249,6 +258,8 @@ export function createTXT(
  * @param isSendEmail 
  * @param fontFamily 没用，对齐API用
  * @param embedTitle 是否嵌入章节标题
+ * @param enableIndent 是否启用缩进
+ * @param coverImageData 封面图片base64数据
  * @returns 
  */
 export function createEPUB(
@@ -258,6 +269,7 @@ export function createEPUB(
   fontFamily: string,
   embedTitle: boolean,
   enableIndent: boolean,
+  coverImageData?: string,
 ) {
   return axios.post(`/export/epub`, {
     bookId: bookid,
@@ -266,5 +278,6 @@ export function createEPUB(
     fontFamily,
     embedTitle,
     enableIndent,
+    coverImageData,
   });
 }

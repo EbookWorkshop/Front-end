@@ -35,14 +35,18 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['complete']);
+
 const curCover = ref(props.coverImg);
 const curBookName = ref(props.bookName);
 
 function LoadFromBookId(newId: number) {
   queryBookInfo(newId).then(result => {
-    console.log(result.data);
+    // console.log(result.data);
     curCover.value = result.data.CoverImg;
     curBookName.value = result.data.BookName;
+
+    emit("complete");
   });
 }
 
@@ -65,7 +69,7 @@ watch(() => props.coverImg, (newVal) => {
 });
 
 watch(() => props.bookId, (newVal) => {
-  console.log(newVal);
+  // console.log(newVal);
   if (newVal <= 0 || newVal === undefined) return;
   LoadFromBookId(newVal);
 })
