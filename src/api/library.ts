@@ -56,3 +56,12 @@ export function addEmptyBook(book: {
 export function deleteABook(bookId: number) {
   return axios.delete(`/library/book?bookid=${bookId}`)
 }
+
+/**
+ * 为某书提升一点热度
+ * @param bookId 书本id
+ * @returns 
+ */
+export function HeatABook(bookId: number) {
+  return axios.post(`/library/book/heat`, { bookId: bookId });
+}

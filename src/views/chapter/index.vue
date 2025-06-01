@@ -51,6 +51,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { Chapter } from '@/types/book';
+import { HeatABook } from '@/api/library';
 import {
   queryChapterById,
   queryAdjacentChapterInfo,
@@ -78,6 +79,8 @@ const processedContent = ref<ContentItem[]>([]);
 const { loading, response: renderData } = useRequest<Chapter>(() => new Promise((resolve, reject) => {
   queryChapterById(chapterId).then((res) => {
     let data = res.data;
+    
+    HeatABook(data.Book.id ?? 0);
     if (keyword.value && keyword.value?.length > 0) data.Content = data.Content?.replaceAll(keyword.value, `<span class='keyword'>${keyword.value}</span>`);
 
     processedContent.value = data.Content?.split('\n').map((p: String) => ({

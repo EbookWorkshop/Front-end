@@ -14,6 +14,7 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, } from 'vue';
+import { HeatABook } from '@/api/library';
 import type { Book, Chapter } from "@/types/book";
 import {
     queryChapterById,
@@ -102,6 +103,7 @@ const onSubmit = () => {
         editChapter(result).then(rsl => {
             // console.log(rsl);
             Message.success("更新成功！");
+            HeatABook(props.bookId);
             emit('close');
 
             if (reload) {

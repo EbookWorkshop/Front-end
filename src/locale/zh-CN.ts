@@ -45,6 +45,8 @@ export default {
   'menu.visualization': '数据可视化',
   'menu.user': '个人中心',
   'menu.arcoWebsite': 'EBook Workshop',
+  'menu.tools': '工具集',
+  'menu.tools.other': '其它工具',
   'menu.faq': '常见问题',
   'menu.api': '后台接口文档',
   'menu.api.scalar': 'Scalar',

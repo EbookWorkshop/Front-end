@@ -146,6 +146,7 @@ import type { FormInstance } from '@arco-design/web-vue';
 import { useRoute } from 'vue-router';
 import SelectBook from '@/components/select-book/index.vue'
 
+import { HeatABook } from '@/api/library'
 import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';
 import { queryFontList, } from '@/api/font';
 import { getKindleInbox } from '@/api/system';
@@ -162,7 +163,7 @@ const form = ref({
   isCheckAll: true,
   chapterRange: '',
   fontFamily: '',
-  isEnableIndent: false,
+  isEnableIndent: true,
   cBegin: undefined as number | undefined,
   cEnd: undefined as number | undefined,
   fileType: "epub",
@@ -262,6 +263,8 @@ const onSubmit = () => {
       resultData.value.result = 'error';
       resultData.value.msg = res.msg;
     }
+
+    HeatABook(form.value.bookId ?? 0);
   }).catch((err: any) => {
     current.value = 4;
     saving.value = false;

@@ -62,6 +62,7 @@
 import { ref, reactive } from 'vue';
 import { Chapter } from '@/types/book';
 import { ApiResultCode } from '@/types/global';
+import { HeatABook } from '@/api/library';
 import { mergeWebBookIndex, updateChapter, queryBookDefaultSourcesById } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
 import useChapterHiddenHelper from "@/hooks/chapter-hidden";
@@ -161,6 +162,7 @@ function onSetChapterLength(value: any) {
 function mergeIndex() {
     Message.info('已启动章节更新合并');
     isMerging.value = true;
+    HeatABook(props.bookid ?? 0);
     return mergeWebBookIndex(props.bookid || -1)
         .then((result) => {
             isMerging.value = false;
@@ -187,9 +189,10 @@ function UpdateChapter() {
         Message.error("没有选中章节");
         return;
     }
-
+    
     updateChapter(props.bookid as number, hasCheckChapter, isMustUpdate.value).then((res: any) => {
         if (res?.code == ApiResultCode.Success) {
+            HeatABook(props.bookid ?? 0);
             Message.info("已启动下载。");
             emit("StartUpdateChapter", 0);
         } else Message.error("启动失败，原因：" + res.msg)
