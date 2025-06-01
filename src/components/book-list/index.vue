@@ -17,8 +17,7 @@
                 :xl="6" :xxl="4" @click="goto(item.BookId)">
                 <a-dropdown trigger="contextMenu" alignPoint :style="{ display: 'block' }" :popup-max-height="false"
                   class="book-context-menu">
-                  <BookCover :loading="loading" :book-name="item.BookName" :cover-img="item.CoverImg">
-                  </BookCover>
+                  <BookCover :loading="loading" :book-name="item.BookName" :cover-img="item.CoverImg"> </BookCover>
                   <template #content>
                     <a-dgroup title="标签">
                       <a-doption disabled>

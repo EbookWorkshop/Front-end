@@ -8,8 +8,8 @@
                 padding: '40px',
                 backgroundColor: 'var(--color-fill-2)',
             }">
-                <a-row :gutter="[0, 20]" :style="{ marginBottom: '20px' }">
-                    <a-col :span="6" v-for="(item, index) in OtherTools" :key="index">
+                <a-row :gutter="[0, { xs: 0, sm: 20 }]" :style="{ marginBottom: '20px' }">
+                    <a-col :span="6" v-for="(item, index) in OtherTools" :key="index" :xs="24" :lg="12" :xxl="6">
                         <a :href="easyDecrypt(item.url, EKEY)" target="_blank">
                             <a-card hoverable :style="{ width: '360px' }">
                                 <template #cover>

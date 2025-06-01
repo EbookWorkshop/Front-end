@@ -19,6 +19,7 @@
                   <a-form-item label="选择书籍" required>
                     <SelectBook v-model="form.bookId" :rules="[{ required: true, message: '必须设置文本编码' }]" />
                   </a-form-item>
+                  <BookCover v-if="form.bookId ?? 0 > 0" :book-id="form.bookId" />
                 </div>
                 <div v-if="current == 2" class="main-content">
                   <a-form-item label="全部章节">
@@ -145,6 +146,8 @@ import { ref } from 'vue';
 import type { FormInstance } from '@arco-design/web-vue';
 import { useRoute } from 'vue-router';
 import SelectBook from '@/components/select-book/index.vue'
+import BookCover from '@/components/book-cover/index.vue';
+
 
 import { HeatABook } from '@/api/library'
 import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';
@@ -152,6 +155,7 @@ import { queryFontList, } from '@/api/font';
 import { getKindleInbox } from '@/api/system';
 import { ApiResultCode } from '@/types/global'
 import { getApiBaseUrl } from '@/utils/config';
+
 const ASSETS_HOST = getApiBaseUrl();
 const route = useRoute();
 const bookid = Number(route.params.bookid);
@@ -174,6 +178,7 @@ const current = ref(1);
 const Chapters = ref<Array<any>>([]);
 let fontData: Array<any> = [];
 const resultData = ref({} as any);
+
 
 function getBookIndex() {
   if (!form.value.bookId || form.value.isCheckAll) return;
