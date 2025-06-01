@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-
+import { HeatABook } from '@/api/library';
 import { queryDuplicatesChapter } from '@/api/book';
 const expandedKeys = ref<number[]>([]);
 const loading = ref(false)
@@ -64,6 +64,8 @@ const loadData = async () => {
             resultData.value.push(item);
         }
 
+        HeatABook(props.bookId);
+    }).finally(() => {
         loading.value = false;
     });
 }

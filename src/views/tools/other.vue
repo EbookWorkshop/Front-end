@@ -10,15 +10,17 @@
             }">
                 <a-row :gutter="[0, 20]" :style="{ marginBottom: '20px' }">
                     <a-col :span="6" v-for="(item, index) in OtherTools" :key="index">
-                        <a :href="decrypturl(item.url, EKEY)" target="_blank">
+                        <a :href="easyDecrypt(item.url, EKEY)" target="_blank">
                             <a-card hoverable :style="{ width: '360px' }">
                                 <template #cover>
                                     <div :style="{
-                                        position: 'relative',
+                                        display: 'flex',
+                                        alignItems: 'center',
                                         height: '204px',
                                         overflow: 'hidden',
+                                        padding: '20px',
                                     }">
-                                        <img class="banner" :alt="item.name" :src="decrypturl(item.icon, EKEY)" />
+                                        <img class="banner" :alt="item.name" :src="easyDecrypt(item.icon, EKEY)" />
                                     </div>
                                 </template>
                                 <a-card-meta :title="item.name">
@@ -37,9 +39,9 @@
 
 <script lang="ts" setup>
 import { OtherTools, EKEY } from './data';
-import { encrypturl, decrypturl } from "@/utils/crypto";
+import { easyEncrypt, easyDecrypt } from "@/utils/crypto";
 
-// let api = encrypturl;
+// let api = easyDecrypt;
 // let temp = [];
 // for (let i = 0; i < OtherTools.length; i++) {
 //     temp.push(OtherTools[i]);
@@ -48,15 +50,12 @@ import { encrypturl, decrypturl } from "@/utils/crypto";
 // }
 // console.log(JSON.stringify(temp, null, 2));
 
+// console.log(easyEncrypt("aaaaaaaaaa", EKEY));
 
 </script>
 
 <style lang="less" scoped>
 .banner {
     width: 100%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 </style>
