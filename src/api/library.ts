@@ -4,12 +4,14 @@ import { HttpResponse } from '@/types/global';
 import { Book } from '@/types/book';
 
 export type ListQueryApi = (
-  tagId: number | undefined
+  tagId: number | undefined,
+  notTag: number[] | undefined
 ) => Promise<AxiosResponse<HttpResponse<Book[]>>>;
 
-export function queryBookList(tagId?: number) {
+export function queryBookList(tagId?: number, notTag?: number[]) {
   let param = {};
   if (tagId) param = { params: { tagid: tagId } };
+  if (notTag) param = { params: { nottag: notTag.join(',') } }
   return axios.get('/library/booklist', param);
 }
 
