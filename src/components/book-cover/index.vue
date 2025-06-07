@@ -67,6 +67,9 @@ function CoverImgError(event: Event) {
 watch(() => props.coverImg, (newVal) => {
   curCover.value = newVal;
 });
+watch(() => props.bookName, (newVal) => {
+  curBookName.value = newVal;
+});
 
 watch(() => props.bookId, (newVal) => {
   // console.log(newVal);

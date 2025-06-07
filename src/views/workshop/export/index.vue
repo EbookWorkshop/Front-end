@@ -194,10 +194,11 @@ function getBookIndex() {
 function onChangeBook() {
   nextTick(() => {
     if (captureCover.value?.$el) {  // 使用$el访问组件根元素
-      captureElement(captureCover.value.$el).then(result => {
+      captureElement(captureCover.value.$el, { scale: 4 }).then(result => {
         coverData.value = result;
       }).catch(error => {
         console.error('截图失败:', error);
+        coverData.value = "";
       });
     }
   })
