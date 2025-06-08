@@ -15,7 +15,7 @@ export function queryFontList() {
   return axios.get('/services/font').then((data: AxiosResponse<string[]>) => {
     return data.data.map((item) => {
       return {
-        name: item.replace(/(\/font\/)|(\.\w+)/g, ''),
+        name: item.replace(/(^\/font\/)|(\.\w+$)/g, ''),
         path: ASSETS_HOST + item,
         fontFile: item.replace('/font/', ''),
       };

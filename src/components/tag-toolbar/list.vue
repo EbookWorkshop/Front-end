@@ -35,13 +35,13 @@ const props = defineProps({
 
 const tagId = ref<number | undefined>(props.tagid);
 const curTag = ref<Tag>();
-const tagNotInclude = [];
+const tagNotInclude: number[] = [];
 
 //标签相关逻辑
 const { response: tagsData } = useRequest<Tag[]>(getTagHasBook);
 function CheckTag(id: number | undefined) {
     tagId.value = id;
-    props.Api(id).then((result) => {
+    props.Api(id, []).then((result) => {
         emit('change', result.data);
         curTag.value = tagsData.value.filter(t => t.id === tagId.value)[0];
     })
