@@ -51,7 +51,7 @@ export function saveKindleInbox(address: string) {
 
 /**
  * 发邮件
- * @param {} email 
+ * @param {FormData} email 
  * @returns 
  */
 export function sendAEMail(email:FormData) {

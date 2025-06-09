@@ -147,8 +147,8 @@ export function queryAdjacentChapterInfo(cid: number) {
  * @param bookId 书ID
  * @returns 
  */
-export function queryDuplicatesChapter(bookId: number) {
-  return axios.get(`/library/book/duplicates?bookid=${bookId}`);
+export function queryDuplicatesChapter(bookId: number,threshold:number) {
+  return axios.get(`/library/book/duplicates?bookid=${bookId}&threshold=${threshold}`);
 }
 
 /**
