@@ -7,6 +7,7 @@ export const OtherTools = [
         description: '这是亚马逊Kindle的一项功能，允许用户将各种格式的文件发送到自己的Kindle设备或应用上，以便在Kindle上阅读。',
         icon: 'amkjk87*lTfWYaV5.lUsfhSXil*bfSaXm7F*tu4jWiXr+We.Zfn7rsd6:h&WVmmYkR_:&z840yrvyx_Zog.',
         url: 'amkjk87*vppRVeVtnmTWfg5mZmcmhbcfYfd',
+        backgroundColor:"#2375c7"
     }, {
         name: 'CDKM',
         description: '这是一个使用多个开源项目搭建的在线文件转换器，支持多种常见格式互相转换，支持在线/离线转换。',
@@ -32,6 +33,7 @@ export const OtherTools = [
         description: '可以免登录查找下载字体的网站。',
         icon: 'XUkV6cg.fY6ghZ/W.rYzv*aP&NQptBAZi:;;/GJO.,Of;//=:*::;7&/P:*:?Y0E3r:*::;WGLIuA:lr3WzH:*&cEIK=?OX;1slPgfWsGSwy6QLgL.mgMDeFtj?zQjDrcFMjWr9uS;fb.wIbNeSzR,eh0kD=OjpFAbaF.4:tYbINoDnx1L2CAge=e771*FoKRrzn**XyytrGt293qe;evPQV:PsYvWziP&DZn/C0;QN:d&qnm2Cv.&P?Va7uVG-rg&fQFho,xra,Y;SJHkU327n:,HAQBE1yWIS:JOLpCr2ju&AaFU=U.2Y.I;Qd:c&:jp2yq.;MBaBd;hR-ez2ryf0i,hvqJXwX0w&UaD9BzaPtfaDDA6mOFucm721fZD0O4;1x?0aEwgnS?LDMYuaJV/VP&dIdY.,sYWOHIdOpcUuKB1E*&f;4qFyOlrp?x*xpaa2W/joD2IGUl/=oJW1aISAnmBqda/6U:,OqQJ3.vBDaTNlUCWlukwI1:E-wYdEV6rdo,eE7*arErJ?DBe;pYxcquIOCf?GP0&3fF3:MToolXG,nmLl0f6ei=071Dz71NHv,11zG7=m;Zk.yzNnXuGO7O3QvYfzamLDEofZ2*N=qyZCYLeQwAmY6VnV32O6HEewG4J;fW?FuqLaIyc0Z1kjxut?0pL0wEOi=EcnYT2sDxK&Fm1KKot:fXCFsj0bompORdX1oLWzsFYUTVrfm:EqBKfDOJl7vPHPagKiHN5vxNcsVk1bsX&HX&DaAKd&Tgv?oQ9F/l1BpbMA&amx/ljz92I-Lk?=yh&GYA0&R2cdJE?T7JwdXz;Xq0KALJOo3H:LnEVyV1nArbCc0SSXedvzbI-QMBs8X11-Q;shIR/t;pytkuPYDzDYALU2Ml:;tKiUi0kNhsbMOkH3BiZMV5tIb*u1YMKTgjsMt&11jGSfMgePSYqL?aHIHHNh.gC.3E.g/??W:Psqc/?vd:VVyPyWbGNQ,y;/KQ?L1Yb9Egco1YMlzwL.EdsOUkvSh=oMbdSs0NyvBQoFDJL:Lzjx9CLFM*GCP7:asgwdFz3IhGomTGqKeJYr?n,ess?o;*JeuJ/mMtQpKUXsZH4&btpReeMPYInrPKBOld&zYt1K&mm.Kyv1x-zWLAvgOgq4dWsp.sN=cAaFDFAE?hNvd1A2xOsrzoExeBeQKe?QIk&ih&sE1ldgY&tn16q0?l,j,at5Se0vWRawvHZVWoeM*aeV*X/iPU6NDVDoHlV33cj.ieJVSgxO1uEcf8OOdHPPq4PYQ1t1NpRlJsKhg?ycAq0.?xzB1atZ*i?kHERr,*PdZGABiYhuQ2HChbImY&sfRdeEvXFSYFWa;GsvyxyfLX-vV,PPynytXvkloxNN.vRn0pVu&a&izCaOfZ4NAI:rFBU;c*PFrMp=u.50ifO/eyEo?,TFPk&TAMxA0,cmj*xHfdhomXreMD;xgme?J?XVYSBa/j?OwkqU0VfaTslwmI2YYkJwDdvdZOmOqoxd5PTDq1npAXNzHLa/fMp2nnM/JeEJ2ka7vS/qGooustQrGIqT2TKWAqWNdqT.vZjnjD.rbL?=QBV0*VAin0PSkHOgUjjZQ4tIaYcIJXPyjkPtfZA8alSdKTNX1c&pEcxLrbAxJMOjlu;pBpCZoV;gQWmtMmZb00sIDmJk:pmipLG1jRIVWfpr0DsBNa1XO?dqCcQfmZcsnBPqCH&L;ilwqxaxRlQprhVNp0W:aJl;wuNBgDmfePC:c3vouNjEggBBM?hMzvrsvE&WVqY,3LmZVUS*Ligx&CMFTNQ4.x&rfKtlvnDwvn&eGXXHuhs1RE.jCzIE=h3NF:y1qixf61.v/0&u=j0y6XdUdxVa=hXOvE7M5L1o4nxy37N?bOAuAGhMlwpjizQxO:o3lXb*vrYiwC.COzQGOvFO7OiDyshjXD5pxW-kWpPNjqSiHQtWoQ2.Ogfv0TybdY&FwTbKL2Odv&cTAeuab=m.xUQIqhOH,Ae3RPAYJ7BLcR,dE?1hdR.r:bCK.l.M/IZCFf4jaj&GMaUk;d&;*KxQ2Nc;:XfaiJG.;FZzkgt:HJaN;?lDO/Hx/tPiX/Wc:jEH;HD.gobobFP.uA&eOT;PQ:qP&X?bk/jBHECE;gnclj,K:4J:PLV*KRAyOAV?Eb&p.:F;0*aoClj;n,xE&VT3JVuM0;qxdKxT*::;;:CIOx,ljI..Y-9',
         url: 'amkjk87*vppR.ghnrZgYkUVh7',
+        backgroundColor:"#ffd600"
     }
 ]
 
