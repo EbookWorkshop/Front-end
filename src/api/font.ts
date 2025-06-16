@@ -15,9 +15,9 @@ export function queryFontList() {
   return axios.get('/services/font').then((data: AxiosResponse<any[]>) => {
     return data.data.map((item) => {
       return {
-        name: item.sortName,
+        name: item.name,
         path: ASSETS_HOST + item.url,
-        fontFile: item.name,
+        fontFile: item.file,
         size: item.size
       };
     }).sort((a:any, b) => b.size - a.size);

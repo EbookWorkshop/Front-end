@@ -92,11 +92,9 @@
           }">
             <a-row>
               <a-col :span="24" style="text-align: center">
-                <iframe :ref="pdfFrame" width="1072" height="1448" :src="ASSETS_HOST +
-                  `/services/pdf/view?content=${encodeURIComponent(
+                <iframe :ref="pdfFrame" width="1072" height="1448" :src="`${ASSETS_HOST}/services/pdf/view?content=${encodeURIComponent(
                     demoContext[form.contentIndex]?.content
-                  )}&fontsize=${form.fontSize}&fontfamily=${form.font ?? fontData[0].name}`
-                  "></iframe>
+                  )}&fontsize=${form.fontSize}&fontfamily=${form.font}`"></iframe>
               </a-col>
             </a-row>
           </div>
@@ -148,7 +146,10 @@ const pdfFrame = ref(null) as any;
 
 const activeViewModel = ref('web'); // 激活的预览模式
 
-getDefaultFont().then(rsl => defaultFont.value = rsl.data);
+getDefaultFont().then(rsl =>{
+  defaultFont.value = rsl.data;
+  form.font = rsl.data;
+});
 
 // 重新设置列数
 const ResetCol = () => {
