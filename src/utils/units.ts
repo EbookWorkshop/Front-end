@@ -15,6 +15,9 @@ export function formatFileSize(fileSize: number, defUnit: "B" | "KB" | "MB" | "G
 
     return {
         fileSize: fileSize,
-        unit: size
+        unit: size,
+        toString:()=>{
+            return `${fileSize.toFixed(2)}${size}`
+        }
     };
 }

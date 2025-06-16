@@ -57,7 +57,7 @@
           }">
             <a-row v-for="(item, index) in renderData" :key="index" :gutter="20" :style="{ marginBottom: '20px' }">
               <a-col v-for="f in item" :key="f.name" :span="Math.floor(24 / item.length)">
-                <a-card :title="f.name" :bordered="false" :style="{ width: '100%' }">
+                <a-card :title="`${f.name} - (${formatFileSize(f.size)})`" :bordered="false" :style="{ width: '100%' }">
                   <template #extra>
                     <a-dropdown>
                       <a-button>更多</a-button>
@@ -71,7 +71,8 @@
                       </template>
                     </a-dropdown>
                   </template>
-                  <div :style="{ fontFamily: f.fontFamily, fontSize: form.fontSize + 'px', color: f.loadError ? 'rgb(var(--red-2))' : '' }"
+                  <div
+                    :style="{ fontFamily: f.fontFamily, fontSize: form.fontSize + 'px', color: f.loadError ? 'rgb(var(--red-2))' : '' }"
                     class="showContent">
                     <p v-for="(p, pI) in demoContext[form.contentIndex]?.content.split(
                       '\n'
@@ -119,11 +120,16 @@ import {
   ASSETS_HOST,
 } from '@/api/font';
 import { Message } from '@arco-design/web-vue';
+import { formatFileSize } from '@/utils/units'
 
 interface FontFace {
+  /**显示名 */
   name: string;
   path: string;
+  /**css的字体名 */
   fontFamily: string;
+  size: number;
+  /**文件名 */
   fontFile: string;
   loadError: boolean;
 }

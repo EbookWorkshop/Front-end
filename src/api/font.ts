@@ -12,15 +12,16 @@ export interface ContentType {
  * @returns 可用字体列表地址
  */
 export function queryFontList() {
-  return axios.get('/services/font').then((data: AxiosResponse<string[]>) => {
+  return axios.get('/services/font').then((data: AxiosResponse<any[]>) => {
     return data.data.map((item) => {
       return {
-        name: item.replace(/(^\/font\/)|(\.\w+$)/g, ''),
-        path: ASSETS_HOST + item,
-        fontFile: item.replace('/font/', ''),
+        name: item.sortName,
+        path: ASSETS_HOST + item.url,
+        fontFile: item.name,
+        size: item.size
       };
-    });
-  });
+    }).sort((a:any, b) => b.size - a.size);
+  })
 }
 /**
  * 删除字体文件
