@@ -5,7 +5,7 @@ import { Book } from '@/types/book';
 
 export type ListQueryApi = (
   tagId: number | undefined,
-  notTag: number[] | undefined
+  notTag?: number[] | undefined
 ) => Promise<AxiosResponse<HttpResponse<Book[]>>>;
 
 export function queryBookList(tagId?: number, notTag?: number[]) {

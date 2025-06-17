@@ -1,5 +1,5 @@
 <template>
-    <a-modal width="auto" :visible="show" @before-open="loadData" @cancel="close" unmount-on-close draggable>
+    <a-modal width="auto" :visible="show" @before-open="loadData" @cancel="close" unmount-on-close draggable :maskClosable="false">
         <template #title> 重复内容检测 </template>
         <div>相似度：
             <a-slider :min="0" :max="1" :style="{ width: '100%' }" :format-tooltip="formatter" :step="0.0005"
@@ -14,18 +14,19 @@
     </a-modal>
       <a-modal :visible="showDiff" fullscreen title="对比差异" unmount-on-close :footer="false"
         @cancel="showDiff = false">
-        <Diff mode="split" :theme="appStore.theme as any" language="text" :prev="diffLeft" :current="diffRight"
+        <Diff mode="split" :theme="appStore.theme as any" language="text" :left="diffLeft" :right="diffRight"
           style="height: 100%; width: 100%; overflow: scroll" />
       </a-modal>
 </template>
 
 <script setup lang="ts">
-import "vue-diff/dist/index.css";
 import { ref } from 'vue';
 import { HeatABook } from '@/api/library';
 import { queryDuplicatesChapter,queryChapterById } from '@/api/book';
 
 import { useAppStore } from '@/store';
+
+import Diff from '@/components/diff/index.vue'
 
 
 const expandedKeys = ref<number[]>([]);
@@ -99,7 +100,6 @@ const loadData = async () => {
             }
             resultData.value.push(item);
         }
-        console.log(resultData.value);
         HeatABook(props.bookId);
     }).finally(() => {
         loading.value = false;
