@@ -87,7 +87,7 @@ const curEditBookId = ref(0);
  * renderData --实际的数据
  */
 const { loading, response: renderData } = useRequest<Book[]>(
-  props.Api.bind(null, props.tagid),
+  props.Api.bind(null, props.tagid, []),
   defaultValue
 );
 
