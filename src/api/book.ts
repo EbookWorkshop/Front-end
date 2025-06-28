@@ -152,7 +152,18 @@ export function queryDuplicatesChapter(bookId: number,threshold:number) {
 }
 
 /**
- * 创建一本书，新书入库
+ * 检查正文内容成组的标点是否匹配
+ * @param bookId 要检查的书
+ * @param chapterIds 限定的章节范围，忽略则全书
+ * @returns 
+ */
+export function queryPairedPunctuation(bookId: number, chapterIds: number[] | null) {
+  return axios.get(`/library/book/pairedpunctuation?bookid=${bookId}${chapterIds ? `&chapterids=${JSON.stringify(chapterIds)}` : ''}`);
+}
+
+
+/**
+ * 创建一本网文，新书入库
  * @param url 书目录地址
  * @returns
  */

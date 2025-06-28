@@ -156,17 +156,17 @@ function onSetChapterLength(value: any) {
 }
 
 /**
- * 合并当前章节
+ * 更新目录-从网站重新更新目录，合并到当前书目
  * @param bookid
  */
 function mergeIndex() {
     Message.info('已启动章节更新合并');
     isMerging.value = true;
-    HeatABook(props.bookid ?? 0);
     return mergeWebBookIndex(props.bookid || -1)
         .then((result) => {
             isMerging.value = false;
             Message.normal('已启动章节合并任务，请稍后');
+            HeatABook(props.bookid ?? 0);
         })
         .catch((err) => {
             isMerging.value = false;
@@ -189,7 +189,7 @@ function UpdateChapter() {
         Message.error("没有选中章节");
         return;
     }
-    
+
     updateChapter(props.bookid as number, hasCheckChapter, isMustUpdate.value).then((res: any) => {
         if (res?.code == ApiResultCode.Success) {
             HeatABook(props.bookid ?? 0);

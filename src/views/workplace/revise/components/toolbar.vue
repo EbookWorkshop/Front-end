@@ -8,6 +8,7 @@
                     <a-button @click="isEditBookInfo = true"> <icon-pen /> 元数据 </a-button>
                     <a-button @click="isFormatTitle = true"> 标题格式化 </a-button>
                     <a-button @click="checkDescriptions = true"> 内容重复检查 </a-button>
+                    <a-button @click="isPairedPunctuation = true"> 标点配对检查 </a-button>
                     <a-button @click="showHiddenChapters(bookid ?? 0)"> 已隐藏章节 </a-button>
 
                 </a-button-group>
@@ -17,6 +18,7 @@
     <EditBookInfo :visible="isEditBookInfo" :bookId="bookid ?? 0" @cancel="isEditBookInfo = false" />
     <Descriptions :bookId="bookid ?? 0" :show="checkDescriptions" @close="checkDescriptions = false" />
     <FormatTitle v-model:visible="isFormatTitle" :bookId="bookid ?? 0" :chapters="chapters" />
+    <PairedPunctuation v-model:visible="isPairedPunctuation" :bookId="bookid ?? 0"  />
 </template>
 
 <script lang="ts" setup>
@@ -24,6 +26,7 @@ import { ref } from 'vue';
 import EditBookInfo from '@/components/book-info/edit.vue';
 import Descriptions from '@/components/book-tool/duplicates.vue';
 import FormatTitle from './FormatTitle.vue';
+import PairedPunctuation from './PairedPunctuation.vue';
 import type { Chapter } from "@/types/book";
 import useChapterHiddenHelper from "@/hooks/chapter-hidden";
 
@@ -31,6 +34,7 @@ import useChapterHiddenHelper from "@/hooks/chapter-hidden";
 const isEditBookInfo = ref(false);      //是否正在编辑书籍信息
 const checkDescriptions = ref(false);
 const isFormatTitle = ref(false);
+const isPairedPunctuation = ref(false);
 
 const props = defineProps<{
     bookid: number | undefined;
