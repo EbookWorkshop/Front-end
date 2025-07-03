@@ -41,7 +41,8 @@ const tagNotInclude: number[] = [];
 const { response: tagsData } = useRequest<Tag[]>(getTagHasBook);
 function CheckTag(id: number | undefined) {
     tagId.value = id;
-    props.Api(id, []).then((result) => {
+    console.log("选中tag：", id);
+    props.Api(id).then((result) => {
         emit('change', result.data);
         curTag.value = tagsData.value.filter(t => t.id === tagId.value)[0];
     })
