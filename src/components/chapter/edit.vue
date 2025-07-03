@@ -7,7 +7,7 @@
                 <a-input v-model="form.chapTitle" />
             </a-form-item>
             <a-form-item field="content" label="章节正文">
-                <a-textarea v-model="form.content" :auto-size="{ minRows: 20 }" show-word-limit />
+                <a-textarea v-model="form.content" :auto-size="{ minRows: 20 }" show-word-limit :textarea-attrs="{'style':'font-size:1.25em'}"/>
             </a-form-item>
         </a-form>
     </a-modal>
