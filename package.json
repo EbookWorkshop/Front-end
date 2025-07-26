@@ -1,7 +1,7 @@
 {
   "name": "ebookworkshop",
   "description": " Ebook Workshop,Base from Arco Design Pro for Vue",
-  "version": "3.9.0-α",
+  "version": "3.9.0",
   "private": true,
   "author": "c0618c",
   "license": "MIT",
