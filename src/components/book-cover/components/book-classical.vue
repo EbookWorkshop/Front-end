@@ -9,16 +9,16 @@
       <a-space align="start">
         <a-card-meta>
           <template v-if="isHasSubTitle" #title>
-            <a-typography-text class="sub-title sub-title-s">
+            <a-typography-text class="book-title sub-title sub-title-s">
               {{ sTitle }}
             </a-typography-text>
             <div></div>
-            <a-typography-text class="sub-title sub-title-f">
+            <a-typography-text class="book-title sub-title sub-title-f">
               {{ fTitle }}
             </a-typography-text>
           </template>
           <template v-else #title>
-            <a-typography-text :class="titleShow.length >= 8 ? 'large-text' : ''">
+            <a-typography-text :class="`book-title ${titleShow.length >= 8 ? 'large-text' : ''} title-word-count-${titleShow.length}`">
               {{ titleShow }}
             </a-typography-text>
           </template>
@@ -77,6 +77,10 @@ const isHasSubTitle = computed<boolean>(() => {
   if (props.titleShow.match(titleSplitReg) !== null) {
     const rsl = props.titleShow.split(titleSplitReg);
     [fTitle, sTitle] = rsl;
+    return true;
+  } else if (props.titleShow.length > 11) {
+    fTitle = props.titleShow.slice(0, 6);
+    sTitle = props.titleShow.slice(6);
     return true;
   }
   return false;
@@ -170,35 +174,50 @@ const isHasSubTitle = computed<boolean>(() => {
       content: ' ';
     }
 
-    .arco-typography {
+    .book-title {
       position: absolute;
-      top: 20px;
-      margin-left: 3px;
       color: black;
       font-size: 1.5rem;
-      writing-mode: vertical-lr;
+      line-height: 1.5rem;
+      font-family: "微软雅黑";
+      text-align: center;
     }
 
+    .title-word-count-2{line-height: 5rem;  }
+    .title-word-count-3{line-height: 3rem;  }
+    .title-word-count-4{line-height: 2.5rem;  }
+    .title-word-count-5{line-height: 2rem;  }
+    .title-word-count-6{line-height: 1.6rem;  }
+
     .large-text {
-      margin-left: 8px;
+      top: 20px;
+      margin-left: 0px;
       font-size: 1rem;
+      line-height: 1rem;
+      width: 1rem;
+      left: 1rem;
     }
+
+    .title-word-count-8{line-height: 1.1rem !important;  }
+    .title-word-count-11{top:13px; }
 
     .sub-title {
       font-size: 0.7rem;
+      line-height: 0.8rem;
+      width: 0.7rem;
     }
 
     .sub-title-f {
       position: absolute;
       top: 20px;
-      right: 6px;
+      top: 1rem;
+      right: 0.7rem;
     }
 
     .sub-title-s {
       position: absolute;
-      top: inherit;
-      bottom: 20px;
-      left: 4px;
+      bottom: 1rem;
+      left: 0.7rem;
     }
   }
 

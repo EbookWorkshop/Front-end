@@ -9,13 +9,13 @@
               <BookClassical :title-show="'网文导入'" @click="toImport"></BookClassical>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
-              <BookClassical :title-show="'TXT 导入'" conver-color="#f2e3a4" @click="handleImportText">
+              <BookClassical :title-show="'ＴＸＴ 导入'" conver-color="#f2e3a4" @click="handleImportText">
               </BookClassical>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
               <a-upload action="/upload/importBook/pdf">
                 <template #upload-button>
-                  <BookClassical :title-show="'不可编辑格式导入：PDF，Mobi、EPUB等'" conver-color="#cb1f2f" />
+                  <BookClassical :title-show="'不可编辑格式导入：PDF\'-EPUB等'" conver-color="#cb1f2f" />
                 </template>
               </a-upload>
             </a-col>
@@ -85,7 +85,7 @@ const handleImportSubmit = () => {
 };
 </script>
 
-<style>
+<style lang="less" scoped>
 .showBord {
   border: 1px solid red;
 }
@@ -98,5 +98,9 @@ const handleImportSubmit = () => {
 .col-align-center {
   display: flex;
   justify-content: center;
+
+  :deep(.arco-upload-wrapper) {
+    width: inherit;/* 修复PDF导入封面不居中的问题 */
+  }
 }
 </style>

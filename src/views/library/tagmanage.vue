@@ -18,6 +18,7 @@
             <a-table-column title="引用次数" data-index="Count" :width="120"></a-table-column>
             <a-table-column title="操作" :width="250">
               <template #cell="{ record }">
+                <a-button @click="viewTag(record.id)">查看</a-button>
                 <a-button @click="editRow(record)">编辑</a-button>
                 <a-popconfirm content="确认删除？此操作将无法恢复！" @ok="handlerDeleteTag(record.id)">
                   <a-button status="danger">删除</a-button>
@@ -48,6 +49,7 @@ import useRequest from '@/hooks/request';
 import { getAllTag, updateTag, deleteTag, addTag, Tag } from '@/api/tag';
 import { Message } from '@arco-design/web-vue';
 import { ApiResultCode } from '@/types/global';
+import { openWindow } from '@/utils';
 
 const { loading: tableLoading, response: renderData } = useRequest<Tag[]>(getAllTag);
 
@@ -121,4 +123,8 @@ const editRow = (data: any) => {
   form.text = data.Text;
   form.color = data.Color;
 };
+
+const viewTag=(id:number)=>{
+  openWindow(`/library/booklist/${id}`);
+}
 </script>

@@ -89,7 +89,7 @@
 
       <a-modal :visible="testResult" fullscreen title="验证结果" unmount-on-close :footer="false"
         @cancel="testResult = false">
-        <Diff mode="split" :theme="theme" language="text" :prev="diffLeft" :current="diffRight"
+        <Diff mode="split" :theme="theme" language="text" :left="diffLeft" :right="diffRight"
           style="height: 100%; width: 100%; overflow: scroll" />
       </a-modal>
     </div>
@@ -97,7 +97,6 @@
 </template>
 
 <script lang="ts" setup>
-import "vue-diff/dist/index.css";
 import { reactive, ref, computed, h } from 'vue';
 import useRequest from '@/hooks/request';
 import { queryBookById, } from '@/api/book';
@@ -111,6 +110,7 @@ import {
 import type { TableColumnData } from '@arco-design/web-vue';
 import { Message } from '@arco-design/web-vue';
 import SelectBook from '@/components/select-book/index.vue';
+import Diff from '@/components/diff/index.vue'
 import { useAppStore } from '@/store';
 
 import { IconSearch } from '@arco-design/web-vue/es/icon';

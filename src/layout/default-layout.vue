@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, computed, watch, provide, onMounted } from 'vue';
+  import { ref, computed, watch, provide, onMounted,defineAsyncComponent  } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
   import { useAppStore, useUserStore } from '@/store';
   import NavBar from '@/components/navbar/index.vue';
@@ -54,7 +54,8 @@
   import TabBar from '@/components/tab-bar/index.vue';
   import usePermission from '@/hooks/permission';
   import useResponsive from '@/hooks/responsive';
-  import PageLayout from './page-layout.vue';
+  // import PageLayout from './page-layout.vue';
+  const PageLayout = defineAsyncComponent (() => import('./page-layout.vue'));
 
   const isInit = ref(false);
   const appStore = useAppStore();

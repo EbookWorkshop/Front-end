@@ -15,25 +15,31 @@
               <!-- 一行 -->
               <a-col v-for="item in renderData" :key="item.BookId" class="list-col" :xs="24" :sm="12" :md="12" :lg="6"
                 :xl="6" :xxl="4" @click="goto(item.BookId)">
-                <a-dropdown trigger="contextMenu" alignPoint :style="{ display: 'block' }" :popup-max-height="false" >
-                  <BookCover :loading="loading" :book-name="item.BookName" :cover-img="item.CoverImg">
-                  </BookCover>
+                <a-dropdown trigger="contextMenu" alignPoint :style="{ display: 'block' }" :popup-max-height="false"
+                  class="book-context-menu">
+                  <BookCover :loading="loading" :book-name="item.BookName" :cover-img="item.CoverImg"> </BookCover>
                   <template #content>
                     <a-dgroup title="标签">
                       <a-doption disabled>
                         <TagTool :book-id="item.BookId"></TagTool>
                       </a-doption>
                     </a-dgroup>
-                    <a-doption >
+                    <a-doption>
                       <template #icon> <icon-delete /> </template>
                       <template #default>
-                        <a-button type="text" status="danger" @click="DeleteABook(item.BookId)">删除书本</a-button>
+                        <a-button type="text" status="danger" @click="DeleteABook(item.BookId)" long>删除书本</a-button>
                       </template>
                     </a-doption>
-                    <a-doption >
+                    <a-doption>
                       <template #icon> <icon-pen /> </template>
-                      <template #default><a-button type="text"
+                      <template #default><a-button type="text" long
                           @click="curEditBookId = item.BookId">修改元数据</a-button></template>
+                    </a-doption>
+                    <a-doption>
+                      <template #icon> <icon-export /> </template>
+                      <template #default>
+                        <a-button type="text" long @click="gotoExport(item.BookId)">导出</a-button>
+                      </template>
                     </a-doption>
                   </template>
                 </a-dropdown>
@@ -45,7 +51,8 @@
     </a-row>
   </a-spin>
 
-  <EditBookInfo :visible="curEditBookId != 0" :bookId="curEditBookId" @cancel="curEditBookId = 0" @submit="onUpdateMeta" />
+  <EditBookInfo :visible="curEditBookId != 0" :bookId="curEditBookId" @cancel="curEditBookId = 0"
+    @submit="onUpdateMeta" />
 </template>
 
 <script lang="ts" setup>
@@ -58,6 +65,8 @@ import BookCover from '../book-cover/index.vue';
 import TagTool from '../tag-toolbar/index.vue';
 import TagList from '../tag-toolbar/list.vue';
 import EditBookInfo from '../book-info/edit.vue';
+import NProgress from 'nprogress'; // progress bar
+
 
 // 入参
 const props = defineProps({
@@ -78,7 +87,7 @@ const curEditBookId = ref(0);
  * renderData --实际的数据
  */
 const { loading, response: renderData } = useRequest<Book[]>(
-  props.Api.bind(null, props.tagid),
+  props.Api.bind(null, props.tagid, []),
   defaultValue
 );
 
@@ -87,6 +96,12 @@ const router = useRouter();
 const goto = (bookid: number) => {
   router.push({
     path: `/${props.nextRouter}/${bookid}`,
+  });
+};
+
+const gotoExport = (bookid: number) => {
+  router.push({
+    path: `/workshop/export/exportguide/${bookid}`,
   });
 };
 
@@ -100,18 +115,19 @@ function onUpdateMeta(form: any) {
 }
 
 function DeleteABook(bookid: number) {
-  loading.value = true;
+  // loading.value = true;
+  NProgress.start();
   deleteABook(bookid).then((rsl) => {
     for (let i = 0; i < renderData.value.length; i++) {
       if (renderData.value[i].BookId == bookid) {
-        loading.value = false;
         renderData.value.splice(i, 1);
         return;
       }
     }
   }).catch((err) => {
     // Message.error(`删除失败：${err}`);
-    loading.value = false;
+  }).finally(() => {
+    NProgress.done();
   });
 }
 </script>
@@ -134,6 +150,25 @@ function DeleteABook(bookid: number) {
 
     .arco-result-title {
       color: rgb(var(--gray-6));
+    }
+  }
+}
+
+.book-context-menu {
+  .arco-dropdown-option {
+    width: 100%;
+
+    :deep(.arco-dropdown-option-content) {
+      // 深度选择器
+      width: 100%;
+      box-sizing: border-box; // 防止边框影响宽度计算
+    }
+
+    .arco-dropdown-option-content {
+      button {
+        width: 100%;
+        box-sizing: border-box;
+      }
     }
   }
 }

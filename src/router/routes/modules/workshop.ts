@@ -35,7 +35,7 @@ const WORKSHOP: AppRouteRecordRaw = {
       },
       children: [
         {
-          path: 'exportguide',
+          path: 'exportguide/:bookid?',
           name: 'exportguide',
           component: () => import('@/views/workshop/export/index.vue'),
           meta: {

@@ -71,7 +71,7 @@ const formModel = reactive({
 
 const chapterTitles = reactive<ChapterTitle[]>([]);
 
-const param = defineProps({
+const props = defineProps({
   visible: Boolean,
   bookId: Number,
   chapters: {
@@ -82,7 +82,7 @@ const emiter = defineEmits(['update:visible', 'submit'])
 
 const isShowDiffOnly = ref(false);
 
-watch(() => param.chapters, (newChapters) => {
+watch(() => props.chapters, (newChapters) => {
   if (!newChapters) return;
 
   chapterTitles.splice(0, chapterTitles.length, ...newChapters.map(chapter => ({
@@ -107,7 +107,7 @@ const submit = async () => {
     }));
 
     await restructureChapter({
-      bookId: param.bookId, operations: [{
+      bookId: props.bookId, operations: [{
         operationType: 'update',
         chapters: chaptersSetting,
       }]

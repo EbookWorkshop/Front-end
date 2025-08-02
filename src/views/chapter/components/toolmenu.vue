@@ -107,7 +107,11 @@ function onChangeFontSize() {
     localStorage.setItem('ebws-readingFontSize', fontSize.value.toString());
 }
 watch(() => props.defaultFont, (newVal, oldVal) => {
-    selectedFont.value = newVal;
+    let setFont = newVal;
+    if (newVal.startsWith("http")) {
+        setFont = (newVal.match(/\/([^/.]+)\.\w+$/) ?? [0, newVal])[1];//在完整的字体url中提取出字体名字。取最后一个/到.之间的字符
+    }
+    selectedFont.value = setFont;
     onChangeFont();
 })
 

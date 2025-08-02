@@ -8,7 +8,6 @@ import configArcoStyleImportPlugin from './plugin/arcoStyleImport';
 
 
 import { dependencies, devDependencies, name, version } from "../package.json"
-import { assert } from 'console';
 
 export default defineConfig({
   plugins: [

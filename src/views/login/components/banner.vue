@@ -24,12 +24,12 @@
     {
       slogan: t('login.banner.slogan1'),
       subSlogan: t('login.banner.subSlogan1'),
-      image: 'assets/logo-dark.svg',
+      image: 'logo-dark.svg',
     },
     {
       slogan: t('login.banner.slogan2'),
       subSlogan: t('login.banner.subSlogan2'),
-      image: "assets/logo.svg",
+      image: "logo.svg",
     },
   ]);
 </script>

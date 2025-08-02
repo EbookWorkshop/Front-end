@@ -34,7 +34,8 @@
                                             v-if="(ruleItem = ruleAll.find((ruleItem: Rule) => ruleItem.id === item.ruleId))">
                                             <p>规则名称：{{ ruleItem.Name }}</p>
                                             <p>校阅内容：<a-typography-text code copyable
-                                                    @click="form.curRegex = ruleItem.Rule;form.curReplace = ruleItem.Replace" style="cursor: pointer;">{{
+                                                    @click="form.curRegex = ruleItem.Rule; form.curReplace = ruleItem.Replace"
+                                                    style="cursor: pointer;">{{
                                                         ruleItem.Rule
                                                     }}</a-typography-text></p>
                                             <p>替换结果：{{ ruleItem.Replace }}</p>
@@ -83,7 +84,7 @@
             <div style="height: 100vh; overflow: scroll">
                 <div v-for="item in diffResult" :key="item.id">
                     <a-typography-title :heading="3">{{ item.title }}</a-typography-title>
-                    <Diff mode="split" :theme="theme" language="text" :prev="item.content" :current="item.newText"
+                    <Diff mode="split" :theme="theme" language="text" :left="item.content" :right="item.newText"
                         style="height: 100%; width: 100%; overflow: scroll" />
                 </div>
                 <a-typography-paragraph v-for="(item, index) in saveResult" :key="index">
@@ -103,12 +104,13 @@
 </template>
 
 <script lang="ts" setup>
-import "vue-diff/dist/index.css";
 import { ref, reactive, computed } from 'vue';
 import SelectBook from '@/components/select-book/index.vue';
+import Diff from '@/components/diff/index.vue'
 import type { Rule } from '@/api/workplace';
 import { ApiResultCode } from "@/types/global"
 import { queryReviewRuleOnBook, RuleAndBook, queryReviewRuleList, tryARuleOnBook, saveReviewOnBook, deleteReviewRuleForBook } from '@/api/workplace';
+import { HeatABook } from "@/api/library";
 import { queryBookById, queryChapterById } from '@/api/book';
 import useRequest from '@/hooks/request';
 import { useAppStore } from '@/store';
@@ -199,14 +201,14 @@ async function onTryIt() {
     }).finally(() => {
         visBtLoading.value = false;
     });
-    
+
     if (result.code != ApiResultCode.Success) return;
     CleanView();
     diffResult.value = result.data;
 }
 
 /**
- * 保存
+ * 保存-应用到所有章节
  */
 async function onSave() {
     if (!form.bookId || form.curRegex == '') {
@@ -221,6 +223,7 @@ async function onSave() {
     if (result.code != ApiResultCode.Success) return;
     CleanView();
     saveResult.value = result.data;
+    HeatABook(form.bookId);
 }
 
 /**

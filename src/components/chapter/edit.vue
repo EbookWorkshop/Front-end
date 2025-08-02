@@ -7,14 +7,15 @@
                 <a-input v-model="form.chapTitle" />
             </a-form-item>
             <a-form-item field="content" label="章节正文">
-                <a-textarea v-model="form.content" :auto-size="{ minRows: 20 }" show-word-limit />
+                <a-textarea v-model="form.content" :auto-size="{ minRows: 20 }" show-word-limit :textarea-attrs="{'style':'font-size:1.25em'}"/>
             </a-form-item>
         </a-form>
     </a-modal>
 </template>
 <script setup lang="ts">
-import { ref, reactive, } from 'vue';
-import type { Book, Chapter } from "@/types/book";
+import { reactive, } from 'vue';
+import { HeatABook } from '@/api/library';
+import type { Chapter } from "@/types/book";
 import {
     queryChapterById,
     editChapter,
@@ -50,8 +51,8 @@ const props = defineProps({
 const emit = defineEmits(['close', "reload"]);
 
 //状态区
-let defTitle: String = ""
-let defContent: String = "";
+let defTitle: string = ""
+let defContent: string = "";
 
 const form = reactive({
     chapTitle: '',
@@ -60,6 +61,11 @@ const form = reactive({
 
 async function InitData() {
     try {
+        if (props.chapterId == -1) {
+            form.chapTitle = defTitle = "";
+            form.content = defContent = "";
+            return;
+        }
         let result = await queryChapterById(props.chapterId);
         form.chapTitle = result.data.Title as any
         form.content = result.data.Content as any;
@@ -102,6 +108,7 @@ const onSubmit = () => {
         editChapter(result).then(rsl => {
             // console.log(rsl);
             Message.success("更新成功！");
+            HeatABook(props.bookId);
             emit('close');
 
             if (reload) {
@@ -132,6 +139,7 @@ function onMergeChapter() {
         }]
     }).then(rsl => {
         Message.success("更新成功！");
+        HeatABook(props.bookId);
         emit('close');
     })
 }
