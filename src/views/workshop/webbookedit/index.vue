@@ -29,11 +29,13 @@
 import type { Book, Chapter, WebChapter } from '@/types/book';
 import { WebBookStatus } from './data'
 import type { OneChapterStatus } from './data'
+import type { MessageRecord } from '@/types/Message'
 
 import { ref, reactive, nextTick } from 'vue';
 import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
 import { useSocket } from '@/hooks/socket';
+import { useMessageStore } from '@/store';
 
 //控件
 import BookInfo from '@/components/book-info/index.vue';
@@ -70,6 +72,8 @@ const queryBook = () => {
 const { bookId } = useBookHelper();
 const { loading, response: bookData } = useRequest<Book>(queryBook);
 const { io: socket } = useSocket();
+const messageStore = useMessageStore();
+
 
 //操作定义
 /**
@@ -84,7 +88,7 @@ function OnToggleChapter(isChecked: boolean, chapterId: number) {
 }
 
 function onHideChapter(chapterId: number) {
-  console.log(`隐藏章节：${chapterId}`);
+  //console.log(`隐藏章节：${chapterId}`);
   const index = bookData.value?.Index.findIndex(chap => chap.IndexId === chapterId);
   if (index !== undefined && index !== -1) {
     bookData.value?.Index.splice(index, 1);
@@ -119,7 +123,21 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       content: `章节-${curChapter.value.getTitle()}：${err?.message || "未知错误"}`,
       showIcon: true,
     });
+
+    //将错误消息转入消息中心
+    const errInfo: MessageRecord = {
+      id:bookId,
+      type:"message",
+      title: `《${bookData.value?.BookName}》获取章节出错：${err?.name || ""}`,
+      subTitle: `章节-${curChapter.value.getTitle()}`,
+      content: err?.message || "未知错误",
+      time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
+      status: 1,
+      avatar: "error",
+    };
+    messageStore.addMessage(errInfo);
   });
+
   //单一章节更新成功
   socket.on(WebBookStatus.Success + `.${bookId}`, (chaptOne: OneChapterStatus) => {
     const curChapter = chapterRefMap.get(chaptOne.chapterId);
@@ -140,10 +158,20 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
     });
     nextTick(() => {
       curDoingProcent.value = -1;
-    })
+    });
+
+    messageStore.addMessage({
+      id: bookId,
+      type: "message",
+      title: `《${bookData.value?.BookName}》已尝试任务${chapterIndexArray.length}个`,
+      subTitle: `成功：${doneNum}，失败：${failNum}`,
+      content: `成功率：${Math.round(doneNum / chapterIndexArray.length * 10000) / 100}%`,
+      time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
+      status: 1,
+      avatar: "info",
+    });
   });
 }
-
 </script>
 
 <style scoped lang="less"></style>

@@ -53,6 +53,7 @@
                     <a-option value="((第\S+?章[^。，\n]+?)|(简介：))\r?\n">第x章 XXXX|简介</a-option>
                     <a-option value="((第\S+?回[^。，\n]+?)|(后记)|(简介：))\r?\n">第x回 XXXX|后记|简介</a-option>
                     <a-option value="((第\S+?回[^。，\n]+?)|(后记)|(简介：))\r?\n">第x回 XXXX|后记|简介</a-option>
+                    <a-option value="(((第\S+?章)|(序章)|(尾声))：[^。，\n]+?)\r?\n" title="序章：XXXX；第一章：XXXX；尾声：XXXX">（第x章|序章|尾声）：XXXX</a-option>
                   </a-optgroup>
                   <a-optgroup label="无章节标题">
                     <a-option value="((第\S+?章)|后记)\r?\n">第x章|后记</a-option>

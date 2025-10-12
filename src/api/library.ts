@@ -8,6 +8,12 @@ export type ListQueryApi = (
   notTag?: number[] | undefined
 ) => Promise<AxiosResponse<HttpResponse<Book[]>>>;
 
+/**
+ * 获取总图书列表
+ * @param tagId 指定标签ID
+ * @param notTag 排除的标签ID数组
+ * @returns 图书列表响应
+ */
 export function queryBookList(tagId?: number, notTag?: number[]) {
   let param = {};
   if (tagId) param = { params: { tagid: tagId } };
@@ -15,8 +21,17 @@ export function queryBookList(tagId?: number, notTag?: number[]) {
   return axios.get('/library/booklist', param);
 }
 
-export function queryWebBookList() {
-  return axios.get('/library/webbook/list');
+/**
+ * 获取网文列表
+ * @param tagId 指定标签ID
+ * @param notTag 排除的标签ID数组
+ * @returns 网文列表响应
+ */
+export function queryWebBookList(tagId?: number, notTag?: number[]) {
+  let param = {};
+  if (tagId) param = { params: { tagid: tagId } };
+  if (notTag) param = { params: { nottag: notTag.join(',') } }
+  return axios.get('/library/webbook/list',param);
 }
 
 /**

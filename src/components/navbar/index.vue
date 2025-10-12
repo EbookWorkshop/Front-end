@@ -109,7 +109,7 @@ import { LOCALE_OPTIONS } from '@/locale';
 import useLocale from '@/hooks/locale';
 import useUser from '@/hooks/user';
 import Menu from '@/components/menu/index.vue';
-import { MessageRecord } from '@/api/message';
+import { MessageRecord } from '@/types/Message';
 
 import { useSocket, getSocketState } from '@/hooks/socket';
 import MessageBox from '../message-box/index.vue';
@@ -224,7 +224,7 @@ socket.io.on(
   }
 )
 
-socket.io.on("Message.Box.Send", (msg) => {
+socket.io.on("Message.Box.Send", (msg:MessageRecord) => {
   if (typeof (msg.status) === "undefined") msg.status = 0;
   messageList.push(msg);
 })

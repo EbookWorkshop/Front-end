@@ -2,6 +2,7 @@ export default {
   'messageBox.tab.title.message': 'Message',
   'messageBox.tab.title.notice': 'Notice',
   'messageBox.tab.title.todo': 'Todo',
+  'messageBox.tab.title.history': 'History',
   'messageBox.tab.button': 'empty',
   'messageBox.allRead': 'All Read',
   'messageBox.viewMore': 'View More',

@@ -27,11 +27,12 @@
 <script lang="ts" setup>
   import { ref, reactive, toRefs, computed, PropType } from 'vue';
   import { useI18n } from 'vue-i18n';
+  import { MessageRecord, MessageListType} from '@/types/Message';
+  import { useMessageStore } from '@/store';
+
   import {
-    queryMessageList,
+    //queryMessageList,
     setMessageStatus,
-    MessageRecord,
-    MessageListType,
   } from '@/api/message';
   import useLoading from '@/hooks/loading';
   import List from './list.vue';
@@ -63,6 +64,9 @@
     renderList: [],//点击Tab时过滤出当前的合计作为渲染内容
     messageList: [],//所有的信息合集
   });
+
+  const messageStore = useMessageStore();
+
   toRefs(messageData);
   const tabList: TabItem[] = [
     {
@@ -74,16 +78,24 @@
       title: t('messageBox.tab.title.message'),
     },
     {
-      key: 'todo',
-      title: t('messageBox.tab.title.todo'),
+      key: 'history',
+      title: t('messageBox.tab.title.history'),
     },
   ];
   async function fetchSourceData() {
     setLoading(true);
     try {
+      //console.log("加载消息列表中！！！");
       // const { data } = await queryMessageList();
       // messageData.messageList = data;
+
       messageData.messageList = props.messageList;
+
+      let tempMsg = messageStore.getTopMessage();
+      while(tempMsg){
+        messageData.messageList.push(tempMsg);
+        tempMsg = messageStore.getTopMessage();
+      }
     } catch (err) {
       // you can report use errorHandler or other
     } finally {
@@ -97,7 +109,7 @@
   }
   const renderList = computed(() => {
     return messageData.messageList.filter(
-      (item) => messageType.value === item.type
+      (item) => messageType.value === item.type || messageType.value === 'history'
     );
   });
   const unreadCount = computed(() => {

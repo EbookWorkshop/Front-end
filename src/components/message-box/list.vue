@@ -26,6 +26,8 @@
             <template v-if="item.avatar" #avatar>
               <a-avatar shape="circle">
                 <span v-if="item.avatar == 'index'">{{ index + 1 }}</span>
+                <icon-close-circle-fill v-else-if="item.avatar === 'error'" style="color: red;" />
+                <icon-info-circle-fill v-else-if="item.avatar === 'info'" style="color: blue" />
                 <img v-else-if="item.avatar" :src="item.avatar" />
                 <icon-desktop v-else />
               </a-avatar>
@@ -78,7 +80,7 @@
 
 <script lang="ts" setup>
   import { PropType } from 'vue';
-  import { MessageRecord, MessageListType } from '@/api/message';
+  import { MessageRecord, MessageListType } from '@/types/Message';
 
   const props = defineProps({
     renderList: {
