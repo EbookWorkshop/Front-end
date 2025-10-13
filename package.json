@@ -1,7 +1,7 @@
 {
   "name": "ebookworkshop",
   "description": " Ebook Workshop,Base from Arco Design Pro for Vue",
-  "version": "3.9.1",
+  "version": "3.9.2",
   "private": true,
   "author": "c0618c",
   "license": "MIT",
@@ -59,7 +59,7 @@
     "@vitejs/plugin-vue-jsx": "^4.1.1",
     "@vue/babel-plugin-jsx": "^1.1.1",
     "consola": "^3.4.2",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.1.0",
     "dayjs": "^1.11.13",
     "eslint": "^8.25.0",
     "eslint-config-airbnb-base": "^15.0.0",

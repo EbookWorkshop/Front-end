@@ -5,7 +5,13 @@
     <a-row :gutter="20" align="stretch" style="overflow-x: hidden">
       <!-- 标签工具栏 -->
       <a-col :span="24" v-if="renderData.length > 0">
+        <a-button @click="toggleFilter" shape="circle"> <template #icon><icon-filter title="筛选" /></template></a-button>
         <TagList :tagid="props.tagid" :Api="props.Api" @change="renderData = $event" />
+      </a-col>
+      <a-col :span="24" v-if="isFiltered">
+        <a-input :style="{ width: '100%' }" placeholder="输入过滤的书名，按回车执行过滤" allow-clear @change="filterBookName">
+          <template #prefix><icon-filter title="筛选" /></template>
+        </a-input>
       </a-col>
       <a-divider />
       <a-col :span="24">
@@ -82,6 +88,8 @@ const props = defineProps({
 // 内部状态管理
 const defaultValue: Book[] = new Array().fill({});
 const curEditBookId = ref(0);
+const isFiltered = ref(false);
+const defaultAllBooks = ref<Book[]>([]);
 
 /**
  * renderData --实际的数据
@@ -129,6 +137,22 @@ function DeleteABook(bookid: number) {
   }).finally(() => {
     NProgress.done();
   });
+}
+
+function filterBookName(name: string) {
+  renderData.value = defaultAllBooks.value.filter(item => item.BookName.includes(name));
+}
+
+function toggleFilter() {
+  isFiltered.value = !isFiltered.value;
+
+  if (defaultAllBooks.value.length == 0) {
+    defaultAllBooks.value = renderData.value;
+  }
+
+  if (isFiltered.value == false) {
+    filterBookName("");
+  }
 }
 </script>
 
