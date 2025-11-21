@@ -55,7 +55,7 @@ const WORKPLACE: AppRouteRecordRaw = {
             requiresAuth: true,
             roles: ['*'],
           },
-        },
+        }
       ],
     },
     {
@@ -76,10 +76,22 @@ const WORKPLACE: AppRouteRecordRaw = {
       meta: {
         requiresAuth: true,
         hideInMenu: true,
-        activeMenu:"revise",
+        activeMenu: "revise",
         roles: ['*'],
       },
     },
+    {
+      path: 'suspiciouschars',
+      name: 'SuspiciousChars',
+      component: () => import('@/views/workplace/suspiciouschars.vue'),
+      meta: {
+        locale: '可疑字符分析',
+        requiresAuth: true,
+        hideInMenu: true,
+        activeMenu: "workplace",
+        roles: ['*'],
+      },
+    }
   ],
 };
 

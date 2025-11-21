@@ -14,7 +14,7 @@
                 <a-button-group type="primary">
                     <a-button shape="round" @click="showHiddenChapters(bookid ?? 0)"> 已隐藏章节 </a-button>
                     <a-button @click="checkDescriptions = true">查重</a-button>
-                    <a-button shape="round">来源管理</a-button>
+                    <a-button shape="round" status="warning">来源管理</a-button>
                 </a-button-group>
             </a-space>
             <a-space>

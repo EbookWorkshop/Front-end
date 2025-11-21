@@ -4,4 +4,5 @@ export default {
   'menu.workplace.correction.bookandrule': 'Book And Rule',
   'menu.workplace.correction.reviewbook': 'Review Book',
   'menu.workplace.revise': 'Revise',
+  'menu.workplace.suspiciouschars': 'Suspicious Chars',
 };

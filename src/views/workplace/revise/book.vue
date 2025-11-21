@@ -36,6 +36,7 @@
                     <a-doption @click="onSetChapter2Introduction(item.IndexId)">设为简介</a-doption>
                   </a-dgroup>
                   <a-dgroup title="---------☆---------">
+                    <a-doption @click="onSuspiciousCharsAnalysis(item.IndexId)">特殊字符分析</a-doption>
                     <a-doption @click="gotoChapter(item.IndexId, true)">阅读</a-doption>
                   </a-dgroup>
                 </template>
@@ -314,6 +315,24 @@ function moveToBottom(item: any) {
   }).catch(err => {
     console.log("修改排序出错", err);
   })
+}
+
+function onSuspiciousCharsAnalysis(chapterId?: number) {
+  if (!bookId) {
+    Message.error('未找到书籍信息');
+    return;
+  }
+  
+  // 构建URL参数
+  const params = new URLSearchParams();
+  params.append('bookId', bookId.toString());
+  
+  if (chapterId) {
+    params.append('chapterIds', chapterId.toString());
+  }
+  
+  // 在新标签页打开特殊字符分析页面
+  window.open(`/workplace/suspiciouschars?${params.toString()}`, '_blank');
 }
 
 </script>

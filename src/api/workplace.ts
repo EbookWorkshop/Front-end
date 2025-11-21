@@ -44,12 +44,23 @@ export function tryARule(id: number, chapterId: number) {
 }
 
 /**
+ * 校阅结果
+ */
+export interface ReviewResult {
+    id: number;
+    title: string;
+    content: string;
+    newText: string;
+    updateRsl: number;    //命中数量
+}
+
+/**
  * 在指定书中预览规则
  * @param setting 
  * @returns 
  */
 export function tryARuleOnBook(setting: any) {
-  return axios.post<HttpResponse<any>>(`/review/book/try`, setting);
+  return axios.post<HttpResponse<ReviewResult[]>>(`/review/book/try`, setting);
 }
 /**
  * 将校阅的设置保存到书中
@@ -57,7 +68,17 @@ export function tryARuleOnBook(setting: any) {
  * @returns 
  */
 export function saveReviewOnBook(setting: any) {
-  return axios.post<HttpResponse<any>>(`/review/book/save`, setting);
+  return axios.post<HttpResponse<ReviewResult[]>>(`/review/book/save`, setting);
+}
+
+/**
+ * 分析书籍中特殊字符
+ * @param bookid 书籍ID，必选
+ * @param chapterId 章节ID，可选
+ * @returns 
+ */
+export function querySuspiciousChars(bookid: number, chapterId: number[]) {
+  return axios.get<HttpResponse<any[]>>(`/review/book/suspiciouschars?bookid=${bookid}${chapterId.length > 0 ? `&chapterid=${chapterId.join(',')}` : ''}`);
 }
 
 /**
