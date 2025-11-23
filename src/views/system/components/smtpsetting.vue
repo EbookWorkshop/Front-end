@@ -16,7 +16,7 @@
           </a-form-item>
           <a-form-item>
             <a-button html-type="submit" status="success" type="primary">{{
-              $t('system.form.save')
+              $t('common.save')
             }}</a-button>
           </a-form-item>
         </a-form>

@@ -9,4 +9,6 @@ export default {
   'menu.workshop.webbook': 'Web Book Management',
 
   'workshop.mailto.send':"Send",
+  'workshop.import.file':"Import File",
+  'workshop.import.split':"Split Chapters",
 };

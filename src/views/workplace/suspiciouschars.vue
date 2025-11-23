@@ -31,7 +31,7 @@
         </div>
 
         <div v-else-if="resultList.length === 0" class="text-center py-10">
-          <a-empty description="已分析{{allResultCount}}章，没有符合情况的数据" />
+          <a-empty description="没有符合情况的数据" />
         </div>
 
         <template v-else>

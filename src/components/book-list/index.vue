@@ -31,12 +31,6 @@
                       </a-doption>
                     </a-dgroup>
                     <a-doption>
-                      <template #icon> <icon-delete /> </template>
-                      <template #default>
-                        <a-button type="text" status="danger" @click="DeleteABook(item.BookId)" long>删除书本</a-button>
-                      </template>
-                    </a-doption>
-                    <a-doption>
                       <template #icon> <icon-pen /> </template>
                       <template #default><a-button type="text" long
                           @click="curEditBookId = item.BookId">修改元数据</a-button></template>
@@ -44,7 +38,19 @@
                     <a-doption>
                       <template #icon> <icon-export /> </template>
                       <template #default>
-                        <a-button type="text" long @click="gotoExport(item.BookId)">导出</a-button>
+                        <a-button type="text" long @click="gotoExport(item.BookId)">{{ $t('menu.workshop.export') }}</a-button>
+                      </template>
+                    </a-doption>
+                    <a-doption>
+                      <template #icon> <icon-bar-chart /> </template>
+                      <template #default>
+                        <a-button type="primary" long status="warning" disabled>统计</a-button>
+                      </template>
+                    </a-doption>
+                    <a-doption>
+                      <template #icon> <icon-delete /> </template>
+                      <template #default>
+                        <a-button type="text" status="danger" @click="DeleteABook(item.BookId)" long>删除书本</a-button>
                       </template>
                     </a-doption>
                   </template>

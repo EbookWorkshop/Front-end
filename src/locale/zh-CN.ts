@@ -30,6 +30,7 @@ import locale500 from '@/views/exception/500/locale/zh-CN';
 // import localeUserInfo from '@/views/user/info/locale/zh-CN';
 // import localeUserSetting from '@/views/user/setting/locale/zh-CN';
 
+import localeCommon from './zh-CN/common';
 import localeSettings from './zh-CN/settings';
 
 export default {
@@ -62,6 +63,7 @@ export default {
   'menu.workplace': '图书工场',
   'menu.system': '系统设置',
 
+  ...localeCommon,
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,

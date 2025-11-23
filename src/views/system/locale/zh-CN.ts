@@ -7,5 +7,4 @@ export default {
   'menu.system.preferences': '偏好设置',
   'menu.system.usestate': '使用状态',
 
-  'system.form.save': '保存',
 };

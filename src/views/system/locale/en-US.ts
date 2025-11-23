@@ -7,5 +7,4 @@ export default {
   'menu.system.preferences': 'Preferences',
   'menu.system.usestate': 'Use State',
 
-  'system.form.save': 'Save',
 };

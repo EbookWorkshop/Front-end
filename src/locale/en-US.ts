@@ -4,8 +4,8 @@ import localeLogin from '@/views/login/locale/en-US';
 // import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 import localeLibrary from '@/views/library/locale/en-US';
 import localeWorkshop from '@/views/workshop/locale/en-US';
-import localeWorkplace from '@/views/workplace/locale/zh-CN';
-import localeSystem from '@/views/system/locale/zh-CN';
+import localeWorkplace from '@/views/workplace/locale/en-US';
+import localeSystem from '@/views/system/locale/en-US';
 // import localeMonitor from '@/views/dashboard/monitor/locale/en-US';
 
 // import localeSearchTable from '@/views/list/search-table/locale/en-US';
@@ -29,6 +29,7 @@ import locale500 from '@/views/exception/500/locale/en-US';
 // import localeUserInfo from '@/views/user/info/locale/en-US';
 // import localeUserSetting from '@/views/user/setting/locale/en-US';
 
+import localeCommon from './en-US/common';
 import localeSettings from './en-US/settings';
 
 export default {
@@ -61,6 +62,7 @@ export default {
   'menu.workplace': 'Workplace',
   'menu.system': 'System Setting',
 
+  ...localeCommon,
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,

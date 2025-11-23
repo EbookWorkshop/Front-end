@@ -5,10 +5,10 @@
       <a-card class="general-card">
         <div class="wrapper" style="margin-bottom: 90px;">
           <a-steps v-model:current="step" style="width: 100%" class="steps">
-            <a-step description="选择文件">导入文件</a-step>
-            <a-step description="设置分割规则">分割章节</a-step>
+            <a-step description="选择文件">{{ $t('workshop.import.file') }}</a-step>
+            <a-step description="设置分割规则">{{ $t('workshop.import.split') }}</a-step>
             <a-step description="检查章节分割情况">章节预览</a-step>
-            <a-step description="完善书籍信息并保存">保存</a-step>
+            <a-step description="完善书籍信息并保存">{{ $t('common.save') }}</a-step>
           </a-steps>
           <keep-alive>
             <Step1 v-if="step == 1" :status="fileStatus" @set-file="onSetFile" />

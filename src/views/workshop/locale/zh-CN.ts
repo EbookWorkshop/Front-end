@@ -9,4 +9,6 @@ export default {
   'menu.workshop.webbook': '网文管理',
   
   'workshop.mailto.send':"发送",
+  'workshop.import.file':"导入文件",
+  'workshop.import.split':"分割章节",
 };

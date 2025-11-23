@@ -85,7 +85,7 @@ const WORKPLACE: AppRouteRecordRaw = {
       name: 'SuspiciousChars',
       component: () => import('@/views/workplace/suspiciouschars.vue'),
       meta: {
-        locale: '可疑字符分析',
+        locale: 'menu.workplace.suspiciouschars',
         requiresAuth: true,
         hideInMenu: true,
         activeMenu: "workplace",
