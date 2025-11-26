@@ -5,13 +5,19 @@
       <BookInfo :loading="loading" :bookId="bookId" :BookName="renderData?.BookName" :convertImg="renderData?.CoverImg"
         :Author="renderData?.Author" :Introduction="renderData?.Introduction">
         <template #toolbar>
-          <Toolbar @EditChapterOrdering="onChangeOrdering" :bookid="bookId" :chapters="renderData?.Index ?? []">
+          <Toolbar 
+            @EditChapterOrdering="onChangeOrdering" 
+            @reload="reloadBook"
+            :bookid="bookId" 
+            :chapters="renderData?.Index ?? []" 
+            :volumes="renderData?.Volumes ?? []"
+          >
           </Toolbar>
         </template>
       </BookInfo>
       <a-divider />
       <keep-alive>
-        <ChapterList :loading="loading" :Chapters="renderData?.Index">
+        <ChapterList :loading="loading" :Chapters="renderData?.Index" :Volumes="renderData?.Volumes">
           <template #content="{ item }">
             <a-button-group v-if="!isOrdering" style="width: 100%;">
               <a-button long class="chapter" @click="onClickChapter(item.IndexId)" style="width: 100%;">

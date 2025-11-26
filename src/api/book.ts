@@ -147,7 +147,7 @@ export function queryAdjacentChapterInfo(cid: number) {
  * @param bookId 书ID
  * @returns 
  */
-export function queryDuplicatesChapter(bookId: number,threshold:number) {
+export function queryDuplicatesChapter(bookId: number, threshold: number) {
   return axios.get(`/library/book/duplicates?bookid=${bookId}&threshold=${threshold}`);
 }
 
@@ -159,6 +159,66 @@ export function queryDuplicatesChapter(bookId: number,threshold:number) {
  */
 export function queryPairedPunctuation(bookId: number, chapterIds: number[] | null) {
   return axios.get(`/library/book/pairedpunctuation?bookid=${bookId}${chapterIds ? `&chapterids=${JSON.stringify(chapterIds)}` : ''}`);
+}
+
+/**
+ * 添加卷
+ * @param bookId 
+ * @param volumeTitle 
+ * @param introduction 
+ * @returns 
+ */
+export function addVolume(bookId: number, volumeTitle: string, introduction: string) {
+  return axios.post<HttpResponse<number>>(`/library/book/volume`, {
+    bookId,
+    title: volumeTitle,
+    introduction: introduction
+  });
+}
+/**
+ * 编辑卷
+ * @param volumeId 
+ * @param volumeTitle 
+ * @param introduction 
+ * @returns 
+ */
+export function editVolume(volumeId: number, volumeTitle: string, introduction: string) {
+  return axios.put<HttpResponse<boolean>>(`/library/book/volume`, {
+    volumeId,
+    title: volumeTitle,
+    introduction: introduction
+  });
+}
+
+export function deleteVolume(volumeId: number) {
+  return axios.delete<HttpResponse<boolean>>(`/library/book/volume`, {
+    params: { volumeId }    //注意检查这个参数是否正确
+  });
+}
+
+/**
+ * 将章节移动到指定卷
+ * @param chapterId 章节ID
+ * @param volumeId 目标卷ID
+ * @returns 
+ */
+export function moveChapterToVolume(chapterId: number[], volumeId: number | null) {
+  return axios.post<HttpResponse<boolean>>(`/library/book/volume/movechapters`, {
+    chapterIds: chapterId,
+    volumeId
+  });
+}
+
+/**
+ * 从卷中移除章节
+ * @param chapterIds 章节ID列表
+ * @param volumeId 目标卷ID
+ * @returns 
+ */
+export function removeChapterFromVolume(chapterIds: number[]) {
+  return axios.post<HttpResponse<boolean>>(`/library/book/volume/removechapters`, {
+    chapterIds: chapterIds,
+  });
 }
 
 

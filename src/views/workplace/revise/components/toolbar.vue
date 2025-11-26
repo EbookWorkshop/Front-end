@@ -8,6 +8,7 @@
                         :status="isOrdering ? 'success' : 'normal'"> {{ isOrdering ? "保存并退出排序" : "章节排序" }} </a-button>
                     <a-button @click="isFormatTitle = true"> 标题格式化 </a-button>
                     <a-button @click="showHiddenChapters(bookid ?? 0)"> 已隐藏章节 </a-button>
+                    <a-button status="warning" @click="isVolumeSetting = true"> 分卷设置 </a-button>
                 </a-button-group>
             </a-space>
             <a-space>
@@ -26,17 +27,26 @@
     <Descriptions :bookId="bookid ?? 0" :show="checkDescriptions" @close="checkDescriptions = false" />
     <FormatTitle v-model:visible="isFormatTitle" :bookId="bookid ?? 0" :chapters="chapters" />
     <PairedPunctuation v-model:visible="isPairedPunctuation" :bookId="bookid ?? 0" />
+    <VolumeSetting 
+        v-model:visible="isVolumeSetting" 
+        :bookId="bookid ?? 0" 
+        :volumes="volumes" 
+        :chapters="chapters" 
+        @update="reloadBook"
+    />
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+// 导入所需的图标组件
 import EditBookInfo from '@/components/book-info/edit.vue';
 import Descriptions from '@/components/book-tool/duplicates.vue';
 import TagTool from '@/components/tag-toolbar/index.vue';
 import FormatTitle from './FormatTitle.vue';
 import PairedPunctuation from './PairedPunctuation.vue';
-import type { Chapter } from "@/types/book";
+import VolumeSetting from './VolumeSetting.vue';
+import type { Chapter, Volume } from "@/types/book";
 import useChapterHiddenHelper from "@/hooks/chapter-hidden";
 
 const router = useRouter();
@@ -45,10 +55,12 @@ const isEditBookInfo = ref(false);      //是否正在编辑书籍信息
 const checkDescriptions = ref(false);
 const isFormatTitle = ref(false);
 const isPairedPunctuation = ref(false);
+const isVolumeSetting = ref(false);
 
 const props = defineProps<{
     bookid: number | undefined;
     chapters: Array<Chapter>;
+    volumes: Array<Volume>;
 }>();
 
 
@@ -57,8 +69,12 @@ const isOrdering = ref(false);//是否正在排序
 
 
 //定义消息
-const emit = defineEmits(["EditChapterOrdering"]);
+const emit = defineEmits(["EditChapterOrdering", "reload"]);
 
+// 重新加载书籍数据
+const reloadBook = () => {
+  emit('reload');
+};
 
 const { showHiddenChapters } = useChapterHiddenHelper();
 

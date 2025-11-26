@@ -14,7 +14,7 @@
           </template>
         </BookInfo>
         <a-divider />
-        <ChapterList :loading="loading" :Chapters="renderData.Index">
+        <ChapterList :loading="loading" :Chapters="renderData.Index" :Volumes="renderData.Volumes">
           <template #content="{ item }">
             <a-button long @click="gotoChapter(item.IndexId)" :type="item.IsHasContent ? 'secondary' : 'secondary'"
               :disabled="!item.IsHasContent" :size="renderData.Index.length < 50 ? 'large' : 'medium'"

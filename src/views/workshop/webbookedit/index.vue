@@ -13,7 +13,7 @@
           </template>
         </BookInfo>
         <a-divider />
-        <ChapterList :loading="loading" :Chapters="bookData.Index">
+        <ChapterList :loading="loading" :Chapters="bookData.Index" :Volumes="bookData.Volumes">
           <template #content="{ item }">
             <ChapterOpt :chapter="item as WebChapter" @toggle="OnToggleChapter" :ref="chapterRefMap.get(item.IndexId)"
               @hide="onHideChapter(item.IndexId)" />

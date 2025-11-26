@@ -264,7 +264,7 @@ async function onSave() {
     if (!form.bookId || form.curRegex == '') {
         return;
     }
-
+    CleanView();
     isLoading.value = true;
     let result = await saveReviewOnBook({
         bookid: form.bookId,
@@ -275,7 +275,6 @@ async function onSave() {
         isLoading.value = false;
     });
     if (result.code != ApiResultCode.Success) return;
-    CleanView();
     saveResult.value = result.data;
     HeatABook(form.bookId);
 }
