@@ -13,10 +13,10 @@
             <!-- 使用Grid当GridItem超过101个会在控制台得到一个报错：Maximum recursive updates exceeded in component <Grid>. 所以改用Row -->
             <!-- 带卷的章节 -->
             <div v-else>
-                <div v-for="volume in Volumes" :key="volume.id">
+                <div v-for="volume in Volumes" :key="volume.VolumeId">
                     <h3 class="volume-title">{{ volume.Title }}</h3>
                     <a-row :gutter="[4, 4]" class="chapter-list"><!-- 不带卷的章节 -->
-                        <a-col v-for="item in Chapters.filter(chapter => chapter.VolumeId === volume.id)"
+                        <a-col v-for="item in Chapters.filter(chapter => chapter.VolumeId === volume.VolumeId)"
                             :key="item.IndexId" :xs="24" :sm="12" :md="8" :lg="6" :xl="5" :xxl="4">
                             <a-tooltip v-if="item.Title.length > 13" :content="item.Title">
                                 <slot name="content" :item="item"></slot>

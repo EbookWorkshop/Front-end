@@ -4,11 +4,10 @@
             <a-space>
                 <a-button-group type="primary">
                     <a-button @click="isEditBookInfo = true"> <icon-pen /> 元数据 </a-button>
-                    <a-button @click="() => { isOrdering = !isOrdering; emit('EditChapterOrdering', isOrdering); }"
-                        :status="isOrdering ? 'success' : 'normal'"> {{ isOrdering ? "保存并退出排序" : "章节排序" }} </a-button>
+                    <a-button @click="() => { isOrdering = !isOrdering; emit('EditChapterOrdering', isOrdering); }" :status="isOrdering ? 'success' : 'normal'"> {{ isOrdering ? "保存并退出排序" : "章节排序" }} </a-button>
                     <a-button @click="isFormatTitle = true"> 标题格式化 </a-button>
                     <a-button @click="showHiddenChapters(bookid ?? 0)"> 已隐藏章节 </a-button>
-                    <a-button status="warning" @click="isVolumeSetting = true"> 分卷设置 </a-button>
+                    <a-button @click="isVolumeSetting = true"> 分卷设置 </a-button>
                 </a-button-group>
             </a-space>
             <a-space>

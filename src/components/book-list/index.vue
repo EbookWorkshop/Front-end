@@ -38,7 +38,15 @@
                     <a-doption>
                       <template #icon> <icon-export /> </template>
                       <template #default>
-                        <a-button type="text" long @click="gotoExport(item.BookId)">{{ $t('menu.workshop.export') }}</a-button>
+                        <a-button type="text" long @click="gotoExport(item.BookId)">{{ $t('menu.workshop.export')
+                        }}</a-button>
+                      </template>
+                    </a-doption>
+                    <a-doption>
+                      <template #icon> <icon-eraser /> </template>
+                      <template #default>
+                        <a-button type="text" long @click="gotoRevise(item.BookId)">{{ $t('menu.workplace.revise')
+                        }}</a-button>
                       </template>
                     </a-doption>
                     <a-doption>
@@ -50,7 +58,8 @@
                     <a-doption>
                       <template #icon> <icon-delete /> </template>
                       <template #default>
-                        <a-button type="text" status="danger" @click="DeleteABook(item.BookId)" long>删除书本</a-button>
+                        <a-button type="text" status="danger" @click="DeleteABook(item.BookId, item.BookName)"
+                          long>删除书本</a-button>
                       </template>
                     </a-doption>
                   </template>
@@ -78,6 +87,7 @@ import TagTool from '../tag-toolbar/index.vue';
 import TagList from '../tag-toolbar/list.vue';
 import EditBookInfo from '../book-info/edit.vue';
 import NProgress from 'nprogress'; // progress bar
+import { Modal } from '@arco-design/web-vue';
 
 
 // 入参
@@ -118,6 +128,11 @@ const gotoExport = (bookid: number) => {
     path: `/workshop/export/exportguide/${bookid}`,
   });
 };
+const gotoRevise = (bookid: number) => {
+  router.push({
+    path: `/workplace/revise/book/${bookid}`,
+  });
+};
 
 function onUpdateMeta(form: any) {
   const curBook = renderData.value.find(item => item.BookId == form.id);
@@ -128,20 +143,29 @@ function onUpdateMeta(form: any) {
   }
 }
 
-function DeleteABook(bookid: number) {
+function DeleteABook(bookid: number, BookName: string) {
   // loading.value = true;
-  NProgress.start();
-  deleteABook(bookid).then((rsl) => {
-    for (let i = 0; i < renderData.value.length; i++) {
-      if (renderData.value[i].BookId == bookid) {
-        renderData.value.splice(i, 1);
-        return;
-      }
-    }
-  }).catch((err) => {
-    // Message.error(`删除失败：${err}`);
-  }).finally(() => {
-    NProgress.done();
+  Modal.warning({
+    title: '删除书籍',
+    content: `确定要删除书籍《${BookName}》吗？ `,
+    okText: '确认删除',
+    cancelText: '取消',
+    hideCancel: false,
+    onOk() {
+      NProgress.start();
+      deleteABook(bookid).then((rsl) => {
+        for (let i = 0; i < renderData.value.length; i++) {
+          if (renderData.value[i].BookId == bookid) {
+            renderData.value.splice(i, 1);
+            return;
+          }
+        }
+      }).catch((err) => {
+        // Message.error(`删除失败：${err}`);
+      }).finally(() => {
+        NProgress.done();
+      });
+    },
   });
 }
 

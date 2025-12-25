@@ -81,11 +81,11 @@
     </a-modal>
 
     <!-- 章节统计模态框 -->
-    <a-modal v-model:visible="statsVisible" title="章节统计信息" draggable unmount-on-close width="600px">
+    <a-modal v-model:visible="statsVisible" title="章节统计信息" draggable unmount-on-close width="600px" :fullscreen="chapterStats.chapterDetails.length>15">
       <div style="font-size: 14px; line-height: 1.8;">
         <h3 style="margin-bottom: 10px; color: var(--color-text-primary);">整体统计</h3>
         <div
-          style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--color-border);display: flex; justify-content: space-between;">
+          style="max-width:600px;margin-bottom: 20px; padding-bottom: 15px; display: flex; margin: 0 auto;">
           <div style="flex-grow: 2;">
             <div class="stats-row">
               <span class="stats-label">总章节数：</span>
@@ -120,9 +120,8 @@
           </div>
         </div>
 
-        <div>
+        <div style="border-top: 1px solid var(--color-border);">
           <h3 style="margin-bottom: 10px; color: var(--color-text-primary);">章节详情</h3>
-          <a-scrollbar style="max-height: 400px; overflow: auto;">
             <div class=""></div>
             <div v-for="(stats, index) in chapterStats.chapterDetails" :key="index" class="chapter-detail-item"
               :class="isTopFifth(sortedChapterDetails.indexOf(stats)) ? 'chapter-warning' : isBottomFifth(sortedChapterDetails.indexOf(stats)) ? 'chapter-danger' : ''">
@@ -133,7 +132,6 @@
                 <span>段落数：{{ stats.paragraphs }} </span>
               </div>
             </div>
-          </a-scrollbar>
         </div>
       </div>
       <template #footer>

@@ -35,8 +35,9 @@ export interface WebChapter extends Chapter {
  * 卷
  */
 export interface Volume {
-    id: number;
+    VolumeId: number;
     Title: string;
+    Introduction: string;
     BookId: number;
     OrderNum: number;
 }
