@@ -139,7 +139,7 @@ export function listHiddenChapters(bookid: number) {
  * @returns
  */
 export function queryAdjacentChapterInfo(cid: number) {
-  return axios.get(`/library/book/adjacentchapter?chapterid=${cid}`);
+  return axios.get(`/library/book/chapter/adjacent?chapterid=${cid}`);
 }
 
 /**
