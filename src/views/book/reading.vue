@@ -40,8 +40,6 @@ import useBookHelper from '@/hooks/book-helper';
 
 import { queryBookById } from '@/api/book';
 
-import { ref, nextTick } from 'vue';
-
 const { bookId, gotoChapter } = useBookHelper();
 const { loading, response: renderData } = useRequest<Book>(queryBookById.bind(null, bookId));
 

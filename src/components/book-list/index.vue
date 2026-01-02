@@ -52,7 +52,7 @@
                     <a-doption>
                       <template #icon> <icon-bar-chart /> </template>
                       <template #default>
-                        <a-button type="primary" long status="warning" disabled>统计</a-button>
+                        <a-button type="text" long @click="gotoAnalyticsText(item.BookId)">统计</a-button>
                       </template>
                     </a-doption>
                     <a-doption>
@@ -128,11 +128,25 @@ const gotoExport = (bookid: number) => {
     path: `/workshop/export/exportguide/${bookid}`,
   });
 };
+/**
+ * 跳转修改页面
+ * @param bookid 
+ */
 const gotoRevise = (bookid: number) => {
   router.push({
     path: `/workplace/revise/book/${bookid}`,
   });
 };
+/**
+ * 跳转统计分析页面
+ * @param bookid 
+ */
+const gotoAnalyticsText = (bookid: number) => {
+  router.push({
+    path: `/workplace/analytics/text/${bookid}`,
+  });
+};
+
 
 function onUpdateMeta(form: any) {
   const curBook = renderData.value.find(item => item.BookId == form.id);

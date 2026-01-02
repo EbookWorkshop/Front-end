@@ -116,3 +116,12 @@ export function updateReviewRuleForBook(setting: any) {
 export function deleteReviewRuleForBook(id: number) {
   return axios.delete(`/review/bookwithrule?id=${id}`);
 }
+
+/**
+ * 书籍统计分析
+ * @param bookId 
+ * @returns 
+ */
+export function queryBookAnalyticsText(bookId: number) {
+  return axios.get(`/library/book/analytics/text?bookid=${bookId}`);
+}
