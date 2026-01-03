@@ -4,14 +4,14 @@ export function getSystemVersion() {
   return axios.get('/services/version');
 }
 
-/**
- * 检查站点是否可以访问
- * @param host 
- * @returns 
- */
-export function checkSiteAccessibility(host: string) {
-  return axios.get(`/services/checkSiteAccessibility?host=${host}`);
-}
+// /**
+//  * 检查站点是否可以访问
+//  * @param host 
+//  * @returns 
+//  */
+// export function checkSiteAccessibility(host: string) {
+//   return axios.get(`/services/checkSiteAccessibility?host=${host}`);
+// }
 
 /**
  * 保存发邮箱信息

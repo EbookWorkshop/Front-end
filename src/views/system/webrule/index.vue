@@ -1,9 +1,9 @@
 <template>
-  <div ref="containerRef" class="container">
+  <div class="container">
     <Breadcrumb :items="['menu.system', 'menu.system.webrule']" />
     <div class="wrapper">
       <a-spin dot :loading="dataLoading">
-        <a-form ref="formRef" :model="form" @submit="Submit">
+        <a-form :model="form" @submit="Submit">
           <a-row :gutter="16">
             <a-col :span="20" :offset="2">
               <a-space>
@@ -11,7 +11,7 @@
                   <a-button type="primary" @click="resetForm">新增新方案</a-button>
                   <a-button type="primary" @click="showWebList">编辑现有方案</a-button>
                 </a-button-group>
-                <a-button @click="CheckSiteAccessibility">检查站点存活情况</a-button>
+                <a-button @click="GoToRegisteredWebsites">已登记网站</a-button>
                 <a-button-group>
                   <a-button type="primary" status="success" html-type="submit"
                     :disabled="form.hostname.length == 0">保存当前方案</a-button>
@@ -129,20 +129,6 @@
             </a-form-item>
           </a-form>
         </a-modal>
-        <a-modal v-model:visible="isTableModalVisible" title="站点存活情况检查结果" draggable unmount-on-close>
-          <a-table :data="siteAccessibilityData">
-            <template #columns>
-              <a-table-column title="站点" data-index="hostName"></a-table-column>
-              <a-table-column title="返回状态" data-index="statusCode"></a-table-column>
-              <a-table-column title="是否可访问">
-                <template #cell="{ record }">
-                  <a-spin v-if="record.siteAccessibility === '检查中'" />
-                  <a-alert v-else :type="record.siteAccessibility === '成功' ? 'success' : 'error'"></a-alert>
-                </template>
-              </a-table-column>
-            </template>
-          </a-table>
-        </a-modal>
       </a-spin>
     </div>
     <WebList ref="myWebList" @set-form="setFormWithSetting"></WebList>
@@ -150,11 +136,9 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, computed, watch, h } from 'vue';
+import { reactive, ref, computed, h } from 'vue';
 import { ApiResultCode } from '@/types/global';
-import { checkSiteAccessibility } from '@/api/system';
 import {
-  queryHostList,
   saveHostSetting,
   deleteHostSetting,
   visRuleSetting,
@@ -164,7 +148,6 @@ import {
 import { FileItem, Message, Modal } from '@arco-design/web-vue';
 import WebList from './components/web-list.vue';
 import { rulesOptions } from './data';  // 规则类型选项
-import useRequest from '@/hooks/request';
 
 import SelectAction from './components/SelectAction.vue';
 
@@ -176,8 +159,6 @@ const isUseVisStatus = computed(() =>
   isUseVisModel.value ? 'warning' : 'normal'
 );
 const dataLoading = ref(false);
-const isTableModalVisible = ref(false);
-
 
 // 绑定数据的规则配置表单
 const form = reactive({
@@ -204,7 +185,7 @@ const showWebList = () => {
   myWebList.value.show();
 };
 
-const siteAccessibilityData = ref<any[]>([]);      // 站点存活情况数据
+// const siteAccessibilityData = ref<any[]>([]);      // 站点存活情况数据
 
 /**
  * 根据规则值-找到对应的规则显示名称
@@ -368,40 +349,12 @@ function onSetVisUrl() {
 }
 
 /**
- * 检查站点存活情况
+ * 已登记网站
  */
-async function CheckSiteAccessibility() {
-  isTableModalVisible.value = true;
-  const { response: hostList } = useRequest<string[]>(queryHostList);
-  watch(hostList, (newVal /*, oldVal*/) => {
-    siteAccessibilityData.value = [];
-    for (const host of newVal) {
-      siteAccessibilityData.value.push({
-        hostName: host,
-        siteAccessibility: '检查中',
-        statusCode: '',
-      });
-
-      checkSiteAccessibility(host)
-        .then((res: any) => {
-          let isOK = res.data;
-          const index = siteAccessibilityData.value.findIndex(
-            (item) => item.hostName === host
-          );
-          siteAccessibilityData.value[index].siteAccessibility = isOK ? '成功' : '失败';
-          siteAccessibilityData.value[index].statusCode = res.status;
-
-        })
-        .catch((err) => {
-          const index = siteAccessibilityData.value.findIndex(
-            (item) => item.hostName === host
-          );
-          siteAccessibilityData.value[index].siteAccessibility = '失败';
-          console.log(err);
-        });
-    }
-  });
-
+async function GoToRegisteredWebsites() {
+  // 打开 websiteregistry 页面到新窗口
+  const path = '/system/webrule/websiteregistry';
+  window.open(`${path}`, '_blank');
 }
 
 /**
