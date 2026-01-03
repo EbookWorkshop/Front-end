@@ -24,6 +24,15 @@ export function queryHostList() {
   return axios.get(`/services/botrule/hostlist`);
 }
 
+/**
+ * 已登记的网站列表
+ * @returns
+ */
+export function queryRegisteredWebsites() {
+  return axios.get(`/services/botrule/registeredwebsites`);
+}
+
+
 export function queryHostSetting(host: string) {
   return axios.get(`/services/botrule?host=${host}`);
 }
