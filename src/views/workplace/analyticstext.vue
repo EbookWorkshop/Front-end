@@ -29,7 +29,8 @@
           <!-- 章节详细列表（Card 布局） -->
           <a-divider>章节详情</a-divider>
           <a-row :gutter="16" style="margin-top: 12px;">
-            <a-col v-for="chapter in chapters" :key="chapter.chapterId" :xs="24" :sm="12" :md="8" :lg="6" :xl="6" :xxl="4">
+            <a-col v-for="chapter in chapters" :key="chapter.chapterId" :xs="24" :sm="12" :md="8" :lg="6" :xl="6"
+              :xxl="4">
               <a-card size="small" :class="['chapter-card', chapter.bgClass]" :title="chapter.chapterTitle">
                 <div class="card-body">
                   <div class="card-row">
@@ -62,6 +63,7 @@ import { computed } from 'vue';
 import { queryBookAnalyticsText } from "@/api/workplace";
 import useBookHelper from '@/hooks/book-helper';
 import useRequest from '@/hooks/request';
+import { mean, standardDeviation } from '@/utils/math';
 
 // 定义数据结构类型
 interface AnalyticsData {
@@ -82,6 +84,7 @@ interface ChapterAnalytics {
   paragraphs: number;
   words: number;
   readingTime: string;
+  bgClass?: string;
 }
 
 // 响应式数据
@@ -98,7 +101,7 @@ const openChapterInNewTab = (chapterId: number) => {
 // 基于正态分布（均值与标准差）标注过短（红色）或过长（黄色）的章节
 const Z_THRESHOLD = 1; // z <= -1 视为过短，z >= 1 视为过长，可按需调整
 
-const chapters = computed(() => {
+const chapters = computed(() => {//computed会检测到所有Ref和Reactive的变化，从而重新计算
   const data = analyticsData.value as AnalyticsData | null;
   if (!data || !data.chapters || data.chapters.length === 0) return [] as (ChapterAnalytics & { bgClass?: string })[];
 
@@ -106,9 +109,8 @@ const chapters = computed(() => {
   const wordsArr = arr.map(c => Number(c.words) || 0);
   const n = wordsArr.length;
   if (n === 0) return arr;
-  const mean = wordsArr.reduce((s, v) => s + v, 0) / n;// 平均长度
-  const variance = wordsArr.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / n;// 平均平方差、总体方差
-  const std = Math.sqrt(variance);// 标准差
+  const m = mean(wordsArr); //平均每章的字数
+  const std = standardDeviation(wordsArr, m);
 
   if (std === 0) {
     return arr.map(c => ({ ...c, bgClass: '' }));
@@ -116,7 +118,7 @@ const chapters = computed(() => {
 
   return arr.map(c => {
     const w = Number(c.words) || 0;
-    const z = (w - mean) / std; //当前字数对比平均值的差，与标准差比
+    const z = (w - m) / std; //当前字数对比平均值的差，与标准差比
     let bgClass = '';
     if (z <= -Z_THRESHOLD) bgClass = 'chapter-short';
     else if (z >= Z_THRESHOLD) bgClass = 'chapter-long';
@@ -141,6 +143,7 @@ const chapters = computed(() => {
 .mb-6 {
   margin-bottom: 24px;
 }
+
 .py-10 {
   padding: 40px 0;
 }
@@ -173,6 +176,7 @@ const chapters = computed(() => {
   background: #fff1f0 !important;
   border-color: #ffa39e !important;
 }
+
 .chapter-long {
   background: #fffbe6 !important;
   border-color: #ffe58f !important;
