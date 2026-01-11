@@ -18,10 +18,10 @@
       <a-divider />
       <keep-alive>
         <ChapterList :loading="loading" :Chapters="renderData?.Index" :Volumes="renderData?.Volumes">
-          <template #content="{ item }">
+          <template #chapter="{ chapter }">
             <a-button-group v-if="!isOrdering" style="width: 100%;">
-              <a-button long class="chapter" @click="onClickChapter(item.IndexId)" style="width: 100%;">
-                {{ item.Title }}
+              <a-button long class="chapter" @click="onClickChapter(chapter.IndexId)" style="width: 100%;">
+                {{ chapter.Title }}
               </a-button>
               <a-dropdown trigger="click" position="br" :popup-max-height="false">
                 <a-button>
@@ -31,28 +31,28 @@
                 </a-button>
                 <template #content>
                   <a-dgroup title="---------重组---------">
-                    <a-doption @click="onClickSplit(item.IndexId)">分割章节</a-doption>
-                    <a-doption @click="onMargeChapter(item.IndexId)">合并当前和下一章</a-doption>
+                    <a-doption @click="onClickSplit(chapter.IndexId)">分割章节</a-doption>
+                    <a-doption @click="onMargeChapter(chapter.IndexId)">合并当前和下一章</a-doption>
                   </a-dgroup>
                   <a-dgroup title="---------舍弃---------">
-                    <a-doption @click="onDeleteChapter(item.IndexId)" style="color: red;">删除章节</a-doption>
-                    <a-doption @click="onToggleHideChapter(item.IndexId)">隐藏章节</a-doption>
+                    <a-doption @click="onDeleteChapter(chapter.IndexId)" style="color: red;">删除章节</a-doption>
+                    <a-doption @click="onToggleHideChapter(chapter.IndexId)">隐藏章节</a-doption>
                   </a-dgroup>
                   <a-dgroup title="---------转换---------">
-                    <a-doption @click="onSetChapter2Introduction(item.IndexId)">设为简介</a-doption>
+                    <a-doption @click="onSetChapter2Introduction(chapter.IndexId)">设为简介</a-doption>
                   </a-dgroup>
                   <a-dgroup title="---------☆---------">
-                    <a-doption @click="onSuspiciousCharsAnalysis(item.IndexId)">特殊字符分析</a-doption>
-                    <a-doption @click="gotoChapter(item.IndexId, true)">阅读</a-doption>
+                    <a-doption @click="onSuspiciousCharsAnalysis(chapter.IndexId)">特殊字符分析</a-doption>
+                    <a-doption @click="gotoChapter(chapter.IndexId, true)">阅读</a-doption>
                   </a-dgroup>
                 </template>
               </a-dropdown>
             </a-button-group>
             <a-dropdown v-else trigger="contextMenu" alignPoint :style="{ display: 'block' }">
-              <a-button long class="chapter">{{ item.Title }}</a-button>
+              <a-button long class="chapter">{{ chapter.Title }}</a-button>
               <template #content>
-                <a-doption @click="moveToTop(item)">移至开头</a-doption>
-                <a-doption @click="moveToBottom(item)">移至结尾</a-doption>
+                <a-doption @click="moveToTop(chapter)">移至开头</a-doption>
+                <a-doption @click="moveToBottom(chapter)">移至结尾</a-doption>
               </template>
             </a-dropdown>
           </template>

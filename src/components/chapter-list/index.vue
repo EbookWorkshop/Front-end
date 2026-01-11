@@ -11,32 +11,31 @@
             </a-row>
 
             <!-- 使用Grid当GridItem超过101个会在控制台得到一个报错：Maximum recursive updates exceeded in component <Grid>. 所以改用Row -->
-            <!-- 带卷的章节 -->
             <div v-else>
+                <!-- 带卷的章节 -->
                 <div v-for="volume in Volumes" :key="volume.VolumeId">
-                    <h3 class="volume-title">{{ volume.Title }}</h3>
-                    <a-row :gutter="[4, 4]" class="chapter-list"><!-- 不带卷的章节 -->
-                        <a-col v-for="item in Chapters.filter(chapter => chapter.VolumeId === volume.VolumeId)"
-                            :key="item.IndexId" :xs="24" :sm="12" :md="8" :lg="6" :xl="5" :xxl="4">
-                            <a-tooltip v-if="item.Title.length > 13" :content="item.Title">
-                                <slot name="content" :item="item"></slot>
-                            </a-tooltip>
-                            <slot v-else name="content" :item="item"></slot>
-                        </a-col>
-                    </a-row>
+                    <VolumeBlock :volume="volume"
+                        :Chapters="Chapters.filter(chapter => chapter.VolumeId === volume.VolumeId)"
+                        :columnProps="columnProps">
+                        <template #chapter="{ chapter }">
+                            <slot name="chapter" :chapter="chapter"></slot>
+                        </template>
+                        <template #addChapterTool>
+                            <slot name="addChapterTool"></slot>
+                        </template>
+                    </VolumeBlock>
                 </div>
-                <a-row :gutter="[4, 4]" class="chapter-list"><!-- 不带卷的章节 -->
-                    <a-col v-for="item in Chapters.filter(chapter => !chapter.VolumeId)" :key="item.IndexId" :xs="24"
-                        :sm="12" :md="8" :lg="6" :xl="5" :xxl="4">
-                        <a-tooltip v-if="item.Title.length > 13" :content="item.Title">
-                            <slot name="content" :item="item"></slot>
-                        </a-tooltip>
-                        <slot v-else name="content" :item="item"></slot>
-                    </a-col>
-                    <a-col :xs="24" :sm="12" :md="8" :lg="6" :xl="5" :xxl="4">
-                        <slot name="addChapterTool"></slot>
-                    </a-col>
-                </a-row>
+                <!-- 不带卷的章节 -->
+                <div v-if="ChaptersNotInVolume.length > 0">
+                    <VolumeBlock :volume="null" :Chapters="ChaptersNotInVolume" :columnProps="columnProps">
+                        <template #chapter="{ chapter }">
+                            <slot name="chapter" :chapter="chapter"></slot>
+                        </template>
+                        <template #addChapterTool>
+                            <slot name="addChapterTool"></slot>
+                        </template>
+                    </VolumeBlock>
+                </div>
             </div>
         </a-col>
     </a-row>
@@ -44,8 +43,10 @@
 </template>
 <script lang="ts" setup>
 import type { PropType } from "vue";
-//类型引入
+import { computed } from "vue";
+import { mean } from '@/utils/math';
 import { Chapter, WebChapter, Volume } from '@/types/book';
+import VolumeBlock from "./volume-block.vue";
 
 const props = defineProps({
     loading: {
@@ -63,6 +64,30 @@ const props = defineProps({
     },
 });
 
+const columnProps = computed(() => {
+    let avgTitleLength = mean(props.Chapters.map(c => c.Title.length));
+    if (avgTitleLength >= 16) {
+        return {
+            xs: 24,
+            sm: 24,
+            md: 24,
+            lg: 24,
+            xl: 12,
+            xxl: 6,
+        };
+    }
+
+    return {
+        xs: 24,
+        sm: 12,
+        md: 8,
+        lg: 6,
+        xl: 5,
+        xxl: 4
+    };
+});
+
+const ChaptersNotInVolume = computed(() => props.Chapters.filter(chapter => !chapter.VolumeId));
 </script>
 <style lang="less" scoped>
 .volume-title {

@@ -15,11 +15,11 @@
         </BookInfo>
         <a-divider />
         <ChapterList :loading="loading" :Chapters="renderData.Index" :Volumes="renderData.Volumes">
-          <template #content="{ item }">
-            <a-button long @click="gotoChapter(item.IndexId)" :type="item.IsHasContent ? 'secondary' : 'secondary'"
-              :disabled="!item.IsHasContent" :size="renderData.Index.length < 50 ? 'large' : 'medium'"
+          <template #chapter="{ chapter }">
+            <a-button long @click="gotoChapter(chapter.IndexId)" :type="chapter.IsHasContent ? 'secondary' : 'secondary'"
+              :disabled="!chapter.IsHasContent" :size="renderData.Index.length < 50 ? 'large' : 'medium'"
               class="chapterBar">
-              {{ item.Title }}
+              {{ chapter.Title }}
             </a-button>
           </template>
         </ChapterList>

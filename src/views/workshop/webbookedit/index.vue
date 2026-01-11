@@ -14,9 +14,9 @@
         </BookInfo>
         <a-divider />
         <ChapterList :loading="loading" :Chapters="bookData.Index" :Volumes="bookData.Volumes">
-          <template #content="{ item }">
-            <ChapterOpt :chapter="item as WebChapter" @toggle="OnToggleChapter" :ref="chapterRefMap.get(item.IndexId)"
-              @hide="onHideChapter(item.IndexId)" />
+          <template #chapter="{ chapter }">
+            <ChapterOpt :chapter="chapter as WebChapter" @toggle="OnToggleChapter" :ref="chapterRefMap.get(chapter.IndexId)"
+              @hide="onHideChapter(chapter.IndexId)" />
           </template>
         </ChapterList>
       </a-spin>

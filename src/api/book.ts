@@ -94,7 +94,7 @@ export function deleteChapter(chapterid: number) {
  * @returns
  */
 export function updateChapterOrder(chapterOrderList: Array<ChapterOrderSetting>) {
-  return axios.patch('/library/book/chapterOrder', chapterOrderList);
+  return axios.patch('/library/book/chapter/order', chapterOrderList);
 }
 
 /**
