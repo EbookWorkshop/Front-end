@@ -8,7 +8,7 @@
             <slot v-else name="chapter" :chapter="item"></slot>
         </a-col>
         <a-col v-bind="columnProps">
-            <slot name="addChapterTool"></slot>
+            <slot name="addChapterTool" :volumeId="volume?.VolumeId"></slot>
         </a-col>
     </a-row>
 </template>

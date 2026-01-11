@@ -5,13 +5,8 @@
       <BookInfo :loading="loading" :bookId="bookId" :BookName="renderData?.BookName" :convertImg="renderData?.CoverImg"
         :Author="renderData?.Author" :Introduction="renderData?.Introduction">
         <template #toolbar>
-          <Toolbar 
-            @EditChapterOrdering="onChangeOrdering" 
-            @reload="reloadBook"
-            :bookid="bookId" 
-            :chapters="renderData?.Index ?? []" 
-            :volumes="renderData?.Volumes ?? []"
-          >
+          <Toolbar @EditChapterOrdering="onChangeOrdering" @reload="reloadBook" :bookid="bookId"
+            :chapters="renderData?.Index ?? []" :volumes="renderData?.Volumes ?? []">
           </Toolbar>
         </template>
       </BookInfo>
@@ -56,8 +51,8 @@
               </template>
             </a-dropdown>
           </template>
-          <template #addChapterTool>
-            <a-button v-if="!isOrdering" long class="chapter" type="outline" @click="onClickChapter(-1)">
+          <template #addChapterTool="{ volumeId }">
+            <a-button v-if="!isOrdering" long class="chapter" type="outline" @click="onClickChapter(-1, volumeId)">
               <template #icon>
                 <icon-plus />
               </template>
@@ -67,7 +62,7 @@
         </ChapterList>
       </keep-alive>
 
-      <ChapterEdit :isShow="isEdit" :bookId="bookId" :chapterId="curChapId" :toMergeChapterId="toMergeChapterId"
+      <ChapterEdit :isShow="isEdit" :bookId="bookId" :chapterId="curChapId" :volumeId="curVolumeId" :toMergeChapterId="toMergeChapterId"
         @close="isEdit = false" @reload="reloadBook" />
       <SplitTool v-model:model-value="isSplit" :id="splitId" :bookId="bookId" />
     </div>
@@ -117,6 +112,7 @@ nextTick(() => {
 });
 
 const curChapId = ref(0); //要修改的章节
+const curVolumeId = ref(0); //要修改章节所属卷ID
 const isEdit = ref(false);
 const isSplit = ref(false);
 const splitId = ref(0); // 新增响应式变量存储当前分割章节ID
@@ -128,8 +124,9 @@ const orderList = [] as Array<any>;
  * 点击章节列表-打开修改章节
  * @param cid 修改的章节ID，如果是-1则为新增章节
  */
-const onClickChapter = (cid: number) => {
+const onClickChapter = (cid: number, volumeId?: number) => {
   curChapId.value = cid;
+  curVolumeId.value = volumeId ?? -1;
   isEdit.value = true;
   toMergeChapterId.value = 0;
 }
@@ -328,15 +325,15 @@ function onSuspiciousCharsAnalysis(chapterId?: number) {
     Message.error('未找到书籍信息');
     return;
   }
-  
+
   // 构建URL参数
   const params = new URLSearchParams();
   params.append('bookId', bookId.toString());
-  
+
   if (chapterId) {
     params.append('chapterIds', chapterId.toString());
   }
-  
+
   // 在新标签页打开特殊字符分析页面
   window.open(`/workplace/suspiciouschars?${params.toString()}`, '_blank');
 }
