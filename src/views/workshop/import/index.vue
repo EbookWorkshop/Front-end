@@ -40,7 +40,7 @@ import { Message } from '@arco-design/web-vue';
 import BookClassical from '@/components/book-cover/components/book-classical.vue';
 import { addANewWebBook } from '@/api/book';
 import ImportWeb from './components/import-web.vue';
-import ImportText from './components/import-text.vue';
+import ImportText from '@/components/import-text-guid/index.vue';
 import AddDirect from './components/add-direct.vue';
 
 const isShow = ref(false);
