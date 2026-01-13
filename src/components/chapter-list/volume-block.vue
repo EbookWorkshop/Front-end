@@ -2,7 +2,7 @@
     <h3 class="volume-title" v-if="volume != null">
         {{ volume.Title }}
         <a-tooltip v-if="volume.Introduction" :content="volume.Introduction">
-            <icon-archive style="font-size:1.2em"/>
+            <icon-archive style="font-size:1.2em" />
         </a-tooltip>
     </h3>
 
@@ -13,9 +13,7 @@
             </a-tooltip>
             <slot v-else name="chapter" :chapter="item"></slot>
         </a-col>
-        <a-col v-bind="columnProps">
-            <slot name="addChapterTool" :volumeId="volume?.VolumeId"></slot>
-        </a-col>
+        <slot name="addChapterTool" :volumeId="volume?.VolumeId" :columnSetting="columnProps"></slot>
     </a-row>
 </template>
 

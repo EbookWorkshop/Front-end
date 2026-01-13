@@ -20,8 +20,8 @@
                         <template #chapter="{ chapter }">
                             <slot name="chapter" :chapter="chapter"></slot>
                         </template>
-                        <template #addChapterTool="{ volumeId }">
-                            <slot name="addChapterTool" :volumeId="volumeId"></slot>
+                        <template #addChapterTool="{ volumeId,columnSetting:columnProps}">
+                            <slot name="addChapterTool" :volumeId="volumeId" :columnSetting="columnProps"></slot>
                         </template>
                     </VolumeBlock>
                 </div>
@@ -31,8 +31,8 @@
                         <template #chapter="{ chapter }">
                             <slot name="chapter" :chapter="chapter"></slot>
                         </template>
-                        <template #addChapterTool="{ volumeId }">
-                            <slot name="addChapterTool" :volumeId="volumeId"></slot>
+                        <template #addChapterTool="{ volumeId,columnSetting:columnProps }">
+                            <slot name="addChapterTool" :volumeId="volumeId" :columnSetting="columnProps"></slot>
                         </template>
                     </VolumeBlock>
                 </div>

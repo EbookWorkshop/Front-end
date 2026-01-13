@@ -51,19 +51,29 @@
               </template>
             </a-dropdown>
           </template>
-          <template #addChapterTool="{ volumeId }">
-            <a-button v-if="!isOrdering" long class="chapter" type="outline" @click="onClickChapter(-1, volumeId)">
-              <template #icon>
-                <icon-plus />
-              </template>
-              添加一章
-            </a-button>
+          <template #addChapterTool="{ volumeId, columnSetting }">
+            <a-col v-bind="columnSetting">
+              <a-button v-if="!isOrdering" long class="chapter" type="outline" @click="onClickChapter(-1, volumeId)">
+                <template #icon>
+                  <icon-plus />
+                </template>
+                添加一章
+              </a-button>
+            </a-col>
+            <a-col v-bind="columnSetting">
+              <a-button v-if="!isOrdering" long class="chapter" type="outline" @click="onClickChapter(-1, volumeId)">
+                <template #icon>
+                  <icon-import />
+                </template>
+                导入章节
+              </a-button>
+            </a-col>
           </template>
         </ChapterList>
       </keep-alive>
 
-      <ChapterEdit :isShow="isEdit" :bookId="bookId" :chapterId="curChapId" :volumeId="curVolumeId" :toMergeChapterId="toMergeChapterId"
-        @close="isEdit = false" @reload="reloadBook" />
+      <ChapterEdit :isShow="isEdit" :bookId="bookId" :chapterId="curChapId" :volumeId="curVolumeId"
+        :toMergeChapterId="toMergeChapterId" @close="isEdit = false" @reload="reloadBook" />
       <SplitTool v-model:model-value="isSplit" :id="splitId" :bookId="bookId" />
     </div>
   </div>
