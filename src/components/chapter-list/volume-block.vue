@@ -1,5 +1,11 @@
 <template>
-    <h3 class="volume-title" v-if="volume != null">{{ volume.Title }}</h3>
+    <h3 class="volume-title" v-if="volume != null">
+        {{ volume.Title }}
+        <a-tooltip v-if="volume.Introduction" :content="volume.Introduction">
+            <icon-archive style="font-size:1.2em"/>
+        </a-tooltip>
+    </h3>
+
     <a-row :gutter="[4, 4]" class="chapter-list"><!-- 不带卷的章节 -->
         <a-col v-for="item in Chapters" :key="item.IndexId" v-bind="columnProps">
             <a-tooltip v-if="item.Title.length > 13" :content="item.Title">
