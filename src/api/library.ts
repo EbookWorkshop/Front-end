@@ -44,6 +44,15 @@ export function addABook(book: any) {
 }
 
 /**
+ * 追加章节到已有书中
+ * @param book 
+ * @returns 
+ */
+export function addToBook(book:any){
+  return axios.patch(`/library/book`, book);
+}
+
+/**
  * 搜索书库
  * @param setting 
  * @returns 

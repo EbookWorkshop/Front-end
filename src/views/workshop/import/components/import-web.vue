@@ -6,8 +6,8 @@
     unmount-on-close
   >
     <a-form :model="form">
-      <a-form-item field="indexUrl" label="网址">
-        <a-textarea v-model="form.indexUrl" />
+      <a-form-item field="indexUrl" label="网址" required>
+        <a-textarea v-model="form.indexUrl" placeholder="例如: https://example.com/book/123" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -25,6 +25,10 @@
       });
 
       const handleBeforeOk = (done: any) => {
+        if(form.indexUrl.trim() === ''){
+          done(false);
+          return;
+        }
         ctx.emit('check', form.indexUrl);
         done(false);
       };

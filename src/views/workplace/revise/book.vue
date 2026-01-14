@@ -51,7 +51,7 @@
               </template>
             </a-dropdown>
           </template>
-          <template #addChapterTool="{ volumeId, columnSetting }">
+          <template #addChapterTool="{ volumeId,volumeTitle, columnSetting }">
             <a-col v-bind="columnSetting">
               <a-button v-if="!isOrdering" long class="chapter" type="outline" @click="onClickChapter(-1, volumeId)">
                 <template #icon>
@@ -61,7 +61,7 @@
               </a-button>
             </a-col>
             <a-col v-bind="columnSetting">
-              <a-button v-if="!isOrdering" long class="chapter" type="outline" @click="onClickChapter(-1, volumeId)">
+              <a-button v-if="!isOrdering" long class="chapter" type="outline" @click="handleImportText(volumeId,volumeTitle)">
                 <template #icon>
                   <icon-import />
                 </template>
@@ -75,6 +75,9 @@
       <ChapterEdit :isShow="isEdit" :bookId="bookId" :chapterId="curChapId" :volumeId="curVolumeId"
         :toMergeChapterId="toMergeChapterId" @close="isEdit = false" @reload="reloadBook" />
       <SplitTool v-model:model-value="isSplit" :id="splitId" :bookId="bookId" />
+
+      <ImportText ref="textImportModal" :bookId="bookId" :bookName="renderData?.BookName" :volumeId="curVolumeId" :volumeTitle="curVolumeTitle"></ImportText>
+
     </div>
   </div>
 </template>
@@ -98,6 +101,7 @@ import { Message, } from '@arco-design/web-vue';
 import BookInfo from "@/components/book-info/index.vue";
 import ChapterList from '@/components/chapter-list/index.vue';
 import ChapterEdit from "@/components/chapter/edit.vue";
+import ImportText from '@/components/import-text-guid/index.vue';
 import Toolbar from "./components/toolbar.vue";
 import SplitTool from "./components/SplitTool.vue";
 
@@ -111,6 +115,7 @@ const loading = ref(true);
 const renderData = ref<Book | null>(null);//完整的 - 书本信息
 let maxOrderNum = 0;    //最大章节序号
 let toMergeChapterId = ref(0);  //合并章节时用-合并删除的章节
+const textImportModal = ref() as any;
 
 nextTick(() => {
   loading.value = true;
@@ -123,12 +128,22 @@ nextTick(() => {
 
 const curChapId = ref(0); //要修改的章节
 const curVolumeId = ref(0); //要修改章节所属卷ID
+const curVolumeTitle = ref(''); //要修改章节所属卷标题
 const isEdit = ref(false);
 const isSplit = ref(false);
 const splitId = ref(0); // 新增响应式变量存储当前分割章节ID
 const isOrdering = ref(false);
 let sortChapterList = null as any;
 const orderList = [] as Array<any>;
+
+/**
+ * 点击导入章节-打开导入章节窗口
+ */
+const handleImportText = (volumeId?: number,volumeTitle?: string) => {
+  curVolumeId.value = volumeId ?? -1;
+  curVolumeTitle.value = volumeTitle ?? '';
+  textImportModal?.value.show();
+};
 
 /**
  * 点击章节列表-打开修改章节

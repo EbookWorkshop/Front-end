@@ -1,6 +1,9 @@
 <template>
   <a-modal :visible="myVisible" fullscreen cancel-text="退出" unmount-on-close :footer="false" @cancel="handleCancel">
     <template #title> 导入向导 </template>
+    <a-alert v-if="bookId !== -1" type="warning">注意：当前导入的内容将追加到原有书籍《{{ bookName }}》中{{ volumeId ?
+      `，在卷“${volumeTitle}”的最后。`
+      : '' }}</a-alert>
     <a-spin :loading="loading" style="width: 100%">
       <a-card class="general-card">
         <div class="wrapper" style="margin-bottom: 90px;">
@@ -8,13 +11,25 @@
             <a-step description="选择文件">{{ $t('workshop.import.file') }}</a-step>
             <a-step description="设置分割规则">{{ $t('workshop.import.split') }}</a-step>
             <a-step description="检查章节分割情况">章节预览</a-step>
-            <a-step description="完善书籍信息并保存">{{ $t('common.save') }}</a-step>
+            <a-step :description="bookId === -1 ? '完善书籍信息并保存' : ``">{{ $t('common.save') }}</a-step>
           </a-steps>
           <keep-alive>
             <Step1 v-if="step == 1" :status="fileStatus" @set-file="onSetFile" />
             <Step2 v-else-if="step == 2" ref="Step2Ref" :files="fileList" />
             <Step3 v-else-if="step == 3" ref="Step3Ref" />
-            <Step4 v-else-if="step == 4" ref="Step4Ref" :book-name="fileList[0]?.name?.replace(/\.\w+$/, '')" />
+            <Step4 v-else-if="step == 4 && bookId == -1" ref="Step4Ref" :book-name="fileList[0]?.name?.replace(/\.\w+$/, '')" />
+            <div v-else-if="step == 4 && bookId !== -1">
+              <a-result
+                class="result"
+                status="success"
+                :title="`即将导入到《${bookName}》${volumeId ? `，卷“${volumeTitle}”之内` : ''}。`"
+                :subtitle="`已成功分割出 ${chapterList.length} 个章节，点击‘上一步’可返回查看详细章节列表。`"
+              >
+                <template #extra>
+                  只差一步！点击下方的保存按钮，将结果提交到数据库。
+                </template>
+              </a-result>
+            </div>
             <a-result v-else status="warning" title="出错了">
               <template #subtitle>
                 出现未知错误，返回重试
@@ -37,7 +52,8 @@
             </a-col>
             <a-col :span="3">
               <a-button v-if="step < 4" type="primary" long @click="changeStep(1)">下一步</a-button>
-              <a-button v-if="step == 4" type="primary" status="success" long @click="handleSubmit">保存</a-button>
+              <a-button v-if="step == 4" type="primary" status="success" long @click="handleSubmit">{{ $t('common.save')
+              }}</a-button>
             </a-col>
           </a-row>
         </template>
@@ -47,10 +63,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, PropType } from 'vue';
 import { FileItem, Message } from '@arco-design/web-vue';
 import useLoading from '@/hooks/loading';
-import { addABook } from '@/api/library';
+import { addABook, addToBook } from '@/api/library';
 import Step1 from './import-text-step1.vue';
 import Step2 from './import-text-step2.vue';
 import Step3 from './import-text-step3.vue';
@@ -58,6 +74,26 @@ import Step4 from './import-text-step4.vue';
 import { IStepResult } from './utils';
 
 const { loading, setLoading } = useLoading(false);
+
+//参数定义
+const props = defineProps({
+  bookId: {
+    type: Number as PropType<number | undefined>,
+    default: -1
+  },
+  bookName: {
+    type: String,
+    default: ''
+  },
+  volumeId: {
+    type: Number as PropType<number | undefined>,
+    default: -1
+  },
+  volumeTitle: {
+    type: String,
+    default: ''
+  }
+})
 
 // 变量定义
 const myVisible = ref(false);
@@ -132,21 +168,39 @@ const changeStep = (direction: number) => {
  */
 const handleSubmit = async () => {
   setLoading(true);
-  const data = await Step4Ref.value?.submit();
-  const formData = {
-    ...data,
-    chapterList,
-    type: 'txt',
-  };
 
-  await addABook(formData)
-    .then((rsl) => {
-      Message.success('已添加到书库中！');
+  if (props.bookId === -1) {
+    const data = await Step4Ref.value?.submit();
+    const bookData = {
+      ...data,
+      chapterList,
+      type: 'txt',
+    };
+
+    await addABook(bookData)
+      .then((rsl) => {
+        Message.success('已添加到书库中！');
+        myVisible.value = false;
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  } else {
+
+    await addToBook({
+      bookId: props.bookId,
+      volumeId: props.volumeId,
+      chapterList: chapterList.map(({ IndexId, ...rest }) => rest),
+    }).then((rsl) => {
+      console.log(rsl);
+      Message.success(`已追加${chapterList.length}章到《${props.bookName}》中！`);
       myVisible.value = false;
-    })
-    .finally(() => {
+    }).finally(() => {
       setLoading(false);
     });
+  }
+
+
 };
 
 /**
