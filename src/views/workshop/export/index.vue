@@ -23,19 +23,31 @@
                     @complete="onChangeBook" />
                 </div>
                 <div v-if="current == 2" class="main-content">
-                  <a-form-item label="全部章节">
-                    <a-switch :default-checked="true" v-model="form.isCheckAll" @change="getBookIndex" />
+                  <a-form-item label="导出范围">
+                    <a-radio-group type="button" v-model="form.chapterScope" @change="getBookIndex">
+                      <a-radio value="all">全部章节</a-radio>
+                      <a-radio value="volume">指定卷</a-radio>
+                      <a-radio value="range">指定范围</a-radio>
+                    </a-radio-group>
                   </a-form-item>
-                  <a-form-item field="cBegin" label="开始章节:" required v-if="!form.isCheckAll">
-                    <a-select v-model="form.cBegin" :options="Chapters"
-                      :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
-                      allow-search />
-                  </a-form-item>
-                  <a-form-item field="cEnd" label="结束章节:" required v-if="!form.isCheckAll">
-                    <a-select v-model="form.cEnd" :options="[...Chapters].reverse()"
-                      :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
-                      allow-search />
-                  </a-form-item>
+                  <div v-if="form.chapterScope == 'volume'">
+                    <a-form-item field="volumes" label="选择卷:" required>
+                      <a-select v-model="form.volumes" :options="Volumes" multiple allow-search
+                        :field-names="{ value: 'VolumeId', label: 'Title' }" :virtual-list-props="{ height: 200 }" />
+                    </a-form-item>
+                  </div>
+                  <div v-if="form.chapterScope == 'range'">
+                    <a-form-item field="cBegin" label="开始章节:" required>
+                      <a-select v-model="form.cBegin" :options="Chapters"
+                        :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
+                        allow-search />
+                    </a-form-item>
+                    <a-form-item field="cEnd" label="结束章节:" required>
+                      <a-select v-model="form.cEnd" :options="[...Chapters].reverse()"
+                        :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
+                        allow-search />
+                    </a-form-item>
+                  </div>
                 </div>
                 <div v-if="current == 3" class="main-content">
                   <a-form-item label="文件类型" required>
@@ -165,10 +177,11 @@ const saving = ref(false);
 const formRef = ref<FormInstance>();
 const form = ref({
   bookId: bookid || undefined as number | undefined,
-  isCheckAll: true,
+  chapterScope: "all",
   chapterRange: '',
   fontFamily: '',
   isEnableIndent: true,
+  volumes: [],
   cBegin: undefined as number | undefined,
   cEnd: undefined as number | undefined,
   fileType: "epub",
@@ -177,16 +190,20 @@ const form = ref({
 });
 const current = ref(1);
 const Chapters = ref<Array<any>>([]);
+const Volumes = ref<Array<any>>([]);
+let chapterBookId = -1;   // 记录当前获取的章节索引的书籍ID
 let fontData: Array<any> = [];
 const resultData = ref({} as any);
 const captureCover = ref<InstanceType<typeof BookCover> | null>(null); // 截图的封面
 const coverData = ref("");
 
 function getBookIndex() {
-  if (!form.value.bookId || form.value.isCheckAll) return;
+  if (!form.value.bookId || form.value.chapterScope == 'all' || chapterBookId == form.value.bookId) return;
   queryBookById(form.value.bookId).then(res => {
     if (res.code === ApiResultCode.Success) {
+      chapterBookId = form.value.bookId ?? -1;
       Chapters.value = res.data.Index;
+      Volumes.value = res.data.Volumes;
     }
   })
 }
@@ -243,8 +260,11 @@ InitFont();
 
 const onSubmit = () => {
   let chapterIds = [] as any;
-  if (form.value.isCheckAll) {
+  if (form.value.chapterScope == 'all') {
     chapterIds = null;
+  } else if (form.value.chapterScope == 'volume') {
+    //TODO: 处理卷信息
+    // chapterIds = form.value.volumes.map((t: any) => t.VolumeId);
   } else {
     let isStart = false;
     for (let i = 0; i < Chapters.value.length; i++) {
@@ -254,23 +274,23 @@ const onSubmit = () => {
     }
   };
 
-  let api = null as any;
+  let CreateBookAPI = null as any;
   switch (form.value.fileType) {
     case "pdf":
-      api = createPDF;
+      CreateBookAPI = createPDF;
       break;
     case "txt":
-      api = createTXT;
+      CreateBookAPI = createTXT;
       break;
     case "epub":
-      api = createEPUB;
+      CreateBookAPI = createEPUB;
       break;
   }
   saving.value = true;
 
   let imageData = coverData.value?.startsWith("data:image/png;base64,") ? coverData.value.replace("data:image/png;base64,", "") : "";
 
-  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle, form.value.isEnableIndent, imageData).then((res: any) => {
+  CreateBookAPI(form.value?.bookId ?? 0, form.value.volumes, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle, form.value.isEnableIndent, imageData).then((res: any) => {
     saving.value = false;
     current.value = 4;
     if (res.code === ApiResultCode.Success) {

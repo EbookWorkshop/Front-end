@@ -264,6 +264,7 @@ export function updateChapter(
 /**
  * 制作pdf——可发到默认邮箱
  * @param bookid
+ * @param volumeIds 要包含的卷ID列表
  * @param chapterIds
  * @param isSendEmail 是否发到默认邮箱
  * @param fontFamily 创建PDF时的字体
@@ -274,6 +275,7 @@ export function updateChapter(
  */
 export function createPDF(
   bookid: number,
+  volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
   fontFamily: string,
@@ -283,6 +285,7 @@ export function createPDF(
 ) {
   return axios.post(`/export/pdf`, {
     bookId: bookid,
+    volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
     fontFamily,
@@ -295,6 +298,7 @@ export function createPDF(
 /**
  * 制作txt——可发到默认邮箱
  * @param bookid 
+ * @param volumeIds 要包含的卷ID列表
  * @param chapterIds 
  * @param isSendEmail 
  * @param fontFamily 没用，对齐API用
@@ -305,6 +309,7 @@ export function createPDF(
  */
 export function createTXT(
   bookid: number,
+  volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
   fontFamily: string,
@@ -314,6 +319,7 @@ export function createTXT(
 ) {
   return axios.post(`/export/txt`, {
     bookId: bookid,
+    volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
     embedTitle,
@@ -325,6 +331,7 @@ export function createTXT(
 /**
  * 制作epub——可发到默认邮箱
  * @param bookid 
+ * @param volumeIds 要包含的卷ID列表
  * @param chapterIds 
  * @param isSendEmail 
  * @param fontFamily 没用，对齐API用
@@ -335,6 +342,7 @@ export function createTXT(
  */
 export function createEPUB(
   bookid: number,
+  volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
   fontFamily: string,
@@ -344,6 +352,7 @@ export function createEPUB(
 ) {
   return axios.post(`/export/epub`, {
     bookId: bookid,
+    volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
     fontFamily,
