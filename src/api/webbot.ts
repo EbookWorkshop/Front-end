@@ -40,6 +40,11 @@ export function deleteHostSetting(host: string) {
   return axios.delete(`/services/botrule?host=${host}`);
 }
 
+export function changeHostname(oldHostname: string, newHostname: string) {
+  return axios.post(`/services/botrule/changehostname`, { oldHostname, newHostname });
+}
+
+
 /**
  * 保存配置
  * @param rules

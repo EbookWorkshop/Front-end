@@ -33,6 +33,7 @@
                   <template #icon><icon-eye style="color:rgb(var(--orange-6))"/></template>
                   <template #default>启用预览辅助配置模式</template>
                 </a-button>
+                <a-button @click="ChangeWebHostname">网站域名变更</a-button>
               </a-space>
             </a-col>
           </a-row>
@@ -132,6 +133,7 @@
       </a-spin>
     </div>
     <WebList ref="myWebList" @set-form="setFormWithSetting"></WebList>
+    <ChangeHostname ref="changeHostname" v-model:visible="showChangeHostname" @success="showChangeHostname = false" />
   </div>
 </template>
 
@@ -150,7 +152,7 @@ import WebList from './components/web-list.vue';
 import { rulesOptions } from './data';  // 规则类型选项
 
 import SelectAction from './components/SelectAction.vue';
-
+import ChangeHostname from './components/ChangeHostname.vue';
 
 const formUrlForVisVisible = ref(false); // 配置弹窗是否显示
 const formUrlForVis = reactive({ indexUrl: '', contentUrl: '' }); // 弹窗表单——辅助预览的网址采集表单
@@ -159,6 +161,7 @@ const isUseVisStatus = computed(() =>
   isUseVisModel.value ? 'warning' : 'normal'
 );
 const dataLoading = ref(false);
+const showChangeHostname = ref(false);
 
 // 绑定数据的规则配置表单
 const form = reactive({
@@ -417,6 +420,10 @@ function importScheme(fileItem: FileItem) {
 function FormatHost() {
   let host = new URL(form.hostname);
   if (host != null && host.hostname != form.hostname) form.hostname = host.hostname;
+}
+
+function ChangeWebHostname() {
+  showChangeHostname.value = true;
 }
 </script>
 

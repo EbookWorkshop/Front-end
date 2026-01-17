@@ -3,11 +3,13 @@
     v-model:visible="visible"
     title="从网址导入"
     :on-before-ok="handleBeforeOk"
+    :width="520"
     unmount-on-close
   >
-    <a-form :model="form">
+    <a-alert type="info">请输入要导入的书籍目录页的网址。</a-alert>
+    <a-form :model="form" style="margin-top: 20px;">
       <a-form-item field="indexUrl" label="网址" required>
-        <a-textarea v-model="form.indexUrl" placeholder="例如: https://example.com/book/123" />
+        <a-input v-model="form.indexUrl" placeholder="例如: https://example.com/book/123" allow-clear />
       </a-form-item>
     </a-form>
   </a-modal>
