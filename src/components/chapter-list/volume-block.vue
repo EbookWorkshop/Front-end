@@ -24,7 +24,7 @@ import type { Chapter, WebChapter, Volume } from '@/types/book';
 const props = defineProps({
     volume: {
         type: Object as PropType<Volume | null>,
-        required: true
+        default: null
     },
     Chapters: {
         type: Array as PropType<Chapter[] | WebChapter[]>,

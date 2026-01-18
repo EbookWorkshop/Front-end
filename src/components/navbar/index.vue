@@ -15,8 +15,8 @@
     </div>
     <ul class="right-side">
       <li>
-        <a-tooltip :content="'服务器' + (getSocketState().connected ? '已连接' : '未连接')">
-          <ConnectStatus :connected="getSocketState().connected" />
+        <a-tooltip :content="'服务器' + (socketState.connected ? '已连接' : '未连接')">
+          <ConnectStatus :connected="socketState.connected" />
         </a-tooltip>
       </li>
       <li>
@@ -111,7 +111,7 @@ import useUser from '@/hooks/user';
 import Menu from '@/components/menu/index.vue';
 import { MessageRecord } from '@/types/Message';
 
-import { useSocket, getSocketState } from '@/hooks/socket';
+import { useSocket } from '@/hooks/socket';
 import MessageBox from '../message-box/index.vue';
 import ConnectStatus from './connect-status.vue';
 
@@ -121,7 +121,7 @@ const logoLight = "/logo.svg?t=navbar";
 const logoDark = "/logo-dark.svg?t=navbar";
 
 
-const socket = useSocket();
+const { io: socket, state: socketState, on: socketOn } = useSocket();
 const router = useRouter();
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -186,7 +186,7 @@ function OnEmptyList() {
   messageList.splice(0);
 }
 
-socket.io.on(
+socketOn(
   'WebBook.UpdateChapter.Finish',
   ({ bookid, bookName, doneNum, failNum }) => {
     messageList.push({
@@ -202,7 +202,7 @@ socket.io.on(
   }
 );
 
-socket.io.on(
+socketOn(
   "WebBook.Create.Finish", ({ bookid, bookName }) => {
     messageList.push({
       id: bookid,
@@ -224,7 +224,7 @@ socket.io.on(
   }
 )
 
-socket.io.on("Message.Box.Send", (msg:MessageRecord) => {
+socketOn("Message.Box.Send", (msg: MessageRecord) => {
   if (typeof (msg.status) === "undefined") msg.status = 0;
   messageList.push(msg);
 })
