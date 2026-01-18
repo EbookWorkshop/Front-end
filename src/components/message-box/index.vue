@@ -25,15 +25,11 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, toRefs, computed, PropType } from 'vue';
+  import { ref, reactive, toRefs, computed, watch } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { MessageRecord, MessageListType} from '@/types/Message';
-  import { useMessageStore } from '@/store';
+  import { useMessageService } from '@/services/messageService';
 
-  import {
-    //queryMessageList,
-    setMessageStatus,
-  } from '@/api/message';
   import useLoading from '@/hooks/loading';
   import List from './list.vue';
 
@@ -43,20 +39,16 @@
     avatar?: string;
   }
 
-  // 定义组件入参
-  const props = defineProps({
-    messageList: {
-      type: Array as PropType<MessageRecord[]>,
-      default: [] as MessageRecord[],
-    },
-  });
-
   // 向父组件传递信息
   const emit = defineEmits(['emptyList','allRead']);
 
   const { loading, setLoading } = useLoading(true);
   const messageType = ref('notice');
   const { t } = useI18n();
+  
+  // 使用消息服务
+  const messageService = useMessageService();
+  
   const messageData = reactive<{
     renderList: MessageRecord[];
     messageList: MessageRecord[];
@@ -64,8 +56,6 @@
     renderList: [],//点击Tab时过滤出当前的合计作为渲染内容
     messageList: [],//所有的信息合集
   });
-
-  const messageStore = useMessageStore();
 
   toRefs(messageData);
   const tabList: TabItem[] = [
@@ -82,61 +72,69 @@
       title: t('messageBox.tab.title.history'),
     },
   ];
+  
+  // 监听消息服务中的消息变化
+  watch(() => messageService.messages, (newMessages) => {
+    messageData.messageList = [...newMessages];
+  }, { immediate: true });
+
   async function fetchSourceData() {
     setLoading(true);
     try {
-      //console.log("加载消息列表中！！！");
-      // const { data } = await queryMessageList();
-      // messageData.messageList = data;
-
-      messageData.messageList = props.messageList;
-
-      let tempMsg = messageStore.getTopMessage();
-      while(tempMsg){
-        messageData.messageList.push(tempMsg);
-        tempMsg = messageStore.getTopMessage();
-      }
+      // 直接从消息服务获取消息数据
+      messageData.messageList = [...messageService.messages];
     } catch (err) {
       // you can report use errorHandler or other
     } finally {
       setLoading(false);
     }
   }
-  async function readMessage(data: MessageListType) {
-    const ids = data.map((item) => item.id);
-    await setMessageStatus({ ids });
-    fetchSourceData();
-  }
+  
   const renderList = computed(() => {
     return messageData.messageList.filter(
       (item) => messageType.value === item.type || messageType.value === 'history'
     );
   });
+  
   const unreadCount = computed(() => {
     return renderList.value.filter((item) => !item.status).length;
   });
+  
   const getUnreadList = (type: string) => {
     const list = messageData.messageList.filter(
       (item) => item.type === type && !item.status
     );
     return list;
   };
+  
   const formatUnreadLength = (type: string) => {
     const list = getUnreadList(type);
     return list.length ? `(${list.length})` : ``;
   };
+  
   const handleItemClick = (items: MessageListType) => {
-    if (renderList.value.length) readMessage([...items]);
+    if (renderList.value.length) {
+      // 标记消息为已读
+      items.forEach(item => {
+        messageService.markAsRead(item.id);
+      });
+    }
   };  
+  
   const handleAllRead = (items: MessageListType) => {
-    messageData.messageList.forEach(m=>m.status=0);
+    // 标记所有消息为已读
+    messageService.messages.forEach(message => {
+      messageService.markAsRead(message.id);
+    });
     emit('allRead');
   };
 
   const emptyList = () => {
-    messageData.messageList = [];
+    // 清空所有消息
+    messageService.clearAll();
     emit('emptyList');
   };
+  
   fetchSourceData();
 </script>
 

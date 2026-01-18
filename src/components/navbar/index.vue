@@ -56,7 +56,7 @@
         <!-- 消息通知待办 -->
         <a-tooltip :content="$t('settings.navbar.alerts')">
           <div class="message-box-trigger">
-            <a-badge :count="messageList.filter((item) => !item.status).length">
+            <a-badge :count="unreadCount">
               <a-button class="nav-btn" type="outline" :shape="'circle'" @click="setPopoverVisible">
                 <icon-notification />
               </a-button>
@@ -67,8 +67,8 @@
           content-class="message-popover">
           <div ref="refBtn" class="ref-btn"></div>
           <template #content>
-            <message-box :message-list="messageList" @empty-list="OnEmptyList"
-              @all-read="messageList.forEach(m => m.status = 1)" />
+            <message-box :message-list="messageService.messages" @empty-list="handleEmptyList"
+              @all-read="handleAllRead" />
           </template>
         </a-popover>
         <!-- 消息通知待办-结束 -->
@@ -100,38 +100,30 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, inject, reactive, watch, h } from 'vue';
-import { useRouter } from 'vue-router';
-import { Button, Message, Notification } from '@arco-design/web-vue';
+import { computed, ref, inject, watch } from 'vue';
+import { Notification } from '@arco-design/web-vue';
 import { useDark, useToggle, useFullscreen } from '@vueuse/core';
-import { useAppStore, useUserStore } from '@/store';
+import { useAppStore } from '@/store';
 import { LOCALE_OPTIONS } from '@/locale';
 import useLocale from '@/hooks/locale';
-import useUser from '@/hooks/user';
 import Menu from '@/components/menu/index.vue';
-import { MessageRecord } from '@/types/Message';
-
+import { useMessageService } from '@/services/messageService';
 import { useSocket } from '@/hooks/socket';
 import MessageBox from '../message-box/index.vue';
 import ConnectStatus from './connect-status.vue';
 
-// const logoLight = new URL('@/assets/logo.svg', import.meta.url).href;
-// const logoDark = new URL('@/assets/logo-dark.svg', import.meta.url).href;
 const logoLight = "/logo.svg?t=navbar";
 const logoDark = "/logo-dark.svg?t=navbar";
 
-
-const { io: socket, state: socketState, on: socketOn } = useSocket();
-const router = useRouter();
+const { state: socketState } = useSocket();
 const appStore = useAppStore();
-const userStore = useUserStore();
-const { logout } = useUser();
 const { changeLocale, currentLocale } = useLocale();
 const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
 const locales = [...LOCALE_OPTIONS];
-const avatar = computed(() => {
-  return userStore.avatar;
-});
+
+// 使用消息服务
+const messageService = useMessageService();
+
 const theme = computed(() => {
   return appStore.theme;
 });
@@ -164,9 +156,7 @@ const setPopoverVisible = () => {
   });
   refBtn.value.dispatchEvent(event);
 };
-const handleLogout = () => {
-  logout();
-};
+
 const setDropDownVisible = () => {
   const event = new MouseEvent('click', {
     view: window,
@@ -175,79 +165,43 @@ const setDropDownVisible = () => {
   });
   triggerBtn.value.dispatchEvent(event);
 };
-const switchRoles = async () => {
-  const res = await userStore.switchRoles();
-  Message.success(res as string);
-};
+
 const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
 
-const messageList = reactive<MessageRecord[]>([]);
-function OnEmptyList() {
-  messageList.splice(0);
-}
+// 计算未读消息数量
+const unreadCount = computed(() => {
+  return messageService.messages.filter(item => !item.status).length;
+});
 
-socketOn(
-  'WebBook.UpdateChapter.Finish',
-  ({ bookid, bookName, doneNum, failNum }) => {
-    messageList.push({
-      id: bookid,
-      type: 'notice',
-      title: `《${bookName}》已完成任务。`,
-      subTitle: '',
-      content: `其中，成功：${doneNum}失败：${failNum}。`,
-      time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
-      status: 0,
-      avatar: 'logo.svg?t=msg',
-    });
+// 处理清空消息
+const handleEmptyList = () => {
+  messageService.clearAll();
+};
+
+// 处理全部已读
+const handleAllRead = () => {
+  messageService.messages.forEach(message => {
+    messageService.markAsRead(message.id);
+  });
+};
+
+// 监听新消息并显示通知
+watch(() => messageService.messages, (newValue, oldValue) => {
+  if (newValue.length > oldValue.length) {
+    const lastMsg = newValue[newValue.length - 1];
+    if (lastMsg.type === "notice") {
+      Notification.info({
+        id: lastMsg.id.toString(),
+        title: lastMsg.title,
+        content: typeof lastMsg.content === 'string' ? lastMsg.content : () => lastMsg.content,
+        duration: 0,
+        showIcon: true,
+        closable: true,
+      });
+    }
   }
-);
-
-socketOn(
-  "WebBook.Create.Finish", ({ bookid, bookName }) => {
-    messageList.push({
-      id: bookid,
-      type: 'notice',
-      title: `《${bookName}》已导入完成。`,
-      content: h(Button, {
-        type: "primary",
-        status: "success",
-        size: "small",
-        onClick: () => {
-          router.push({ path: `/workshop/webbook/edit/${bookid}` });
-        },
-      }, "前往查看"),
-      time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
-      avatar: 'logo.svg?t=msg',
-      status: 1,
-      subTitle: '',
-    });
-  }
-)
-
-socketOn("Message.Box.Send", (msg: MessageRecord) => {
-  if (typeof (msg.status) === "undefined") msg.status = 0;
-  messageList.push(msg);
-})
-
-watch(messageList, (newValue, oldValue) => {
-  let lastMsg = newValue[newValue.length - 1];
-  // let t1 = new Date().getTime();
-  // let t2 = new Date(lastMsg.time).getTime();
-  // console.log("收到消息", lastMsg, t1, t2);
-  // if (t1 - t2 > 1100) return;
-  if (lastMsg.type == "notice") {
-    Notification.info({
-      id: lastMsg.id.toString(),
-      title: lastMsg.title,
-      content: typeof lastMsg.content === 'string' ? lastMsg.content : () => lastMsg.content,
-      duration: 0,
-      showIcon: true,
-      closable: true,
-    })
-  }
-}, { deep: true })
+}, { deep: true });
 </script>
-
 <style scoped lang="less">
 .navbar {
   display: flex;
