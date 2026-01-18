@@ -27,7 +27,7 @@
                 </div>
                 <!-- 不带卷的章节 -->
                 <div v-if="ChaptersNotInVolume.length > 0">
-                    <VolumeBlock :volume="null" :Chapters="ChaptersNotInVolume" :columnProps="columnProps">
+                    <VolumeBlock :volume="ChaptersWithoutVolume" :Chapters="ChaptersNotInVolume" :columnProps="columnProps">
                         <template #chapter="{ chapter }">
                             <slot name="chapter" :chapter="chapter"></slot>
                         </template>
@@ -45,7 +45,7 @@
 import type { PropType } from "vue";
 import { computed } from "vue";
 import { mean } from '@/utils/math';
-import { Chapter, WebChapter, Volume } from '@/types/book';
+import type { Chapter, WebChapter, Volume } from '@/types/book';
 import VolumeBlock from "./volume-block.vue";
 
 const props = defineProps({
@@ -88,14 +88,17 @@ const columnProps = computed(() => {
 });
 
 const ChaptersNotInVolume = computed(() => props.Chapters.filter(chapter => !chapter.VolumeId));
+
+/**
+ * 不带卷的章节
+ */
+const ChaptersWithoutVolume = computed(() => {
+    if(props.Volumes.length > 0) {
+        return {
+            VolumeId: -1,
+            Title: ' -未指定卷-',
+        } as Volume;
+    }
+    return null;
+});
 </script>
-<style lang="less" scoped>
-.volume-title {
-    margin-top: 16px;
-    margin-bottom: 8px;
-    padding-left: 8px;
-    border-left: 4px solid red;
-    font-size: 1.2em;
-    font-weight: bold;
-}
-</style>

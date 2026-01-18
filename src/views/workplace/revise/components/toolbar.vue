@@ -15,6 +15,7 @@
                     <a-button @click="checkDescriptions = true"> 内容重复检查 </a-button>
                     <a-button @click="isPairedPunctuation = true"> 标点配对检查 </a-button>
                     <a-button @click="openSuspiciousCharsPage" title="统计分析文字，探测章节中可能存在的错用文字。"> 特殊字符分析 </a-button>
+                    <a-button @click="openStatisticsPage"> 统计 </a-button>
                 </a-button-group>
             </a-space>
             <a-space>
@@ -82,6 +83,13 @@ const openSuspiciousCharsPage = () => {
     if (props.bookid) {
         // 在新窗口打开特殊字符分析页面，并传递bookId参数
         window.open(`/workplace/suspiciouschars?bookId=${props.bookid}`, '_blank');
+    }
+};
+
+const openStatisticsPage = () => {
+    if (props.bookid) {
+        // 在新窗口打开统计分析页面，并传递bookId参数
+        window.open(`/workplace/analytics/text/${props.bookid}`, '_blank');
     }
 };
 </script>

@@ -17,14 +17,12 @@
             <Step1 v-if="step == 1" :status="fileStatus" @set-file="onSetFile" />
             <Step2 v-else-if="step == 2" ref="Step2Ref" :files="fileList" />
             <Step3 v-else-if="step == 3" ref="Step3Ref" />
-            <Step4 v-else-if="step == 4 && bookId == -1" ref="Step4Ref" :book-name="fileList[0]?.name?.replace(/\.\w+$/, '')" />
+            <Step4 v-else-if="step == 4 && bookId == -1" ref="Step4Ref"
+              :book-name="fileList[0]?.name?.replace(/\.\w+$/, '')" />
             <div v-else-if="step == 4 && bookId !== -1">
-              <a-result
-                class="result"
-                status="success"
+              <a-result class="result" status="success"
                 :title="`即将导入到《${bookName}》${volumeId ? `，卷“${volumeTitle}”之内` : ''}。`"
-                :subtitle="`已成功分割出 ${chapterList.length} 个章节，点击‘上一步’可返回查看详细章节列表。`"
-              >
+                :subtitle="`已成功分割出 ${chapterList.length} 个章节，点击‘上一步’可返回查看详细章节列表。`">
                 <template #extra>
                   只差一步！点击下方的保存按钮，将结果提交到数据库。
                 </template>
@@ -110,6 +108,8 @@ const Step4Ref = ref(null) as any;
 let chapterList = [] as any[];
 let fileData = "";//文件内容-第一个文件的原始内容-用于第四步提取作者
 
+const emit = defineEmits(["reload"]);
+
 // 设置文件-文件列表变更时
 const onSetFile = (files: FileItem[]) => {
   fileList.length = 0;
@@ -186,7 +186,6 @@ const handleSubmit = async () => {
         setLoading(false);
       });
   } else {
-
     await addToBook({
       bookId: props.bookId,
       volumeId: props.volumeId,
@@ -195,6 +194,7 @@ const handleSubmit = async () => {
       console.log(rsl);
       Message.success(`已追加${chapterList.length}章到《${props.bookName}》中！`);
       myVisible.value = false;
+      emit('reload');
     }).finally(() => {
       setLoading(false);
     });

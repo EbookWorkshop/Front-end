@@ -15,11 +15,11 @@
         <ChapterList :loading="loading" :Chapters="renderData?.Index" :Volumes="renderData?.Volumes">
           <template #chapter="{ chapter }">
             <a-button-group v-if="!isOrdering" style="width: 100%;">
-              <a-button long class="chapter" @click="onClickChapter(chapter.IndexId)" style="width: 100%;">
+              <a-button long class="chapter" @click="onClickChapter(chapter.IndexId)" style="width: 100%;" :status="chapter.IsHasContent?'normal':'warning'">
                 {{ chapter.Title }}
               </a-button>
               <a-dropdown trigger="click" position="br" :popup-max-height="false">
-                <a-button>
+                <a-button :status="chapter.IsHasContent?'normal':'warning'" >
                   <template #icon>
                     <icon-down />
                   </template>
@@ -57,7 +57,7 @@
                 <template #icon>
                   <icon-plus />
                 </template>
-                添加一章
+                录入一章
               </a-button>
             </a-col>
             <a-col v-bind="columnSetting">
@@ -76,7 +76,7 @@
         :toMergeChapterId="toMergeChapterId" @close="isEdit = false" @reload="reloadBook" />
       <SplitTool v-model:model-value="isSplit" :id="splitId" :bookId="bookId" />
 
-      <ImportText ref="textImportModal" :bookId="bookId" :bookName="renderData?.BookName" :volumeId="curVolumeId" :volumeTitle="curVolumeTitle"></ImportText>
+      <ImportText ref="textImportModal" :bookId="bookId" :bookName="renderData?.BookName" :volumeId="curVolumeId" :volumeTitle="curVolumeTitle" @reload="reloadBook"></ImportText>
 
     </div>
   </div>

@@ -6,7 +6,7 @@
         </a-tooltip>
     </h3>
 
-    <a-row :gutter="[4, 4]" class="chapter-list"><!-- 不带卷的章节 -->
+    <a-row :gutter="[4, 4]" class="chapter-list">
         <a-col v-for="item in Chapters" :key="item.IndexId" v-bind="columnProps">
             <a-tooltip v-if="item.Title.length > 13" :content="item.Title">
                 <slot name="chapter" :chapter="item"></slot>
@@ -36,3 +36,13 @@ const props = defineProps({
     }
 });
 </script>
+<style lang="less" scoped>
+.volume-title {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    padding-left: 8px;
+    border-left: 4px solid red;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+</style>
