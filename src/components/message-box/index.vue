@@ -27,7 +27,7 @@
 <script lang="ts" setup>
   import { ref, reactive, toRefs, computed, watch } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { MessageRecord, MessageListType} from '@/types/Message';
+  import type { MessageRecord, MessageListType} from '@/types/Message';
   import { useMessageService } from '@/services/messageService';
 
   import useLoading from '@/hooks/loading';
@@ -50,8 +50,8 @@
   const messageService = useMessageService();
   
   const messageData = reactive<{
-    renderList: MessageRecord[];
-    messageList: MessageRecord[];
+    renderList: MessageListType;
+    messageList: MessageListType;
   }>({
     renderList: [],//点击Tab时过滤出当前的合计作为渲染内容
     messageList: [],//所有的信息合集
@@ -133,6 +133,7 @@
     // 清空所有消息
     messageService.clearAll();
     emit('emptyList');
+    messageData.messageList.splice(0);//清空组件内已拉取的消息
   };
   
   fetchSourceData();

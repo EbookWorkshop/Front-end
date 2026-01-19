@@ -15,8 +15,8 @@
         <a-divider />
         <ChapterList :loading="loading" :Chapters="bookData.Index" :Volumes="bookData.Volumes">
           <template #chapter="{ chapter }">
-            <ChapterOpt :chapter="chapter as WebChapter" @toggle="OnToggleChapter" :ref="chapterRefMap.get(chapter.IndexId)"
-              @hide="onHideChapter(chapter.IndexId)" />
+            <ChapterOpt :chapter="chapter as WebChapter" @toggle="OnToggleChapter"
+              :ref="chapterRefMap.get(chapter.IndexId)" @hide="onHideChapter(chapter.IndexId)" />
           </template>
         </ChapterList>
       </a-spin>
@@ -29,13 +29,13 @@
 import type { Book, Chapter, WebChapter } from '@/types/book';
 import { WebBookStatus } from './data'
 import type { OneChapterStatus } from './data'
-import type { MessageRecord } from '@/types/Message'
+import { useMessageService } from '@/services/messageService';
+import type { MessageRecord } from '@/types/Message';
 
 import { ref, reactive, nextTick } from 'vue';
 import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
 import { useSocket } from '@/hooks/socket';
-import { useMessageStore } from '@/store';
 
 //控件
 import BookInfo from '@/components/book-info/index.vue';
@@ -71,9 +71,8 @@ const queryBook = () => {
 };
 const { bookId } = useBookHelper();
 const { loading, response: bookData } = useRequest<Book>(queryBook);
-const { io: socket } = useSocket();
-const messageStore = useMessageStore();
-
+const { io: socket, on: socketOn } = useSocket();
+const messageService = useMessageService();
 
 //操作定义
 /**
@@ -107,9 +106,10 @@ function onToggleToolbar(chapterId: number, isChecked: boolean) {
   chapterRefMap.get(chapterId).value.handleCheckIt(isChecked);
 }
 
+
 // 监听广播消息
 if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //防止重复监听
-  socket.on(WebBookStatus.Error + `.${bookId}`, ({   //章节更新错误
+  socketOn(WebBookStatus.Error + `.${bookId}`, ({   //章节更新错误
     bookid: _bookid,    //出错的书ID
     chapterId,          //出错的章节ID
     err,                //错误信息
@@ -124,10 +124,10 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       showIcon: true,
     });
 
-    //将错误消息转入消息中心
+    // 使用消息服务添加错误消息
     const errInfo: MessageRecord = {
-      id:bookId,
-      type:"message",
+      id: bookId,
+      type: "message",
       title: `《${bookData.value?.BookName}》获取章节出错：${err?.name || ""}`,
       subTitle: `章节-${curChapter.value.getTitle()}`,
       content: err?.message || "未知错误",
@@ -135,20 +135,20 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       status: 1,
       avatar: "error",
     };
-    messageStore.addMessage(errInfo);
+    messageService.addMessage(errInfo);
   });
 
-  //单一章节更新成功
-  socket.on(WebBookStatus.Success + `.${bookId}`, (chaptOne: OneChapterStatus) => {
+  // 单一章节更新成功
+  socketOn(WebBookStatus.Success + `.${bookId}`, (chaptOne: OneChapterStatus) => {
     const curChapter = chapterRefMap.get(chaptOne.chapterId);
-    // console.log(curChapter);
     if (!curChapter) return;
     let thisCpt = bookData.value.Index.filter(c => c.IndexId == chaptOne.chapterId);
     if (thisCpt.length > 0) thisCpt[0].IsHasContent = true;
     curChapter.value.handleChangeStatus("success");
   });
-  //全部任务完成
-  socket.on(WebBookStatus.AllSuccess + `.${bookId}`, ({ bookid: _bookid, chapterIndexArray, doneNum, failNum }): any => {
+
+  // 全部任务完成 - 保留页面特定的处理逻辑
+  socketOn(WebBookStatus.AllSuccess + `.${bookId}`, ({ bookid: _bookid, chapterIndexArray, doneNum, failNum }): any => {
     Notification.success({
       title: `已尝试任务${chapterIndexArray.length}个`,
       content: `其中成功：${doneNum}，失败：${failNum}`,
@@ -160,7 +160,8 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       curDoingProcent.value = -1;
     });
 
-    messageStore.addMessage({
+    // 同时将完成消息添加到消息服务
+    messageService.addMessage({
       id: bookId,
       type: "message",
       title: `《${bookData.value?.BookName}》已尝试任务${chapterIndexArray.length}个`,

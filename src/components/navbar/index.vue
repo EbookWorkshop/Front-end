@@ -186,14 +186,14 @@ const handleAllRead = () => {
 };
 
 // 监听新消息并显示通知
-watch(() => messageService.messages, (newValue, oldValue) => {
-  if (newValue.length > oldValue.length) {
-    const lastMsg = newValue[newValue.length - 1];
+watch(() => messageService.messages.length, (newLength, oldLength) => {
+  if (newLength > oldLength) {
+    const lastMsg = messageService.messages[newLength - 1];
     if (lastMsg.type === "notice") {
       Notification.info({
         id: lastMsg.id.toString(),
         title: lastMsg.title,
-        content: typeof lastMsg.content === 'string' ? lastMsg.content : () => lastMsg.content,
+        content: lastMsg.vnodeContent ? () => lastMsg.vnodeContent : lastMsg.content,
         duration: 0,
         showIcon: true,
         closable: true,

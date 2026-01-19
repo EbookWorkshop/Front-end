@@ -16,7 +16,7 @@ const MessageServiceSymbol: InjectionKey<MessageService> = Symbol('MessageServic
 
 export function createMessageService(): MessageService {
     const { on: socketOn } = useSocket()
-    const messages = reactive<MessageRecord[]>([])
+    const messages = reactive<MessageListType>([])
 
     // 注册socket消息监听
     socketOn('WebBook.UpdateChapter.Finish', ({ bookid, bookName, doneNum, failNum }) => {
@@ -27,8 +27,8 @@ export function createMessageService(): MessageService {
             subTitle: '',
             content: `其中，成功：${doneNum}失败：${failNum}。`,
             time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
-            status: 0,
-            avatar: 'logo.svg?t=msg',
+            status: 1,
+            avatar: '/logo.svg?t=msg',
         })
     })
 
@@ -46,9 +46,10 @@ export function createMessageService(): MessageService {
             id: bookid,
             type: 'notice',
             title: `《${bookName}》已导入完成。`,
-            content: buttonVNode,
+            content:'',
+            vnodeContent: buttonVNode,
             time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
-            avatar: 'logo.svg?t=msg',
+            avatar: '/logo.svg?t=msg',
             status: 1,
             subTitle: '',
         })

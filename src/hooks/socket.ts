@@ -58,18 +58,22 @@ class SocketService {
   getSocket(): Socket {
     if (!this.socket) {
       this.socket = io(this.url, {
-        transports: ['websocket'],
+        transports: ['websocket', 'polling'], // 添加轮询作为备选
         autoConnect: true,
         reconnection: true,
-        reconnectionAttempts: 5,
+        reconnectionAttempts: Infinity, // 无限重试
         reconnectionDelay: 1000,
-        timeout: 10000,
+        reconnectionDelayMax: 5000,
+        randomizationFactor: 0.5,
+        timeout: 20000, // 增加超时时间
       });
-
+  
       this.setupEventListeners();
     }
     
-    if (!this.socket.connected) {
+    // 如果socket存在但未连接，强制重连
+    if (this.socket && !this.socket.connected) {
+      console.log('Socket未连接，尝试重新连接...');
       this.socket.connect();
     }
     
