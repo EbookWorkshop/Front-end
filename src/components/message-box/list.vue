@@ -53,13 +53,10 @@
           <a-link @click="allRead">{{ $t('messageBox.allRead') }}</a-link>
         </div>
         <div class="footer-wrap">
-          <a-link>{{ $t('messageBox.viewMore') }}</a-link>
+          <a-link disabled>{{ $t('messageBox.viewMore') }}</a-link>
         </div>
       </a-space>
     </template>
-    <div v-if="renderList.length && renderList.length < 3"
-      :style="{ height: (showMax - renderList.length) * 86 + 'px' }">
-    </div>
   </a-list>
 </template>
 
@@ -77,16 +74,21 @@ const props = defineProps({
     default: 0,
   },
 });
-const emit = defineEmits(['itemClick', "allRead"]);
+const emit = defineEmits(['itemClick', "allRead", "itemDetail"]);
+
 const allRead = () => {
   emit('allRead');
 };
 
 const onItemClick = (item: MessageRecord) => {
   if (!item.status) {
+    // 如果是未读消息，触发标记为已读
     emit('itemClick', [item]);
   }
+  // 总是触发显示消息详情
+  emit('itemDetail', item);
 };
+
 const showMax = 3;
 </script>
 

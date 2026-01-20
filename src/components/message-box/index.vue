@@ -13,6 +13,7 @@
           :unread-count="unreadCount"
           @item-click="handleItemClick"
           @all-read="handleAllRead"
+          @item-detail="handleItemDetail"
         />
       </a-tab-pane>
       <template #extra>
@@ -40,7 +41,7 @@
   }
 
   // 向父组件传递信息
-  const emit = defineEmits(['emptyList','allRead']);
+  const emit = defineEmits(['emptyList','allRead','readOne']);
 
   const { loading, setLoading } = useLoading(true);
   const messageType = ref('notice');
@@ -127,6 +128,17 @@
       messageService.markAsRead(message.id);
     });
     emit('allRead');
+  };
+
+  // 处理消息详情显示
+  const handleItemDetail = (item: MessageRecord) => {
+    // // 打开消息详情模态框
+    emit('readOne', item.id);
+    
+    // 如果是未读消息，标记为已读
+    if (!item.status) {
+      messageService.markAsRead(item.id);
+    }
   };
 
   const emptyList = () => {

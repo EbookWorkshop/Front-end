@@ -63,14 +63,16 @@
             </a-badge>
           </div>
         </a-tooltip>
-        <a-popover trigger="click" :arrow-style="{ display: 'none' }" :content-style="{ padding: 0, minWidth: '400px' }"
-          content-class="message-popover">
+        <a-popover trigger="click" :arrow-style="{ display: 'none' }"
+          :content-style="{ padding: 0, minWidth: '400px', maxWidth: '640px' }" content-class="message-popover">
           <div ref="refBtn" class="ref-btn"></div>
           <template #content>
-            <message-box :message-list="messageService.messages" @empty-list="handleEmptyList"
-              @all-read="handleAllRead" />
+            <message-box :message-list="messageService.messages" @empty-list="handleEmptyList" @all-read="handleAllRead"
+              @read-one="handleReadOne" />
           </template>
         </a-popover>
+        <!-- 消息详情模态框 -->
+        <MessageDetail ref="messageDetailRef" />
         <!-- 消息通知待办-结束 -->
       </li>
       <li>
@@ -109,7 +111,8 @@ import useLocale from '@/hooks/locale';
 import Menu from '@/components/menu/index.vue';
 import { useMessageService } from '@/services/messageService';
 import { useSocket } from '@/hooks/socket';
-import MessageBox from '../message-box/index.vue';
+import MessageBox from '@/components/message-box/index.vue';
+import MessageDetail from '@/components/message-box/detail.vue';
 import ConnectStatus from './connect-status.vue';
 
 const logoLight = "/logo.svg?t=navbar";
@@ -121,6 +124,8 @@ const { changeLocale, currentLocale } = useLocale();
 const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
 const locales = [...LOCALE_OPTIONS];
 
+// 消息详情组件引用
+const messageDetailRef = ref();
 // 使用消息服务
 const messageService = useMessageService();
 
@@ -168,6 +173,10 @@ const setDropDownVisible = () => {
 
 const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
 
+// 处理消息详情显示
+const handleReadOne = (messageId: number) => {
+  messageDetailRef.value?.open(messageId);
+};
 // 计算未读消息数量
 const unreadCount = computed(() => {
   return messageService.messages.filter(item => !item.status).length;

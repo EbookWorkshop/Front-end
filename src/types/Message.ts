@@ -8,7 +8,7 @@ export interface MessageRecord {
      * * ### notice 通知——收到一条未读通知，并通过通知信息直接显示出信息来
      * * ### history 历史消息——收到一条已读状态的信息，通常系统已通过其它渠道已通知过一次的情况
      */
-    type: "notice" | "message" | "history"; 
+    type: "notice" | "message" | "history";
     title: string;
     subTitle: string;
     //图标：index为数字序号，缺省则显示一个显示器
@@ -23,3 +23,13 @@ export interface MessageRecord {
     messageType?: number; // 在src\components\message-box\list.vue::template::#extra 中使用(未开始、已开通、进行中、即将到期)
 }
 export type MessageListType = MessageRecord[];
+
+/**
+ * 后台缓存的消息
+ */
+export interface MessageDetail {
+    type: string;
+    message: MessageRecord;
+    err: ErrorEvent | undefined;
+    data: any | undefined;
+}

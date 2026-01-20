@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { Chapter, ChapterOrderSetting } from '@/types/book';
-import { HttpResponse } from '@/types/global';
+import type { HttpResponse } from '@/types/global';
 
 /**
  * 拿到书 目录
