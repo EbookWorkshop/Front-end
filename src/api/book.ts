@@ -103,7 +103,8 @@ export function updateChapterOrder(chapterOrderList: Array<ChapterOrderSetting>)
  * @returns
  */
 export function restructureChapter(setting: any) {
-  return axios.patch('/library/book/chapters/restructure', setting);
+  console.log("sss")
+  return axios.patch('/library/book/chapter/restructure', setting);
 }
 
 /**

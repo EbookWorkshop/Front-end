@@ -133,7 +133,8 @@
   // 处理消息详情显示
   const handleItemDetail = (item: MessageRecord) => {
     // // 打开消息详情模态框
-    emit('readOne', item.id);
+    //-1为前端生成的错误消息，后端无法获取详情
+    if (item.id !== -1) emit('readOne', item.id);
     
     // 如果是未读消息，标记为已读
     if (!item.status) {

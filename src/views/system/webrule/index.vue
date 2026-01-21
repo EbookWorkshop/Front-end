@@ -80,7 +80,7 @@
                         ]" :validate-trigger="['change', 'input']">
                           <a-input v-model="rule.selector" placeholder="CSS选择器" />
                         </a-form-item>
-                        <a-form-item label="删除的元素" :field="`rules.${index}.removeSelector`">
+                        <a-form-item label="删除的元素" :field="`rules.${index}.removeSelector`" tooltip="删除元素会优先抓取规则执行；同一页面删除过的元素，后续规则抓取时不会存在，请注意先后顺序及互相影响。">
                           <a-select v-model="rule.removeSelector" placeholder="通过CSS选择器匹配，命中的元素会从DOM中删除。用于去广告/按钮。"
                             multiple allow-create>
                           </a-select>

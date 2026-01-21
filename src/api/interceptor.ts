@@ -5,10 +5,11 @@ import type {
   AxiosRequestHeaders,
   AxiosResponse,
 } from 'axios';
-import { Message } from '@arco-design/web-vue';
-// import { useUserStore } from '@/store';
+// import { Message } from '@arco-design/web-vue';
 import { getToken } from '@/utils/auth';
 import { getApiBaseUrl } from '@/utils/config';
+import type { MessageRecord } from '@/types/Message';
+import { useMessageServiceOutsiteVue } from '@/services/messageService';
 
 axios.defaults.baseURL = getApiBaseUrl();
 
@@ -40,20 +41,36 @@ axios.interceptors.response.use(
     const res = response.data;
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== ApiResultCode.Success) {
-      Message.error({
+      const message: MessageRecord = {
+        id: -1,
+        type: 'message',
+        title: 'API执行错误',
+        subTitle: '响应错误',
         content: res.msg || '未知错误',
-        duration: 5 * 1000,
-      });
+        avatar: 'error',
+        time: new Date().toLocaleString(),
+        status: 0,
+      };
+      const messageService = useMessageServiceOutsiteVue();
+      messageService.addMessage(message);
+
       return Promise.reject(new Error(res.msg || 'Error'));
     }
     return res;
   },
-  (error: Error) => {
-    // axios 抛出的错误为Error类型
-    Message.error({
+  (error: Error) => {    // axios 抛出的错误为Error类型
+    const message: MessageRecord = {
+      id: -1,
+      type: 'message',
+      title: '请求错误',
+      subTitle: '',
       content: error?.stack || error.message || '请求错误',
-      duration: 5 * 1000,
-    });
+      avatar: 'error',
+      time: new Date().toLocaleString(),
+      status: 0,
+    };
+    const messageService = useMessageServiceOutsiteVue();
+    messageService.addMessage(message);
     return Promise.reject(error);
   }
 );

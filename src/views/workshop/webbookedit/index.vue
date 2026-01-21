@@ -126,7 +126,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
 
     // 使用消息服务添加错误消息
     const errInfo: MessageRecord = {
-      id: bookId,
+      id: -1,
       type: "message",
       title: `《${bookData.value?.BookName}》获取章节出错：${err?.name || ""}`,
       subTitle: `章节-${curChapter.value.getTitle()}`,
@@ -162,7 +162,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
 
     // 同时将完成消息添加到消息服务
     messageService.addMessage({
-      id: bookId,
+      id: -1,
       type: "message",
       title: `《${bookData.value?.BookName}》已尝试任务${chapterIndexArray.length}个`,
       subTitle: `成功：${doneNum}，失败：${failNum}`,

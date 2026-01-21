@@ -85,7 +85,7 @@ const onItemClick = (item: MessageRecord) => {
     // 如果是未读消息，触发标记为已读
     emit('itemClick', [item]);
   }
-  // 总是触发显示消息详情
+  // 触发显示消息详情
   emit('itemDetail', item);
 };
 

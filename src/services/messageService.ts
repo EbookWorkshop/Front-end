@@ -12,7 +12,8 @@ interface MessageService {
     clearAll: () => void
 }
 
-const MessageServiceSymbol: InjectionKey<MessageService> = Symbol('MessageService')
+const MessageServiceSymbol: InjectionKey<MessageService> = Symbol('MessageService');
+let myMS: MessageService | null = null;
 
 export function createMessageService(): MessageService {
     const { on: socketOn } = useSocket()
@@ -46,7 +47,7 @@ export function createMessageService(): MessageService {
             id: bookid,
             type: 'notice',
             title: `《${bookName}》已导入完成。`,
-            content:'',
+            content: '',
             vnodeContent: buttonVNode,
             time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
             avatar: '/logo.svg?t=msg',
@@ -71,12 +72,26 @@ export function createMessageService(): MessageService {
     }
 }
 
+/**
+ * 内部调用，获取MessageService实例
+ * @returns 
+ */
 export function useMessageService(): MessageService {
-    const service = inject(MessageServiceSymbol)
+    const service = inject(MessageServiceSymbol)   //inject() can only be used inside setup() or functional components
     if (!service) throw new Error('MessageService not provided')
     return service
 }
 
+/**
+ * 外部调用，获取MessageService实例
+ * @returns 
+ */
+export function useMessageServiceOutsiteVue(): MessageService {
+    return myMS ?? createMessageService();
+}
+
 export function provideMessageService() {
-    provide(MessageServiceSymbol, createMessageService())
+    if (myMS) return myMS;
+    myMS = createMessageService();
+    provide(MessageServiceSymbol, myMS);
 }
