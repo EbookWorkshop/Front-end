@@ -14,12 +14,7 @@
                     <a-col :span="16">
                         <a-form-item field="chapterId" label="章节" label-col-flex="100px" :rules="chapterIdRules"
                             tooltip="部分功能可不选，不选则应用到所有章节">
-                            <a-select v-model="form.chapterId" :options="Chapters" default-value=""
-                                :field-names="{ value: 'IndexId', label: 'Title' }" allow-search multiple
-                                :virtual-list-props="{
-                                    height: 500,
-                                    threshold: 80,
-                                }" />
+                            <SelectChapter v-model="form.chapterId" :volume="Volumes" :chapters="Chapters" multiple/>
                         </a-form-item>
                     </a-col>
                 </a-row>
@@ -137,6 +132,7 @@ import type { Rule } from '@/api/workplace';
 
 import { ref, reactive, computed, nextTick } from 'vue';
 import SelectBook from '@/components/select-book/index.vue';
+import SelectChapter from '@/components/chapter/select.vue';
 import Diff from '@/components/diff/index.vue'
 import { ApiResultCode } from "@/types/global"
 import { queryReviewRuleOnBook, RuleAndBook, queryReviewRuleList, tryARuleOnBook, saveReviewOnBook, deleteReviewRuleForBook, ReviewResult } from '@/api/workplace';
@@ -159,6 +155,7 @@ const form = reactive({
     curRegex: '' as string,
     curReplace: '' as string,
 });
+const Volumes = ref([]);       //已选中的书所有的卷
 const Chapters = ref([]);       //已选中的书所有的章节
 const ruleData = ref<RuleAndBook[]>([]);    //已选中的书所有的规则
 const chapterIdRules = ref<FieldRule[]>([]);
@@ -219,6 +216,7 @@ function onChangeBookLoadChapter() {
     queryBookById(form.bookId ?? 0).then((result: any) => {
         form.chapterId = [] // 清空已选章节
         Chapters.value = result.data.Index.filter((i: any) => i.IsHasContent)
+        Volumes.value = result.data.Volumes;
     })
 }
 

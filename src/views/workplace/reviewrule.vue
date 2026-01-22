@@ -72,11 +72,10 @@
         <a-form :model="testForm">
           <a-form-item field="book" label="书">
             <SelectBook v-model="testForm.bookId"
-              @change="queryBookById(testForm.bookId).then((result: any) => { Chapters = result.data.Index.filter((i: any) => i.IsHasContent) })" />
+              @change="queryBookById(testForm.bookId).then((result: any) => { Chapters = result.data.Index.filter((i: any) => i.IsHasContent); Volumes = result.data.Volumes; })" />
           </a-form-item>
           <a-form-item field="chapter" label="章节">
-            <a-select v-model="testForm.chapterId as number" :options="Chapters"
-              :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }" allow-search />
+            <SelectChapter v-model="testForm.chapterId" :volume="Volumes" :chapters="Chapters" />
           </a-form-item>
           <a-form-item field="name" label="校正规则">
             {{ testForm.ruleName }}
@@ -110,6 +109,7 @@ import {
 import type { TableColumnData } from '@arco-design/web-vue';
 import { Message } from '@arco-design/web-vue';
 import SelectBook from '@/components/select-book/index.vue';
+import SelectChapter from '@/components/chapter/select.vue';
 import Diff from '@/components/diff/index.vue'
 import { useAppStore } from '@/store';
 
@@ -172,6 +172,7 @@ const { loading: tableLoading, response: renderData } =
   useRequest<Rule[]>(queryReviewRuleList);
 
 const Chapters = ref([]);
+const Volumes = ref([]);
 const visible = ref(false);
 const isTest = ref(false);
 const testResult = ref(false);

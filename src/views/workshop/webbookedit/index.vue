@@ -7,7 +7,7 @@
         <BookInfo :loading="loading" :bookId="bookId" :BookName="bookData.BookName" :convertImg="bookData.CoverImg"
           :Author="bookData.Author" :Introduction="bookData.Introduction">
           <template #toolbar>
-            <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Chapters="bookData.Index"
+            <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Volumes="bookData.Volumes" :Chapters="bookData.Index"
               :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar"
               @start-update-chapter="(rsl: any) => curDoingProcent = rsl" ref="toolbarRef"></Toolbar>
           </template>
@@ -26,7 +26,7 @@
 
 <script lang="ts" setup>
 //类型引入
-import type { Book, Chapter, WebChapter } from '@/types/book';
+import type { Book, WebChapter } from '@/types/book';
 import { WebBookStatus } from './data'
 import type { OneChapterStatus } from './data'
 import { useMessageService } from '@/services/messageService';

@@ -31,21 +31,20 @@
                     </a-radio-group>
                   </a-form-item>
                   <div v-if="form.chapterScope == 'volume'">
-                    <a-form-item field="volumes" label="选择卷:" :rules="[{ required: true, message: '至少要选择一个卷，若不想按卷导出，请在导出范围选其它方式。' }]">
+                    <a-form-item field="volumes" label="选择卷:"
+                      :rules="[{ required: true, message: '至少要选择一个卷，若不想按卷导出，请在导出范围选其它方式。' }]">
                       <a-select v-model="form.volumes" :options="Volumes" multiple allow-search
                         :field-names="{ value: 'VolumeId', label: 'Title' }" :virtual-list-props="{ height: 200 }" />
                     </a-form-item>
                   </div>
                   <div v-if="form.chapterScope == 'range'">
-                    <a-form-item field="cBegin" label="开始章节:" :rules="[{ required: true, message: '按范围导出时，需要设置导出范围开始章节' }]">
-                      <a-select v-model="form.cBegin" :options="Chapters"
-                        :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
-                        allow-search />
+                    <a-form-item field="cBegin" label="开始章节:"
+                      :rules="[{ required: true, message: '按范围导出时，需要设置导出范围开始章节' }]">
+                      <SelectChapter v-model="form.cBegin" :volume="Volumes" :chapters="Chapters" />
                     </a-form-item>
-                    <a-form-item field="cEnd" label="结束章节:" :rules="[{ required: true, message: '按范围导出时，需要设置导出范围结束章节' }]">
-                      <a-select v-model="form.cEnd" :options="[...Chapters].reverse()"
-                        :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
-                        allow-search />
+                    <a-form-item field="cEnd" label="结束章节:"
+                      :rules="[{ required: true, message: '按范围导出时，需要设置导出范围结束章节' }]">
+                      <SelectChapter v-model="form.cEnd" :volume="Volumes" :chapters="Chapters" :is-reverse="true" />
                     </a-form-item>
                   </div>
                 </div>
@@ -162,6 +161,7 @@ import type { FormInstance } from '@arco-design/web-vue';
 import { useRoute } from 'vue-router';
 import SelectBook from '@/components/select-book/index.vue'
 import BookCover from '@/components/book-cover/index.vue';
+import SelectChapter from '@/components/chapter/select.vue';
 
 import { HeatABook } from '@/api/library'
 import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';

@@ -39,8 +39,7 @@
     <a-modal v-model:visible="isShow" title="区段选择" @ok="onSetChapter" draggable unmount-on-close>
         <a-form :model="data" layout="vertical">
             <a-form-item field="cBegin" label="开始章节:" required>
-                <a-select v-model="data.cBegin" :options="Chapters" :field-names="{ value: 'IndexId', label: 'Title' }"
-                    :virtual-list-props="{ height: 200 }" allow-search />
+                <SelectChapter v-model="data.cBegin" :volume="Volumes" :chapters="Chapters" />
             </a-form-item>
             <a-form-item field="cLength" label="按数量选：">
                 <a-select placeholder="需要先选择【开始章节】" allow-create @change="onSetChapterLength">
@@ -48,9 +47,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item field="cEnd" label="结束章节:" required>
-                <a-select v-model="data.cEnd" :options="[...Chapters].reverse()"
-                    :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
-                    allow-search />
+                <SelectChapter v-model="data.cEnd" :volume="Volumes" :chapters="Chapters" :is-reverse="true" />
             </a-form-item>
         </a-form>
     </a-modal>
@@ -60,7 +57,7 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
-import { Chapter } from '@/types/book';
+import type { Volume, Chapter } from '@/types/book';
 import { ApiResultCode } from '@/types/global';
 import { HeatABook } from '@/api/library';
 import { mergeWebBookIndex, updateChapter, queryBookDefaultSourcesById } from '@/api/book';
@@ -69,6 +66,7 @@ import useChapterHiddenHelper from "@/hooks/chapter-hidden";
 
 import EditBookInfo from '@/components/book-info/edit.vue';
 import Descriptions from '@/components/book-tool/duplicates.vue';
+import SelectChapter from '@/components/chapter/select.vue';
 
 const chapterHasCheckedNum = ref(0);    // 已选中的章节数
 const isMerging = ref(false);       //合并章节状态
@@ -91,6 +89,10 @@ const props = defineProps({
     },
     Chapters: {
         type: Array as () => Chapter[],
+        default: []
+    },
+    Volumes: {
+        type: Array as () => Volume[],
         default: []
     },
     ChapterStatus: {
