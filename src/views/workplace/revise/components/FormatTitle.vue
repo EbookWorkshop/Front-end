@@ -31,7 +31,7 @@
         </a-form>
       </div>
     </div>
-    <a-card :bordered="false" :style="{ width: '100%', marginTop: '100px' }">
+    <a-card :bordered="false" :style="{ width: '100%', marginTop: '140px' }">
       <a-card-grid v-for="(item, index) in chapterTitles" :key="index" :hoverable="chapterTitles.length <= 100"
         :class="chapterTitles.length > 200 ? 'L' : (chapterTitles.length > 80 ? 'M' : 'S')">
         <a-card v-if="!isShowDiffOnly || (isShowDiffOnly && item.OldTitle != item.NewTitle)" :bordered="false"
