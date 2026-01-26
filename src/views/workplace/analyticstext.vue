@@ -46,7 +46,7 @@
                     <div class="card-value">约{{ Math.ceil(Number(chapter.readingTime)) }}分钟</div>
                   </div>
                 </div>
-                <template #footer>
+                <template #actions>
                   <a-button type="primary" size="small" @click="openChapterInNewTab(chapter.chapterId)">阅读</a-button>
                 </template>
               </a-card>

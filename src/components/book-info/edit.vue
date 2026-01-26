@@ -127,6 +127,9 @@ async function handleBeforeOk(callback: any) {
         callback(true); // 
         await LoadData();
         emit('submit', form); // 提交数据
+    }).catch((err) => {
+        Message.error('修改失败：' + err.message);
+        callback(false);
     }).finally(() => {
         emit('cancel');
     });
