@@ -57,13 +57,22 @@
           }">
             <a-row v-for="(item, index) in renderData" :key="index" :gutter="20" :style="{ marginBottom: '20px' }">
               <a-col v-for="f in item" :key="f.name" :span="Math.floor(24 / item.length)">
-                <a-card :title="`${f.name} - (${formatFileSize(f.size)})`" :bordered="false" :style="{ width: '100%' }">
+                <a-card :title="`${f.name} - (${formatFileSize(f.size)})`" :bordered="false" :style="{ width: '100%' }" :class="`${f.loadError?`loadError`:``}`">
                   <template #extra>
                     <a-dropdown>
-                      <a-button>更多</a-button>
+                      <a-button type="dashed" :status="f.loadError?'danger':'normal'">更多</a-button>
                       <template #content>
                         <a-doption
                           @click="setDefaultFont(f.name).then((rsl: any) => defaultFont = rsl.data.Value)">设置为默认字体</a-doption>
+                        <a-popover title="修改字体名" popup-container="body" trigger="click" position="bottom">
+                          <a-button type="text" long>修改字体名</a-button>
+                          <template #content>
+                            <a-input :default-value="f.name" v-model="newFontName" placeholder="请输入新的字体显示名"
+                              style="width: 200px;" />
+                            <a-button type="primary" style="margin-top: 10px;"
+                              @click="onFontRename(f.fontFile, newFontName)">确认改名</a-button>
+                          </template>
+                        </a-popover>
                         <a-doption @click="viewOnPDF(f)">在PDF中预览</a-doption>
                         <a-popconfirm content="确认删除？此操作将无法恢复！" @ok="onDeleteFont(f.fontFile)">
                           <a-button status="danger" long>删除字体</a-button>
@@ -71,12 +80,11 @@
                       </template>
                     </a-dropdown>
                   </template>
-                  <div
-                    :style="{ fontFamily: f.fontFamily, fontSize: form.fontSize + 'px', color: f.loadError ? 'rgb(var(--red-2))' : '' }"
-                    class="showContent">
-                    <p v-for="(p, pI) in demoContext[form.contentIndex]?.content.split(
-                      '\n'
-                    )" :key="pI">{{ p }}</p>
+                  <div class="showContent"
+                    :style="{ fontFamily: f.fontFamily, fontSize: `${form.fontSize}px`}" >
+                    <a-typography-title :heading="4">{{ demoContext[form.contentIndex]?.name }}</a-typography-title>
+                    <a-typography-paragraph v-for="(p, pI) in demoContext[form.contentIndex]?.content.split('\n')" :key="pI">{{ p
+                    }}</a-typography-paragraph>
                   </div>
                 </a-card>
               </a-col>
@@ -93,8 +101,8 @@
             <a-row>
               <a-col :span="24" style="text-align: center">
                 <iframe :ref="pdfFrame" width="1072" height="1448" :src="`${ASSETS_HOST}/services/pdf/view?content=${encodeURIComponent(
-                    demoContext[form.contentIndex]?.content
-                  )}&fontsize=${form.fontSize}&fontfamily=${form.font}`"></iframe>
+                  demoContext[form.contentIndex]?.content
+                )}&fontsize=${form.fontSize}&fontfamily=${form.font}`"></iframe>
               </a-col>
             </a-row>
           </div>
@@ -113,6 +121,7 @@ import {
   queryFontList,
   queryDemoContent,
   deleteFont,
+  renameFont,
   getDefaultFont,
   setDefaultFont,
   ASSETS_HOST,
@@ -143,10 +152,10 @@ const renderData: FontFace[][] = reactive([]);
 const fontData: FontFace[] = []; // 默认的字体数据
 const defaultFont = ref("无");//默认字体
 const pdfFrame = ref(null) as any;
-
+const newFontName = ref('');
 const activeViewModel = ref('web'); // 激活的预览模式
 
-getDefaultFont().then(rsl =>{
+getDefaultFont().then(rsl => {
   defaultFont.value = rsl.data;
   form.font = rsl.data;
 });
@@ -169,6 +178,20 @@ const onDeleteFont = async (fontName: any) => {
     Message.error(`删除失败：${err?.response?.data?.msg}`);
   }
 };
+
+/**
+ * 修改字体显示名
+ * @param fontName 字体文件名
+ * @param newFontName 新的字体显示名
+ */
+const onFontRename = (fontName: string, newFontName: string) => {
+  renameFont(fontName, newFontName).then(() => {
+    Message.success('修改成功！');
+    Init();
+  }).catch((err: any) => {
+    Message.error(`修改失败：${err?.response?.data?.msg}`);
+  });
+}
 
 async function Init() {
   const data = (await queryFontList()) as FontFace[];
@@ -206,8 +229,16 @@ Init();
 </script>
 
 <style lang="less" scoped>
-.showContent p::before {
-  content: '　　';
-  /* 段落前缩进两格 */
+.showContent  {
+  h4{
+    text-align: center;
+  }
+  div::before {
+    content: '　　';
+    /* 段落前缩进两格 */
+  }
+}
+.loadError {
+  background-color: rgb(var(--red-1));
 }
 </style>

@@ -31,6 +31,10 @@ export function queryFontList() {
 export function deleteFont(fontName: string) {
   return axios.delete(`/services/font?fontName=${fontName}`);
 }
+
+export function renameFont(fontFile: string, newName: string) {
+  return axios.post(`/services/font/rename`, { fontFile, newName });
+}
 /**
  * 获取默认字体
  * @returns 
