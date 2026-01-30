@@ -193,10 +193,9 @@ import {
     IconArrowDown,
     IconLeft,
     IconRight,
-    IconSearch
 } from '@arco-design/web-vue/es/icon';
 
-import { addVolume as apiAddVolume, editVolume as apiEditVolume, deleteVolume as apiDeleteVolume, moveChapterToVolume as apiMoveChapterToVolume, removeChapterFromVolume as apiRemoveChapterFromVolume } from '@/api/book';
+import { addVolume as apiAddVolume, editVolume as apiEditVolume, deleteVolume as apiDeleteVolume, moveChapterToVolume as apiMoveChapterToVolume, removeChapterFromVolume as apiRemoveChapterFromVolume, reorderVolumes as apiReorderVolumes } from '@/api/book';
 import { ApiResultCode } from '@/types/global';
 
 
@@ -397,12 +396,18 @@ function moveVolume(volume: Volume, direction: 'up' | 'down') {
     // 交换顺序
     const updatedVolume1: Volume = { ...volume, OrderNum: targetVolume.OrderNum };
     const updatedVolume2: Volume = { ...targetVolume, OrderNum: volume.OrderNum };
+    apiReorderVolumes([updatedVolume1, updatedVolume2].map(v => ({ volumeId: v.VolumeId, orderNum: v.OrderNum }))).then(response => {
+        if (response.code === ApiResultCode.Success) {
+            Message.success('调整顺序成功');
 
-    // 模拟移动成功
-    Message.success('【模拟】调整顺序成功');
-
-    // 触发更新事件，通知父组件
-    emit('update', { type: 'move', data: [updatedVolume1, updatedVolume2] });
+            // 触发更新事件，通知父组件
+            emit('update', { type: 'move', data: [updatedVolume1, updatedVolume2] });
+        } else {
+            Message.error('调整顺序失败: ' + response.msg);
+        }
+    }).catch((err) => {
+        Message.error('调整顺序时发生错误: ' + err.message);
+    });
 }
 
 /**

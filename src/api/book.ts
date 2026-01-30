@@ -222,6 +222,17 @@ export function removeChapterFromVolume(chapterIds: number[]) {
   });
 }
 
+/**
+ * 更新卷排序
+ * @param volumeIdsInOrder 
+ * @returns 
+ */
+export function reorderVolumes(volumeOrders: any[]) {
+  return axios.post<HttpResponse<boolean>>(`/library/book/volume/reorder`, {
+    volumeOrders  
+  });
+}
+
 
 /**
  * 创建一本网文，新书入库
