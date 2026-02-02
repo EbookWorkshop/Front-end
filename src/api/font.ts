@@ -20,7 +20,7 @@ export function queryFontList() {
         fontFile: item.file,
         size: item.size
       };
-    }).sort((a:any, b) => b.size - a.size);
+    }).sort((a: any, b) => b.size - a.size);
   })
 }
 /**
@@ -36,19 +36,38 @@ export function renameFont(fontFile: string, newName: string) {
   return axios.post(`/services/font/rename`, { fontFile, newName });
 }
 /**
- * 获取默认字体
+ * 获取默认阅读字体
  * @returns 
  */
-export function getDefaultFont() {
-  return axios.get(`/services/font/defaultFont`);
+export function getDefaultReadingFont() {
+  return axios.get(`/services/font/reading`);
 }
 /**
- * 设置默认字体
+ * 设置默认阅读字体
  * @param fontName 
  * @returns 
  */
-export function setDefaultFont(fontName: string) {
-  return axios.post(`/services/font/setDefault`, { fontName });
+export function setDefaultReadingFont(fontName: string) {
+  return axios.put(`/services/font/reading`, { fontName });
+}
+/**
+ * 获取默认UI字体
+ * @returns 
+ */
+export function getUIFont() {
+  return axios.get(`/services/font/UI`).then((data: AxiosResponse<any>) => {
+    if (!data.data) return;
+    data.data.url = ASSETS_HOST + data.data?.url;
+    return data;
+  });
+}
+/**
+ * 设置默认UI字体
+ * @param fontName 
+ * @returns 
+ */
+export function setUIFont(fontName: string) {
+  return axios.put(`/services/font/UI`, { fontName });
 }
 
 

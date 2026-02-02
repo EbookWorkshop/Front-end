@@ -55,11 +55,13 @@ import TabBar from '@/components/tab-bar/index.vue';
 import usePermission from '@/hooks/permission';
 import useResponsive from '@/hooks/responsive';
 import { provideMessageService } from '@/services/messageService';
+import { useUserUIFont } from '@/hooks/font';
 const PageLayout = defineAsyncComponent (() => import('./page-layout.vue'));
 
 // 在应用顶层提供消息服务
 provideMessageService();
 
+useUserUIFont();
 const isInit = ref(false);
 const appStore = useAppStore();
 const userStore = useUserStore();

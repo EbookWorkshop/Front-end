@@ -63,7 +63,9 @@
                       <a-button type="dashed" :status="f.loadError?'danger':'normal'">更多</a-button>
                       <template #content>
                         <a-doption
-                          @click="setDefaultFont(f.name).then((rsl: any) => defaultFont = rsl.data.Value)">设置为默认字体</a-doption>
+                          @click="setDefaultReadingFont(f.name).then((rsl: any) => defaultFont = rsl.data.Value)">设置为默认阅读字体</a-doption>
+                        <a-doption v-if="!f.loadError"
+                          @click="setUIFont(f.name).then((rsl: any) => Message.success('设置成功，请刷新页面。'))">设置为UI字体</a-doption>
                         <a-popover title="修改字体名" popup-container="body" trigger="click" position="bottom">
                           <a-button type="text" long>修改字体名</a-button>
                           <template #content>
@@ -122,8 +124,9 @@ import {
   queryDemoContent,
   deleteFont,
   renameFont,
-  getDefaultFont,
-  setDefaultFont,
+  getDefaultReadingFont,
+  setDefaultReadingFont,
+  setUIFont,
   ASSETS_HOST,
 } from '@/api/font';
 import { Message } from '@arco-design/web-vue';
@@ -155,7 +158,7 @@ const pdfFrame = ref(null) as any;
 const newFontName = ref('');
 const activeViewModel = ref('web'); // 激活的预览模式
 
-getDefaultFont().then(rsl => {
+getDefaultReadingFont().then(rsl => {
   defaultFont.value = rsl.data;
   form.font = rsl.data;
 });
