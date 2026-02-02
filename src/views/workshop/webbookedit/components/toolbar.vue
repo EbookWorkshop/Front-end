@@ -11,9 +11,10 @@
                     <a-button @click="onCheckEmpty" shape="round"> 选空章节 </a-button>
                     <a-button @click="onCheckNotEmpty"> 选非空章节 </a-button>
                     <a-dropdown @select="onCheckVolume" v-if="Volumes.length > 0">
-                        <a-button shape="round" > 选择卷 </a-button>
+                        <a-button shape="round"> 选择卷 </a-button>
                         <template #content>
-                            <a-doption v-for="volume in Volumes" :key="volume.VolumeId" :value="volume.VolumeId">{{ volume.Title }}</a-doption>    
+                            <a-doption v-for="volume in Volumes" :key="volume.VolumeId" :value="volume.VolumeId">{{
+                                volume.Title }}</a-doption>
                         </template>
                     </a-dropdown>
                     <a-button @click="isShow = true" shape="round"> 区段选择 </a-button>
@@ -201,6 +202,7 @@ function UpdateChapter() {
 
     if (hasCheckChapter.length == 0) {
         Message.error("没有选中章节");
+        btStatusGettingData.value = false;
         return;
     }
 
