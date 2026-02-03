@@ -6,5 +6,5 @@ export default {
   'menu.system.fontmanager': 'Fonts Manager',
   'menu.system.preferences': 'Preferences',
   'menu.system.usestate': 'Use State',
-
+  'menu.system.RegisteredWebsites': 'Registered Websites',
 };

@@ -40,6 +40,13 @@ const props = defineProps({
         default: -1
     },
     /**
+     * 卷ID ,-1:不在任何卷中
+     */
+    volumeId: {
+        type: Number,
+        default: -1
+    },
+    /**
      * 合并的章节ID
      */
     toMergeChapterId: {
@@ -101,6 +108,9 @@ const onSubmit = () => {
     if (props.chapterId == -1) {    // 新增章节
         result.BookId = props.bookId;
         reload = true;
+        if(props.volumeId != -1) {
+            result.VolumeId = props.volumeId;
+        }
     }
 
     if (change) {

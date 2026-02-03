@@ -6,5 +6,5 @@ export default {
   'menu.system.fontmanager': '字体管理',
   'menu.system.preferences': '偏好设置',
   'menu.system.usestate': '使用状态',
-
+  'menu.system.RegisteredWebsites': '已登记网站',
 };

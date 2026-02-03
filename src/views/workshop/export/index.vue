@@ -16,29 +16,40 @@
             <keep-alive>
               <a-form :model="form" ref="formRef" auto-label-width>
                 <div v-if="current == 1" class="main-content">
-                  <a-form-item label="选择书籍" required>
-                    <SelectBook v-model="form.bookId" :rules="[{ required: true, message: '必须设置文本编码' }]" />
+                  <a-form-item label="选择书籍" field="bookId" :rules="[{ required: true, message: '需要先选择书籍' }]">
+                    <SelectBook v-model="form.bookId" />
                   </a-form-item>
                   <BookCover v-show="form.bookId ?? 0 > 0" :book-id="form.bookId" ref="captureCover"
                     @complete="onChangeBook" />
                 </div>
                 <div v-if="current == 2" class="main-content">
-                  <a-form-item label="全部章节">
-                    <a-switch :default-checked="true" v-model="form.isCheckAll" @change="getBookIndex" />
+                  <a-form-item label="导出范围" field="chapterScope" required>
+                    <a-radio-group type="button" v-model="form.chapterScope" @change="getBookIndex">
+                      <a-radio value="all">全部章节</a-radio>
+                      <a-radio value="volume">指定卷</a-radio>
+                      <a-radio value="range">指定范围</a-radio>
+                    </a-radio-group>
                   </a-form-item>
-                  <a-form-item field="cBegin" label="开始章节:" required v-if="!form.isCheckAll">
-                    <a-select v-model="form.cBegin" :options="Chapters"
-                      :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
-                      allow-search />
-                  </a-form-item>
-                  <a-form-item field="cEnd" label="结束章节:" required v-if="!form.isCheckAll">
-                    <a-select v-model="form.cEnd" :options="[...Chapters].reverse()"
-                      :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
-                      allow-search />
-                  </a-form-item>
+                  <div v-if="form.chapterScope == 'volume'">
+                    <a-form-item field="volumes" label="选择卷:"
+                      :rules="[{ required: true, message: '至少要选择一个卷，若不想按卷导出，请在导出范围选其它方式。' }]">
+                      <a-select v-model="form.volumes" :options="Volumes" multiple allow-search
+                        :field-names="{ value: 'VolumeId', label: 'Title' }" :virtual-list-props="{ height: 200 }" />
+                    </a-form-item>
+                  </div>
+                  <div v-if="form.chapterScope == 'range'">
+                    <a-form-item field="cBegin" label="开始章节:"
+                      :rules="[{ required: true, message: '按范围导出时，需要设置导出范围开始章节' }]">
+                      <SelectChapter v-model="form.cBegin" :volume="Volumes" :chapters="Chapters" />
+                    </a-form-item>
+                    <a-form-item field="cEnd" label="结束章节:"
+                      :rules="[{ required: true, message: '按范围导出时，需要设置导出范围结束章节' }]">
+                      <SelectChapter v-model="form.cEnd" :volume="Volumes" :chapters="Chapters" :is-reverse="true" />
+                    </a-form-item>
+                  </div>
                 </div>
                 <div v-if="current == 3" class="main-content">
-                  <a-form-item label="文件类型" required>
+                  <a-form-item label="文件类型" required field="fileType">
                     <a-radio-group v-model="form.fileType">
                       <a-radio value="epub">EPUB</a-radio>
                       <a-radio value="pdf">PDF</a-radio>
@@ -62,7 +73,7 @@
                     <a-switch v-model="form.isSendEmail" />
                   </a-form-item>
                   <a-table>
-                    <a-tr><a-th>类型</a-th><a-th>优点</a-th><a-th>缺点</a-th></a-tr>
+                    <a-tr><a-th>导出文件类型</a-th><a-th>优点</a-th><a-th>缺点</a-th></a-tr>
                     <a-tr>
                       <a-td>EPUB</a-td><a-td>
                         <ul>
@@ -72,6 +83,7 @@
                           <li>可以保存书籍的元数据（作者、出版社、ISBN等）</li>
                           <li>占用空间最少（对比其它格式）</li>
                           <li>丰富的在线转换工具可转为其它格式</li>
+                          <li>带目录可以方便跳转（需要阅读设备支持）</li>
                         </ul>
                       </a-td>
                       <a-td>
@@ -88,6 +100,7 @@
                         <ul>
                           <li>可以预设显示的效果，排版、字体、字号等，能在不同设备、平台得到相似的效果</li>
                           <li>可直接复制到 Kindle 上</li>
+                          <li>带目录可以方便跳转（需要阅读设备支持）</li>
                         </ul>
                       </a-td>
                       <a-td>
@@ -148,6 +161,7 @@ import type { FormInstance } from '@arco-design/web-vue';
 import { useRoute } from 'vue-router';
 import SelectBook from '@/components/select-book/index.vue'
 import BookCover from '@/components/book-cover/index.vue';
+import SelectChapter from '@/components/chapter/select.vue';
 
 import { HeatABook } from '@/api/library'
 import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';
@@ -165,10 +179,11 @@ const saving = ref(false);
 const formRef = ref<FormInstance>();
 const form = ref({
   bookId: bookid || undefined as number | undefined,
-  isCheckAll: true,
+  chapterScope: "all",
   chapterRange: '',
   fontFamily: '',
   isEnableIndent: true,
+  volumes: [],
   cBegin: undefined as number | undefined,
   cEnd: undefined as number | undefined,
   fileType: "epub",
@@ -177,16 +192,20 @@ const form = ref({
 });
 const current = ref(1);
 const Chapters = ref<Array<any>>([]);
+const Volumes = ref<Array<any>>([]);
+let chapterBookId = -1;   // 记录当前获取的章节索引的书籍ID
 let fontData: Array<any> = [];
 const resultData = ref({} as any);
 const captureCover = ref<InstanceType<typeof BookCover> | null>(null); // 截图的封面
 const coverData = ref("");
 
 function getBookIndex() {
-  if (!form.value.bookId || form.value.isCheckAll) return;
+  if (!form.value.bookId || form.value.chapterScope == 'all' || chapterBookId == form.value.bookId) return;
   queryBookById(form.value.bookId).then(res => {
     if (res.code === ApiResultCode.Success) {
+      chapterBookId = form.value.bookId ?? -1;
       Chapters.value = res.data.Index;
+      Volumes.value = res.data.Volumes;
     }
   })
 }
@@ -209,21 +228,24 @@ const onPrev = () => {
 };
 
 const onNext = async () => {
-  if (current.value == 1 && !form.value.bookId) {
-    formRef.value?.setFields({
-      bookId: {
-        status: 'error',
-        message: '需要先选择书籍',
-      }
-    });
+  let result = await formRef.value?.validate();
+  if (result) {
     return;
-  } else if (current.value == 2) {
+  }
+  if (current.value == 2) {
+    let result = await formRef.value?.validate();
+    if (result) {
+      return;
+    }
     setDefaultSendMail();
   }
 
   current.value = Math.min(4, current.value + 1);
 };
 
+/**
+ * 检查数据库是否配置了接收邮箱信息，若是则默认勾选发送邮箱
+ */
 function setDefaultSendMail() {
   getKindleInbox().then(res => {
     if (res.code === ApiResultCode.Success && res.data?.address) {
@@ -243,8 +265,10 @@ InitFont();
 
 const onSubmit = () => {
   let chapterIds = [] as any;
-  if (form.value.isCheckAll) {
+  if (form.value.chapterScope == 'all') {
     chapterIds = null;
+  } else if (form.value.chapterScope == 'volume') {
+
   } else {
     let isStart = false;
     for (let i = 0; i < Chapters.value.length; i++) {
@@ -254,23 +278,23 @@ const onSubmit = () => {
     }
   };
 
-  let api = null as any;
+  let CreateBookAPI = null as any;
   switch (form.value.fileType) {
     case "pdf":
-      api = createPDF;
+      CreateBookAPI = createPDF;
       break;
     case "txt":
-      api = createTXT;
+      CreateBookAPI = createTXT;
       break;
     case "epub":
-      api = createEPUB;
+      CreateBookAPI = createEPUB;
       break;
   }
   saving.value = true;
 
   let imageData = coverData.value?.startsWith("data:image/png;base64,") ? coverData.value.replace("data:image/png;base64,", "") : "";
 
-  api(form.value?.bookId ?? 0, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle, form.value.isEnableIndent, imageData).then((res: any) => {
+  CreateBookAPI(form.value?.bookId ?? 0, form.value.volumes, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle, form.value.isEnableIndent, imageData).then((res: any) => {
     saving.value = false;
     current.value = 4;
     if (res.code === ApiResultCode.Success) {

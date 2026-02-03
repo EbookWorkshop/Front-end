@@ -1,9 +1,9 @@
 <template>
-  <div ref="containerRef" class="container">
+  <div class="container">
     <Breadcrumb :items="['menu.system', 'menu.system.webrule']" />
     <div class="wrapper">
       <a-spin dot :loading="dataLoading">
-        <a-form ref="formRef" :model="form" @submit="Submit">
+        <a-form :model="form" @submit="Submit">
           <a-row :gutter="16">
             <a-col :span="20" :offset="2">
               <a-space>
@@ -11,7 +11,7 @@
                   <a-button type="primary" @click="resetForm">新增新方案</a-button>
                   <a-button type="primary" @click="showWebList">编辑现有方案</a-button>
                 </a-button-group>
-                <a-button @click="CheckSiteAccessibility">检查站点存活情况</a-button>
+                <a-button @click="GoToRegisteredWebsites">已登记网站</a-button>
                 <a-button-group>
                   <a-button type="primary" status="success" html-type="submit"
                     :disabled="form.hostname.length == 0">保存当前方案</a-button>
@@ -33,6 +33,7 @@
                   <template #icon><icon-eye style="color:rgb(var(--orange-6))"/></template>
                   <template #default>启用预览辅助配置模式</template>
                 </a-button>
+                <a-button @click="ChangeWebHostname">网站域名变更</a-button>
               </a-space>
             </a-col>
           </a-row>
@@ -79,7 +80,7 @@
                         ]" :validate-trigger="['change', 'input']">
                           <a-input v-model="rule.selector" placeholder="CSS选择器" />
                         </a-form-item>
-                        <a-form-item label="删除的元素" :field="`rules.${index}.removeSelector`">
+                        <a-form-item label="删除的元素" :field="`rules.${index}.removeSelector`" tooltip="删除元素会优先抓取规则执行；同一页面删除过的元素，后续规则抓取时不会存在，请注意先后顺序及互相影响。">
                           <a-select v-model="rule.removeSelector" placeholder="通过CSS选择器匹配，命中的元素会从DOM中删除。用于去广告/按钮。"
                             multiple allow-create>
                           </a-select>
@@ -129,32 +130,17 @@
             </a-form-item>
           </a-form>
         </a-modal>
-        <a-modal v-model:visible="isTableModalVisible" title="站点存活情况检查结果" draggable unmount-on-close>
-          <a-table :data="siteAccessibilityData">
-            <template #columns>
-              <a-table-column title="站点" data-index="hostName"></a-table-column>
-              <a-table-column title="返回状态" data-index="statusCode"></a-table-column>
-              <a-table-column title="是否可访问">
-                <template #cell="{ record }">
-                  <a-spin v-if="record.siteAccessibility === '检查中'" />
-                  <a-alert v-else :type="record.siteAccessibility === '成功' ? 'success' : 'error'"></a-alert>
-                </template>
-              </a-table-column>
-            </template>
-          </a-table>
-        </a-modal>
       </a-spin>
     </div>
     <WebList ref="myWebList" @set-form="setFormWithSetting"></WebList>
+    <ChangeHostname ref="changeHostname" v-model:visible="showChangeHostname" @success="showChangeHostname = false" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, computed, watch, h } from 'vue';
+import { reactive, ref, computed, h } from 'vue';
 import { ApiResultCode } from '@/types/global';
-import { checkSiteAccessibility } from '@/api/system';
 import {
-  queryHostList,
   saveHostSetting,
   deleteHostSetting,
   visRuleSetting,
@@ -164,10 +150,9 @@ import {
 import { FileItem, Message, Modal } from '@arco-design/web-vue';
 import WebList from './components/web-list.vue';
 import { rulesOptions } from './data';  // 规则类型选项
-import useRequest from '@/hooks/request';
 
 import SelectAction from './components/SelectAction.vue';
-
+import ChangeHostname from './components/ChangeHostname.vue';
 
 const formUrlForVisVisible = ref(false); // 配置弹窗是否显示
 const formUrlForVis = reactive({ indexUrl: '', contentUrl: '' }); // 弹窗表单——辅助预览的网址采集表单
@@ -176,8 +161,7 @@ const isUseVisStatus = computed(() =>
   isUseVisModel.value ? 'warning' : 'normal'
 );
 const dataLoading = ref(false);
-const isTableModalVisible = ref(false);
-
+const showChangeHostname = ref(false);
 
 // 绑定数据的规则配置表单
 const form = reactive({
@@ -204,7 +188,7 @@ const showWebList = () => {
   myWebList.value.show();
 };
 
-const siteAccessibilityData = ref<any[]>([]);      // 站点存活情况数据
+// const siteAccessibilityData = ref<any[]>([]);      // 站点存活情况数据
 
 /**
  * 根据规则值-找到对应的规则显示名称
@@ -368,40 +352,12 @@ function onSetVisUrl() {
 }
 
 /**
- * 检查站点存活情况
+ * 已登记网站
  */
-async function CheckSiteAccessibility() {
-  isTableModalVisible.value = true;
-  const { response: hostList } = useRequest<string[]>(queryHostList);
-  watch(hostList, (newVal /*, oldVal*/) => {
-    siteAccessibilityData.value = [];
-    for (const host of newVal) {
-      siteAccessibilityData.value.push({
-        hostName: host,
-        siteAccessibility: '检查中',
-        statusCode: '',
-      });
-
-      checkSiteAccessibility(host)
-        .then((res: any) => {
-          let isOK = res.data;
-          const index = siteAccessibilityData.value.findIndex(
-            (item) => item.hostName === host
-          );
-          siteAccessibilityData.value[index].siteAccessibility = isOK ? '成功' : '失败';
-          siteAccessibilityData.value[index].statusCode = res.status;
-
-        })
-        .catch((err) => {
-          const index = siteAccessibilityData.value.findIndex(
-            (item) => item.hostName === host
-          );
-          siteAccessibilityData.value[index].siteAccessibility = '失败';
-          console.log(err);
-        });
-    }
-  });
-
+async function GoToRegisteredWebsites() {
+  // 打开 websiteregistry 页面到新窗口
+  const path = '/system/webrule/websiteregistry';
+  window.open(`${path}`, '_blank');
 }
 
 /**
@@ -464,6 +420,10 @@ function importScheme(fileItem: FileItem) {
 function FormatHost() {
   let host = new URL(form.hostname);
   if (host != null && host.hostname != form.hostname) form.hostname = host.hostname;
+}
+
+function ChangeWebHostname() {
+  showChangeHostname.value = true;
 }
 </script>
 

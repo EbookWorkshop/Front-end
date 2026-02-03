@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { addEmptyBook } from '@/api/library';
-import Step4 from './import-text-step4.vue';
+import Step4 from '@/components/import-text-guid/import-text-step4.vue';
 import { Message } from '@arco-design/web-vue';
 
 const visible = ref(false);

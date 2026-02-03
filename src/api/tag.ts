@@ -65,14 +65,14 @@ export function deleteTag(tagId: number) {
 }
 
 /**
- * 更新标签
+ * 更新标签——put-修改完整数据
  * @param tagId 标签Id
  * @param tagText 标签文本
  * @param color 标签颜色
  * @returns
  */
 export function updateTag(tagId: number, tagText: string, color?: string) {
-  return axios.patch<HttpResponse<number>>(`/library/tag`, {
+  return axios.put<HttpResponse<number>>(`/library/tag`, {
     tagId,
     tagText,
     color,

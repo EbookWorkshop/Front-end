@@ -1,5 +1,5 @@
 export default {
-    'common.save': 'Save',
-    'common.cancel': 'Cancel',
-    'common.delete': 'Delete',
+    'common.save': '保存',
+    'common.cancel': '取消',
+    'common.delete': '删除',
 }

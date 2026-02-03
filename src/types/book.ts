@@ -10,6 +10,7 @@ export interface Book {
     FontFamily: string;
     FontSize: number;
     Index: Chapter[];
+    Volumes: Volume[];
     // data?: DescData[];
 }
 
@@ -21,12 +22,24 @@ export interface Chapter {
     IsHasContent?: boolean;
     Book?: Book;
     BookId?: number;
+    VolumeId?: number;
 }
 
 export interface WebChapter extends Chapter {
     URL: Array<{ id: number; Path: string }>;
     curHost: string;
     WebTitle: string;
+}
+
+/**
+ * 卷
+ */
+export interface Volume {
+    VolumeId: number;
+    Title: string;
+    Introduction: string;
+    BookId: number;
+    OrderNum: number;
 }
 
 /**

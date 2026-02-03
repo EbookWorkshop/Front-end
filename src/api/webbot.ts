@@ -24,12 +24,26 @@ export function queryHostList() {
   return axios.get(`/services/botrule/hostlist`);
 }
 
+/**
+ * 已登记的网站列表
+ * @returns
+ */
+export function queryRegisteredWebsites() {
+  return axios.get(`/services/botrule/registeredwebsites`);
+}
+
+
 export function queryHostSetting(host: string) {
   return axios.get(`/services/botrule?host=${host}`);
 }
 export function deleteHostSetting(host: string) {
   return axios.delete(`/services/botrule?host=${host}`);
 }
+
+export function changeHostname(oldHostname: string, newHostname: string) {
+  return axios.post(`/services/botrule/changehostname`, { oldHostname, newHostname });
+}
+
 
 /**
  * 保存配置

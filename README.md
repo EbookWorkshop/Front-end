@@ -97,6 +97,7 @@ wt --maximized -d %cd%\\EBWFrontEnd PowerShell -c npm run dev;split-pane -d %cd%
 ```bash
 git commit --no-verify -m "提交说明"
 ```
+或者删除`.husky`目录
 
 ## 执行校验
 >在git终端bash中才能正确显示颜色和符号

@@ -1,46 +1,12 @@
-// import axios from 'axios';
+import axios from 'axios';
+import type { HttpResponse } from '@/types/global';
+import type { MessageDetail } from '@/types/Message';
 
-
-// export function queryMessageList() {
-//   // return axios.post<MessageListType>('/api/message/list');
-//   const m: MessageRecord = {
-//     id: 0,
-//     type: 'notice',
-//     title: 'Kindle中国服务将于今年6月30日关闭！',
-//     subTitle: '',
-//     content: '如题',
-//     time: '2023年6月5日',
-//     status: 0,
-//   };
-
-//   return { data: [m] };
-// }
-
-interface MessageStatus {
-  ids: number[];
+/**
+ * 获取消息详情
+ * @param messageId 消息ID
+ * @returns 
+ */
+export function getMessage(messageId:number) {
+  return axios.get<HttpResponse<MessageDetail>>(`/services/message/?msgid=${messageId}`);
 }
-
-export function setMessageStatus(data: MessageStatus) {
-  // return axios.post<MessageListType>('/api/message/read', data);
-  return { data: true };
-}
-
-// export interface ChatRecord {
-//   id: number;
-//   username: string;
-//   content: string;
-//   time: string;
-//   isCollect: boolean;
-// }
-
-// export function queryChatList() {
-//   // return axios.post<ChatRecord[]>('/api/chat/list');
-//   let c: ChatRecord = {
-//     id: 1,
-//     username: "Admin",
-//     content: "这是一个对话",
-//     time: new Date().toJSON(),
-//     isCollect: false
-//   }
-//   return { data: [c] };
-// }

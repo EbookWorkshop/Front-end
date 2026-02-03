@@ -14,12 +14,12 @@
           </template>
         </BookInfo>
         <a-divider />
-        <ChapterList :loading="loading" :Chapters="renderData.Index">
-          <template #content="{ item }">
-            <a-button long @click="gotoChapter(item.IndexId)" :type="item.IsHasContent ? 'secondary' : 'secondary'"
-              :disabled="!item.IsHasContent" :size="renderData.Index.length < 50 ? 'large' : 'medium'"
+        <ChapterList :loading="loading" :Chapters="renderData.Index" :Volumes="renderData.Volumes">
+          <template #chapter="{ chapter }">
+            <a-button long @click="gotoChapter(chapter.IndexId)" :type="chapter.IsHasContent ? 'secondary' : 'secondary'"
+              :disabled="!chapter.IsHasContent" :size="renderData.Index.length < 50 ? 'large' : 'medium'"
               class="chapterBar">
-              {{ item.Title }}
+              {{ chapter.Title }}
             </a-button>
           </template>
         </ChapterList>
@@ -39,8 +39,6 @@ import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
 
 import { queryBookById } from '@/api/book';
-
-import { ref, nextTick } from 'vue';
 
 const { bookId, gotoChapter } = useBookHelper();
 const { loading, response: renderData } = useRequest<Book>(queryBookById.bind(null, bookId));

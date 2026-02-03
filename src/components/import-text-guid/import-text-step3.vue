@@ -81,11 +81,11 @@
     </a-modal>
 
     <!-- 章节统计模态框 -->
-    <a-modal v-model:visible="statsVisible" title="章节统计信息" draggable unmount-on-close width="600px">
+    <a-modal v-model:visible="statsVisible" title="章节统计信息" draggable unmount-on-close width="600px"
+      :fullscreen="chapterStats.chapterDetails.length > 15">
       <div style="font-size: 14px; line-height: 1.8;">
         <h3 style="margin-bottom: 10px; color: var(--color-text-primary);">整体统计</h3>
-        <div
-          style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--color-border);display: flex; justify-content: space-between;">
+        <div style="max-width:600px;margin-bottom: 20px; padding-bottom: 15px; display: flex; margin: 0 auto;">
           <div style="flex-grow: 2;">
             <div class="stats-row">
               <span class="stats-label">总章节数：</span>
@@ -120,20 +120,17 @@
           </div>
         </div>
 
-        <div>
+        <div style="border-top: 1px solid var(--color-border);">
           <h3 style="margin-bottom: 10px; color: var(--color-text-primary);">章节详情</h3>
-          <a-scrollbar style="max-height: 400px; overflow: auto;">
-            <div class=""></div>
-            <div v-for="(stats, index) in chapterStats.chapterDetails" :key="index" class="chapter-detail-item"
-              :class="isTopFifth(sortedChapterDetails.indexOf(stats)) ? 'chapter-warning' : isBottomFifth(sortedChapterDetails.indexOf(stats)) ? 'chapter-danger' : ''">
-              <div class="chapter-title">{{ chapterList[stats.originalIndex].Title }}</div>
-              <div class="chapter-stats">
-                <span>字数：{{ stats.characters }} <icon-drag-dot-vertical /> </span>
-                <span>字数排序：{{ sortedChapterDetails.indexOf(stats) + 1 }} <icon-drag-dot-vertical /> </span>
-                <span>段落数：{{ stats.paragraphs }} </span>
-              </div>
+          <div v-for="(stats, index) in ShowChapterInfo" :key="index" class="chapter-detail-item"
+            :class="stats.showClass">
+            <div class="chapter-title stats-value">{{ stats.title }}</div>
+            <div class="chapter-stats">
+              <span>字数：{{ stats.characters }} <icon-drag-dot-vertical /> </span>
+              <span>字数排序：{{ index + 1 }} <icon-drag-dot-vertical /> </span>
+              <span>段落数：{{ stats.paragraphs }} </span>
             </div>
-          </a-scrollbar>
+          </div>
         </div>
       </div>
       <template #footer>
@@ -148,11 +145,11 @@ import { Chapter } from '@/types/book';
 import { reactive, ref, computed } from 'vue';
 import { IStepResult, cleanContent, cutContent } from "./utils"
 import { numberToChinese } from "@/utils/units";
+import { standardDeviation } from '@/utils/math';
 import type { FormInstance } from '@arco-design/web-vue';
 
 // 标题设置模态框控制
 const setTitleVisible = ref(false);
-const formRef = ref<FormInstance>();
 
 // 统计模态框控制
 const statsVisible = ref(false);
@@ -167,10 +164,10 @@ const form = reactive({
 
 // 章节统计数据
 const chapterStats = reactive({
-  totalChapters: 0,
-  totalCharacters: 0,
-  totalParagraphs: 0,
-  avgCharactersPerChapter: 0,
+  totalChapters: 0,   // 总章节数
+  totalCharacters: 0, // 总字数
+  totalParagraphs: 0, // 总段落数
+  avgCharactersPerChapter: 0,// 平均每章字数
   longestChapter: {
     title: '',
     characters: 0,
@@ -182,10 +179,32 @@ const chapterStats = reactive({
     index: -1
   },
   chapterDetails: [] as Array<{
-    characters: number;
+    characters: number;// 章节字数
     paragraphs: number;
     originalIndex: number; // 添加原始索引以保持与chapterList的关联
   }>
+});
+
+const ShowChapterInfo = computed(() => {
+  const std = standardDeviation(
+    chapterStats.chapterDetails.map(c => c.characters),
+    chapterStats.avgCharactersPerChapter
+  );
+
+  const THRESHOLD = 1; // z <= -1 视为过短，z >= 1 视为过长
+  return chapterStats.chapterDetails.map((stats) => {
+    const w = stats.characters;
+    const z = (w - chapterStats.avgCharactersPerChapter) / std;
+    let showClass = '';
+    if (z >= THRESHOLD) {
+      showClass = 'chapter-long'; //过长
+    } else if (z <= -THRESHOLD) {
+      showClass = 'chapter-short'; //过短
+    }
+    return {
+      ...stats, showClass, title: chapterList[stats.originalIndex].Title
+    }
+  });
 });
 
 interface ChapterOnBar extends Chapter {
@@ -290,22 +309,7 @@ const calculateChapterStats = () => {
   }
 };
 
-// 计算属性：按字数降序排序的章节详情
-const sortedChapterDetails = computed(() => {
-  return [...chapterStats.chapterDetails].sort((a, b) => b.characters - a.characters);
-});
 
-// 判断是否是前1/5的章节
-const isTopFifth = (index: number) => {
-  const fifthCount = Math.ceil(chapterStats.totalChapters / 5);
-  return index < fifthCount;
-};
-
-// 判断是否是末1/5的章节
-const isBottomFifth = (index: number) => {
-  const fifthCount = Math.ceil(chapterStats.totalChapters / 5);
-  return index >= chapterStats.totalChapters - fifthCount;
-};
 
 // 暴露给父组件的方法
 defineExpose({
@@ -391,7 +395,6 @@ const applyTitleFormat = () => {
 }
 
 .chapter-title {
-  font-weight: 500;
   margin-bottom: 5px;
   color: var(--color-text-primary);
 }
@@ -401,15 +404,13 @@ const applyTitleFormat = () => {
   font-size: 13px;
 }
 
-/* 前1/5章节的样式 - warning颜色 */
-.chapter-warning .chapter-title,
-.chapter-warning .chapter-stats {
-  color: rgb(var(--orange-5));
+.chapter-long {
+  background: #fffbe6 !important;
+  border-color: #ffe58f !important;
 }
 
-/* 末1/5章节的样式 - danger颜色 */
-.chapter-danger .chapter-title,
-.chapter-danger .chapter-stats {
-  color: rgb(var(--red-5));
+.chapter-short {
+  background: #fff1f0 !important;
+  border-color: #ffa39e !important;
 }
 </style>

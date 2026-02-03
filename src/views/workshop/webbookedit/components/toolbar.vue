@@ -5,10 +5,18 @@
                 <a-button-group type="primary">
                     <a-button shape="round" @click="onCheckAll(true)"> 全选 </a-button>
                     <a-button shape="round" @click="onCheckAll(false)"> 清空 </a-button>
+                    <a-button shape="round" @click="onCheckNot()"> 反选 </a-button>
                 </a-button-group>
                 <a-button-group type="primary">
                     <a-button @click="onCheckEmpty" shape="round"> 选空章节 </a-button>
                     <a-button @click="onCheckNotEmpty"> 选非空章节 </a-button>
+                    <a-dropdown @select="onCheckVolume" v-if="Volumes.length > 0">
+                        <a-button shape="round"> 选择卷 </a-button>
+                        <template #content>
+                            <a-doption v-for="volume in Volumes" :key="volume.VolumeId" :value="volume.VolumeId">{{
+                                volume.Title }}</a-doption>
+                        </template>
+                    </a-dropdown>
                     <a-button @click="isShow = true" shape="round"> 区段选择 </a-button>
                 </a-button-group>
                 <a-button-group type="primary">
@@ -21,7 +29,6 @@
                 <a-button-group type="primary">
                     <a-button shape="round" title="查看目录页面" @click="openDefaultIndex"> <icon-eye /> </a-button>
                     <a-button :loading="isMerging" @click="mergeIndex"> 更新目录 </a-button>
-                    <a-button @click="isEditBookInfo = true"> 修改元数据 </a-button>
                     <a-button status="success" @click="isMustUpdate = !isMustUpdate">
                         <a-checkbox :model-value="isMustUpdate">强制更新</a-checkbox>
                     </a-button>
@@ -32,6 +39,10 @@
                         </a-badge>
                     </a-button>
                 </a-button-group>
+                <a-button-group type="primary">
+                    <a-button shape="round" @click="isEditBookInfo = true"> <icon-pen /> 元数据 </a-button>
+                    <a-button shape="round" @click="() => router.push(`/workplace/revise/book/${bookid}`)">修订</a-button>
+                </a-button-group>
             </a-space>
         </a-space>
     </a-row>
@@ -39,8 +50,7 @@
     <a-modal v-model:visible="isShow" title="区段选择" @ok="onSetChapter" draggable unmount-on-close>
         <a-form :model="data" layout="vertical">
             <a-form-item field="cBegin" label="开始章节:" required>
-                <a-select v-model="data.cBegin" :options="Chapters" :field-names="{ value: 'IndexId', label: 'Title' }"
-                    :virtual-list-props="{ height: 200 }" allow-search />
+                <SelectChapter v-model="data.cBegin" :volume="Volumes" :chapters="Chapters" />
             </a-form-item>
             <a-form-item field="cLength" label="按数量选：">
                 <a-select placeholder="需要先选择【开始章节】" allow-create @change="onSetChapterLength">
@@ -48,9 +58,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item field="cEnd" label="结束章节:" required>
-                <a-select v-model="data.cEnd" :options="[...Chapters].reverse()"
-                    :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }"
-                    allow-search />
+                <SelectChapter v-model="data.cEnd" :volume="Volumes" :chapters="Chapters" :is-reverse="true" />
             </a-form-item>
         </a-form>
     </a-modal>
@@ -60,15 +68,17 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
-import { Chapter } from '@/types/book';
+import type { Volume, Chapter } from '@/types/book';
 import { ApiResultCode } from '@/types/global';
 import { HeatABook } from '@/api/library';
 import { mergeWebBookIndex, updateChapter, queryBookDefaultSourcesById } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
 import useChapterHiddenHelper from "@/hooks/chapter-hidden";
+import { useRouter } from 'vue-router';
 
 import EditBookInfo from '@/components/book-info/edit.vue';
 import Descriptions from '@/components/book-tool/duplicates.vue';
+import SelectChapter from '@/components/chapter/select.vue';
 
 const chapterHasCheckedNum = ref(0);    // 已选中的章节数
 const isMerging = ref(false);       //合并章节状态
@@ -77,6 +87,7 @@ const isMustUpdate = ref(false);    //强制更新-覆盖更新
 const isEditBookInfo = ref(false);
 const btStatusGettingData = ref(false);
 const checkDescriptions = ref(false);
+const router = useRouter();
 
 const data = reactive<{
     cBegin: any,
@@ -91,6 +102,10 @@ const props = defineProps({
     },
     Chapters: {
         type: Array as () => Chapter[],
+        default: []
+    },
+    Volumes: {
+        type: Array as () => Volume[],
         default: []
     },
     ChapterStatus: {
@@ -187,6 +202,7 @@ function UpdateChapter() {
 
     if (hasCheckChapter.length == 0) {
         Message.error("没有选中章节");
+        btStatusGettingData.value = false;
         return;
     }
 
@@ -221,7 +237,6 @@ function onCheckAll(isCheck: boolean) {
 function onCheckNotEmpty() {
     chapterHasCheckedNum.value = 0;
     props.Chapters.forEach(c => {
-        // let ctrl = props.ChapterOptMap.get(c.IndexId) as any;
         if (!c.IsHasContent) {
             emit("ToggleCheck", c.IndexId, false);
             return;
@@ -240,7 +255,6 @@ function onCheckNotEmpty() {
 function onCheckEmpty() {
     chapterHasCheckedNum.value = 0;
     props.Chapters.forEach(c => {
-        // let ctrl = props.ChapterOptMap.get(c.IndexId) as any;
         if (c.IsHasContent) {
             emit("ToggleCheck", c.IndexId, false);
             return;
@@ -250,6 +264,33 @@ function onCheckEmpty() {
 
         emit("ToggleCheck", c.IndexId, true);
     });
+}
+
+/**
+ * 反选
+ */
+function onCheckNot() {
+    chapterHasCheckedNum.value = 0;
+    props.Chapters.forEach(c => {
+        let isChecked = props.ChapterStatus.get(c.IndexId) ?? false;
+        props.ChapterStatus.set(c.IndexId, !isChecked);
+        if (!isChecked) chapterHasCheckedNum.value++;
+        emit("ToggleCheck", c.IndexId, !isChecked);
+    })
+}
+
+/**
+ * 选择整卷
+ */
+function onCheckVolume(volumeId: number) {
+    // chapterHasCheckedNum.value = 0;
+    props.Chapters.forEach(c => {
+        if (c.VolumeId === volumeId) {
+            props.ChapterStatus.set(c.IndexId, true);
+            chapterHasCheckedNum.value++;
+            emit("ToggleCheck", c.IndexId, true);
+        }
+    })
 }
 
 /**

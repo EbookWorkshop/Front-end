@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { Chapter, ChapterOrderSetting } from '@/types/book';
-import { HttpResponse } from '@/types/global';
+import type { HttpResponse } from '@/types/global';
 
 /**
  * 拿到书 目录
@@ -94,7 +94,7 @@ export function deleteChapter(chapterid: number) {
  * @returns
  */
 export function updateChapterOrder(chapterOrderList: Array<ChapterOrderSetting>) {
-  return axios.patch('/library/book/chapterOrder', chapterOrderList);
+  return axios.patch('/library/book/chapter/order', chapterOrderList);
 }
 
 /**
@@ -103,7 +103,8 @@ export function updateChapterOrder(chapterOrderList: Array<ChapterOrderSetting>)
  * @returns
  */
 export function restructureChapter(setting: any) {
-  return axios.patch('/library/book/chapters/restructure', setting);
+  console.log("sss")
+  return axios.patch('/library/book/chapter/restructure', setting);
 }
 
 /**
@@ -139,7 +140,7 @@ export function listHiddenChapters(bookid: number) {
  * @returns
  */
 export function queryAdjacentChapterInfo(cid: number) {
-  return axios.get(`/library/book/adjacentchapter?chapterid=${cid}`);
+  return axios.get(`/library/book/chapter/adjacent?chapterid=${cid}`);
 }
 
 /**
@@ -147,7 +148,7 @@ export function queryAdjacentChapterInfo(cid: number) {
  * @param bookId 书ID
  * @returns 
  */
-export function queryDuplicatesChapter(bookId: number,threshold:number) {
+export function queryDuplicatesChapter(bookId: number, threshold: number) {
   return axios.get(`/library/book/duplicates?bookid=${bookId}&threshold=${threshold}`);
 }
 
@@ -159,6 +160,77 @@ export function queryDuplicatesChapter(bookId: number,threshold:number) {
  */
 export function queryPairedPunctuation(bookId: number, chapterIds: number[] | null) {
   return axios.get(`/library/book/pairedpunctuation?bookid=${bookId}${chapterIds ? `&chapterids=${JSON.stringify(chapterIds)}` : ''}`);
+}
+
+/**
+ * 添加卷
+ * @param bookId 
+ * @param volumeTitle 
+ * @param introduction 
+ * @returns 
+ */
+export function addVolume(bookId: number, volumeTitle: string, introduction: string) {
+  return axios.post<HttpResponse<number>>(`/library/book/volume`, {
+    bookId,
+    title: volumeTitle,
+    introduction: introduction
+  });
+}
+/**
+ * 编辑卷
+ * @param volumeId 
+ * @param volumeTitle 
+ * @param introduction 
+ * @returns 
+ */
+export function editVolume(volumeId: number, volumeTitle: string, introduction: string) {
+  return axios.put<HttpResponse<boolean>>(`/library/book/volume`, {
+    volumeId,
+    title: volumeTitle,
+    introduction: introduction
+  });
+}
+
+export function deleteVolume(volumeId: number) {
+  return axios.delete<HttpResponse<boolean>>(`/library/book/volume`, {
+    params: { volumeId }    //注意检查这个参数是否正确
+  });
+}
+
+/**
+ * 将章节移动到指定卷
+ * @param chapterId 章节ID
+ * @param volumeId 目标卷ID
+ * @returns 
+ */
+export function moveChapterToVolume(chapterId: number[], volumeId: number | null) {
+  return axios.post<HttpResponse<boolean>>(`/library/book/volume/movechapters`, {
+    chapterIds: chapterId,
+    volumeId
+  });
+}
+
+/**
+ * 从卷中移除章节
+ * @param chapterIds 章节ID列表
+ * @param volumeId 目标卷ID
+ * @returns 
+ */
+export function removeChapterFromVolume(chapterIds: number[]) {
+  return axios.post<HttpResponse<boolean>>(`/library/book/volume/removechapters`, {
+    chapterIds: chapterIds,
+  });
+}
+
+/**
+ * 更新卷排序
+ * @param volumeIdsInOrder 
+ * @returns 
+ */
+export function reorderVolumes(volumeOrders: any[]) {
+  return axios.post<HttpResponse<boolean>>(`/library/book/volume/reorder`, {
+    volumeOrders  
+  });
 }
 
 
@@ -204,6 +276,7 @@ export function updateChapter(
 /**
  * 制作pdf——可发到默认邮箱
  * @param bookid
+ * @param volumeIds 要包含的卷ID列表
  * @param chapterIds
  * @param isSendEmail 是否发到默认邮箱
  * @param fontFamily 创建PDF时的字体
@@ -214,6 +287,7 @@ export function updateChapter(
  */
 export function createPDF(
   bookid: number,
+  volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
   fontFamily: string,
@@ -223,6 +297,7 @@ export function createPDF(
 ) {
   return axios.post(`/export/pdf`, {
     bookId: bookid,
+    volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
     fontFamily,
@@ -235,6 +310,7 @@ export function createPDF(
 /**
  * 制作txt——可发到默认邮箱
  * @param bookid 
+ * @param volumeIds 要包含的卷ID列表
  * @param chapterIds 
  * @param isSendEmail 
  * @param fontFamily 没用，对齐API用
@@ -245,6 +321,7 @@ export function createPDF(
  */
 export function createTXT(
   bookid: number,
+  volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
   fontFamily: string,
@@ -254,6 +331,7 @@ export function createTXT(
 ) {
   return axios.post(`/export/txt`, {
     bookId: bookid,
+    volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
     embedTitle,
@@ -265,6 +343,7 @@ export function createTXT(
 /**
  * 制作epub——可发到默认邮箱
  * @param bookid 
+ * @param volumeIds 要包含的卷ID列表
  * @param chapterIds 
  * @param isSendEmail 
  * @param fontFamily 没用，对齐API用
@@ -275,6 +354,7 @@ export function createTXT(
  */
 export function createEPUB(
   bookid: number,
+  volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
   fontFamily: string,
@@ -284,6 +364,7 @@ export function createEPUB(
 ) {
   return axios.post(`/export/epub`, {
     bookId: bookid,
+    volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
     fontFamily,

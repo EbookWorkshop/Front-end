@@ -91,6 +91,18 @@ const WORKPLACE: AppRouteRecordRaw = {
         activeMenu: "workplace",
         roles: ['*'],
       },
+    },
+    {
+      path: 'analytics/text/:id(\\d+)',
+      name: 'AnalyticsText',
+      component: () => import('@/views/workplace/analyticstext.vue'),
+      meta: {
+        locale: 'menu.workplace.analyticstext',
+        requiresAuth: true,
+        hideInMenu: true,
+        activeMenu: "workplace",
+        roles: ['*'],
+      },
     }
   ],
 };

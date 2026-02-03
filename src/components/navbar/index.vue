@@ -15,8 +15,8 @@
     </div>
     <ul class="right-side">
       <li>
-        <a-tooltip :content="'服务器' + (getSocketState().connected ? '已连接' : '未连接')">
-          <ConnectStatus :connected="getSocketState().connected" />
+        <a-tooltip :content="'服务器' + (socketState.connected ? '已连接' : '未连接')">
+          <ConnectStatus :connected="socketState.connected" />
         </a-tooltip>
       </li>
       <li>
@@ -56,21 +56,23 @@
         <!-- 消息通知待办 -->
         <a-tooltip :content="$t('settings.navbar.alerts')">
           <div class="message-box-trigger">
-            <a-badge :count="messageList.filter((item) => !item.status).length">
+            <a-badge :count="unreadCount">
               <a-button class="nav-btn" type="outline" :shape="'circle'" @click="setPopoverVisible">
                 <icon-notification />
               </a-button>
             </a-badge>
           </div>
         </a-tooltip>
-        <a-popover trigger="click" :arrow-style="{ display: 'none' }" :content-style="{ padding: 0, minWidth: '400px' }"
-          content-class="message-popover">
+        <a-popover trigger="click" :arrow-style="{ display: 'none' }"
+          :content-style="{ padding: 0, minWidth: '400px', maxWidth: '640px' }" content-class="message-popover">
           <div ref="refBtn" class="ref-btn"></div>
           <template #content>
-            <message-box :message-list="messageList" @empty-list="OnEmptyList"
-              @all-read="messageList.forEach(m => m.status = 1)" />
+            <message-box :message-list="messageService.messages" @empty-list="handleEmptyList" @all-read="handleAllRead"
+              @read-one="handleReadOne" />
           </template>
         </a-popover>
+        <!-- 消息详情模态框 -->
+        <MessageDetail ref="messageDetailRef" />
         <!-- 消息通知待办-结束 -->
       </li>
       <li>
@@ -100,38 +102,33 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, inject, reactive, watch, h } from 'vue';
-import { useRouter } from 'vue-router';
-import { Button, Message, Notification } from '@arco-design/web-vue';
+import { computed, ref, inject, watch } from 'vue';
+import { Notification } from '@arco-design/web-vue';
 import { useDark, useToggle, useFullscreen } from '@vueuse/core';
-import { useAppStore, useUserStore } from '@/store';
+import { useAppStore } from '@/store';
 import { LOCALE_OPTIONS } from '@/locale';
 import useLocale from '@/hooks/locale';
-import useUser from '@/hooks/user';
 import Menu from '@/components/menu/index.vue';
-import { MessageRecord } from '@/types/Message';
-
-import { useSocket, getSocketState } from '@/hooks/socket';
-import MessageBox from '../message-box/index.vue';
+import { useMessageService } from '@/services/messageService';
+import { useSocket } from '@/hooks/socket';
+import MessageBox from '@/components/message-box/index.vue';
+import MessageDetail from '@/components/message-box/detail.vue';
 import ConnectStatus from './connect-status.vue';
 
-// const logoLight = new URL('@/assets/logo.svg', import.meta.url).href;
-// const logoDark = new URL('@/assets/logo-dark.svg', import.meta.url).href;
 const logoLight = "/logo.svg?t=navbar";
 const logoDark = "/logo-dark.svg?t=navbar";
 
-
-const socket = useSocket();
-const router = useRouter();
+const { state: socketState } = useSocket();
 const appStore = useAppStore();
-const userStore = useUserStore();
-const { logout } = useUser();
 const { changeLocale, currentLocale } = useLocale();
 const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
 const locales = [...LOCALE_OPTIONS];
-const avatar = computed(() => {
-  return userStore.avatar;
-});
+
+// 消息详情组件引用
+const messageDetailRef = ref();
+// 使用消息服务
+const messageService = useMessageService();
+
 const theme = computed(() => {
   return appStore.theme;
 });
@@ -164,9 +161,7 @@ const setPopoverVisible = () => {
   });
   refBtn.value.dispatchEvent(event);
 };
-const handleLogout = () => {
-  logout();
-};
+
 const setDropDownVisible = () => {
   const event = new MouseEvent('click', {
     view: window,
@@ -175,79 +170,47 @@ const setDropDownVisible = () => {
   });
   triggerBtn.value.dispatchEvent(event);
 };
-const switchRoles = async () => {
-  const res = await userStore.switchRoles();
-  Message.success(res as string);
-};
+
 const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
 
-const messageList = reactive<MessageRecord[]>([]);
-function OnEmptyList() {
-  messageList.splice(0);
-}
+// 处理消息详情显示
+const handleReadOne = (messageId: number) => {
+  messageDetailRef.value?.open(messageId);
+};
+// 计算未读消息数量
+const unreadCount = computed(() => {
+  return messageService.messages.filter(item => !item.status).length;
+});
 
-socket.io.on(
-  'WebBook.UpdateChapter.Finish',
-  ({ bookid, bookName, doneNum, failNum }) => {
-    messageList.push({
-      id: bookid,
-      type: 'notice',
-      title: `《${bookName}》已完成任务。`,
-      subTitle: '',
-      content: `其中，成功：${doneNum}失败：${failNum}。`,
-      time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
-      status: 0,
-      avatar: 'logo.svg?t=msg',
-    });
+// 处理清空消息
+const handleEmptyList = () => {
+  messageService.clearAll();
+};
+
+// 处理全部已读
+const handleAllRead = () => {
+  messageService.messages.forEach(message => {
+    messageService.markAsRead(message.id);
+  });
+};
+
+// 监听新消息并显示通知
+watch(() => messageService.messages.length, (newLength, oldLength) => {
+  if (newLength > oldLength) {
+    const lastMsg = messageService.messages[newLength - 1];
+    if (lastMsg.type === "notice") {
+      Notification.info({
+        id: lastMsg.id.toString(),
+        title: lastMsg.title,
+        content: lastMsg.vnodeContent ? () => lastMsg.vnodeContent : lastMsg.content,
+        duration: 0,
+        showIcon: true,
+        closable: true,
+      });
+    }
   }
-);
-
-socket.io.on(
-  "WebBook.Create.Finish", ({ bookid, bookName }) => {
-    messageList.push({
-      id: bookid,
-      type: 'notice',
-      title: `《${bookName}》已导入完成。`,
-      content: h(Button, {
-        type: "primary",
-        status: "success",
-        size: "small",
-        onClick: () => {
-          router.push({ path: `/workshop/webbook/edit/${bookid}` });
-        },
-      }, "前往查看"),
-      time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
-      avatar: 'logo.svg?t=msg',
-      status: 1,
-      subTitle: '',
-    });
-  }
-)
-
-socket.io.on("Message.Box.Send", (msg:MessageRecord) => {
-  if (typeof (msg.status) === "undefined") msg.status = 0;
-  messageList.push(msg);
-})
-
-watch(messageList, (newValue, oldValue) => {
-  let lastMsg = newValue[newValue.length - 1];
-  // let t1 = new Date().getTime();
-  // let t2 = new Date(lastMsg.time).getTime();
-  // console.log("收到消息", lastMsg, t1, t2);
-  // if (t1 - t2 > 1100) return;
-  if (lastMsg.type == "notice") {
-    Notification.info({
-      id: lastMsg.id.toString(),
-      title: lastMsg.title,
-      content: typeof lastMsg.content === 'string' ? lastMsg.content : () => lastMsg.content,
-      duration: 0,
-      showIcon: true,
-      closable: true,
-    })
-  }
-}, { deep: true })
+}, { deep: true });
 </script>
-
 <style scoped lang="less">
 .navbar {
   display: flex;

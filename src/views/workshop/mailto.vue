@@ -3,10 +3,10 @@
     <Breadcrumb :items="['menu.library', 'menu.workshop.mailto']" />
     <div class="wrapper">
       <a-spin dot :loading="dataLoading" style="width: 100%;">
+        <a-alert type="warning">注意：本页面发送的书，将忽略“线装本”格式的封面。直接上传的书籍不受影响。如需封面请通过【导出】功能发送。</a-alert>
         <a-row>
           <a-col :span="20" :offset="2">
             <a-form :model="emailForm" size="large" :style="{ width: '100%' }" auto-label-width @submit="handleSubmit">
-
               <a-form-item field="from" label="发出邮箱" :required="true">
                 <a-input v-model="emailForm.from" placeholder="请先到【系统设置】→【邮箱配置】设置发件用邮箱账号和密码" disabled />
               </a-form-item>

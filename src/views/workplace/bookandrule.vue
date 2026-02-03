@@ -55,8 +55,7 @@
             {{ testForm.bookName }}
           </a-form-item>
           <a-form-item field="chapter" label="章节">
-            <a-select v-model="testForm.chapterId as any" :options="Chapters"
-              :field-names="{ value: 'IndexId', label: 'Title' }" :virtual-list-props="{ height: 200 }" allow-search />
+            <SelectChapter v-model="testForm.chapterId" :volume="Volumes" :chapters="Chapters" />
           </a-form-item>
           <a-form-item field="name" label="校正规则">
             {{ testForm.ruleName }}
@@ -80,6 +79,7 @@ import { useAppStore } from '@/store';
 import useRequest from '@/hooks/request';
 import type { TableColumnData } from '@arco-design/web-vue';
 import Diff from '@/components/diff/index.vue'
+import SelectChapter from '@/components/chapter/select.vue';
 
 import { queryBookById, } from '@/api/book';
 import {
@@ -146,6 +146,7 @@ const visible = ref(false);
 const isTest = ref(false);
 const testResult = ref(false);
 const Chapters = ref([]);
+const Volumes = ref([]);
 const form = reactive({
   bookId: '',
   ruleId: 0 as number | null,
@@ -231,6 +232,7 @@ const testRule = (data: any) => {
   testForm.ruleId = data.ruleId;
   queryBookById(data.bookId).then((rsl: any) => {
     Chapters.value = rsl.data.Index.filter((i: any) => i.IsHasContent);
+    Volumes.value = rsl.data.Volumes;
   });
 };
 

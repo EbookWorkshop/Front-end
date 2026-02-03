@@ -1,6 +1,6 @@
 import { DEFAULT_LAYOUT } from '../base';
 import { AppRouteRecordRaw } from '../types';
-import {h} from 'vue';
+import { h } from 'vue';
 
 const SYSTEM: AppRouteRecordRaw = {
   path: '/system',
@@ -16,7 +16,7 @@ const SYSTEM: AppRouteRecordRaw = {
     {
       path: 'usestate',
       name: 'UseState',
-      component: () => h("div","当前书库数据库一些情况统计：比如有多少本书，分别多少万字……"),
+      component: () => h("div", "当前书库数据库一些情况统计：比如有多少本书，分别多少万字……"),
       meta: {
         locale: 'menu.system.usestate',
         icon: 'icon-bar-chart',
@@ -58,6 +58,18 @@ const SYSTEM: AppRouteRecordRaw = {
       },
     },
     {
+      path: 'webrule/websiteregistry',
+      name: 'RegisteredWebsites',
+      component: () => import('@/views/system/webrule/websiteregistry.vue'),
+      meta: {
+        locale: 'menu.system.RegisteredWebsites',
+        requiresAuth: false,
+        roles: ['*'],
+        hideInMenu: true,
+        activeMenu: 'webrule',
+      },
+    },
+    {
       path: 'fontmanager',
       name: 'fontmanager',
       component: () => import('@/views/system/fontmanager.vue'),
@@ -71,7 +83,7 @@ const SYSTEM: AppRouteRecordRaw = {
     {
       path: 'preferences',
       name: 'Preferences',
-      component: () => h("div","一些可以设置的选项，用户偏好设置等，比如阅读默认字体；UI字体；"),
+      component: () => h("div", "一些可以设置的选项，用户偏好设置等，比如阅读默认字体；UI字体；"),
       meta: {
         locale: 'menu.system.preferences',
         icon: 'icon-star',
