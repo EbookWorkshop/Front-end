@@ -31,7 +31,7 @@
                       </a-doption>
                     </a-dgroup>
                     <a-doption>
-                      <template #icon> <icon-pen /> </template>
+                      <template #icon> <icon-book /> </template>
                       <template #default><a-button type="text" long
                           @click="curEditBookId = item.BookId">修改元数据</a-button></template>
                     </a-doption>
@@ -42,13 +42,28 @@
                         }}</a-button>
                       </template>
                     </a-doption>
-                    <a-doption>
-                      <template #icon> <icon-eraser /> </template>
-                      <template #default>
-                        <a-button type="text" long @click="gotoRevise(item.BookId)">{{ $t('menu.workplace.revise')
-                        }}</a-button>
+                    <a-dsubmenu value="edit" trigger="hover">
+                      <template #icon> <icon-edit /> </template>
+                      <template #default><a-button type="text" long>　　修改内容</a-button></template>
+                      <template #content>
+                        <a-doption>
+                          <template #default>
+                            <a-button type="text" long @click="gotoReview(item.BookId)">
+                              <template #icon> <icon-find-replace /> </template>
+                              {{ $t('menu.workplace.correction') }}
+                            </a-button>
+                          </template>
+                        </a-doption>
+                        <a-doption>
+                          <template #default>
+                            <a-button type="text" long @click="gotoRevise(item.BookId)">
+                              <template #icon> <icon-eraser /> </template>
+                              {{ $t('menu.workplace.revise') }}
+                            </a-button>
+                          </template>
+                        </a-doption>
                       </template>
-                    </a-doption>
+                    </a-dsubmenu>
                     <a-doption>
                       <template #icon> <icon-bar-chart /> </template>
                       <template #default>
@@ -137,6 +152,13 @@ const gotoRevise = (bookid: number) => {
     path: `/workplace/revise/book/${bookid}`,
   });
 };
+const gotoReview = (bookid: number) => {
+  router.push({
+    path: `/workplace/correction/reviewbook/${bookid}`,
+  });
+};
+
+
 /**
  * 跳转统计分析页面
  * @param bookid 

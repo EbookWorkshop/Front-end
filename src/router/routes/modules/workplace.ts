@@ -14,7 +14,7 @@ const WORKPLACE: AppRouteRecordRaw = {
   children: [
     {
       path: 'correction',
-      name: 'correction', // 改错别字
+      name: 'correction', // 校阅
       component: () => import('@/layout/page-layout.vue'),
       meta: {
         icon: 'icon-find-replace',
@@ -24,8 +24,8 @@ const WORKPLACE: AppRouteRecordRaw = {
       },
       children: [
         {
-          path: 'reviewbook',
-          name: 'ReviewBook',
+          path: 'reviewbook/:bookid(\\d+)?',
+          name: 'ReviewBook',//校阅书本
           component: () => import('@/views/workplace/review/index.vue'),
           meta: {
             icon: 'icon-robot',
@@ -71,7 +71,7 @@ const WORKPLACE: AppRouteRecordRaw = {
     },
     {
       path: 'revise/book/:id(\\d+)',
-      name: 'revisebook',
+      name: 'revisebook',//修订-编辑书本内容
       component: () => import('@/views/workplace/revise/book.vue'),
       meta: {
         requiresAuth: true,
@@ -82,7 +82,7 @@ const WORKPLACE: AppRouteRecordRaw = {
     },
     {
       path: 'suspiciouschars',
-      name: 'SuspiciousChars',
+      name: 'SuspiciousChars',//可疑字符分析
       component: () => import('@/views/workplace/suspiciouschars.vue'),
       meta: {
         locale: 'menu.workplace.suspiciouschars',
@@ -94,7 +94,7 @@ const WORKPLACE: AppRouteRecordRaw = {
     },
     {
       path: 'analytics/text/:id(\\d+)',
-      name: 'AnalyticsText',
+      name: 'AnalyticsText',//文本统计
       component: () => import('@/views/workplace/analyticstext.vue'),
       meta: {
         locale: 'menu.workplace.analyticstext',

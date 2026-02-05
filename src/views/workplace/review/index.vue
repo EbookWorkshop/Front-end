@@ -14,7 +14,7 @@
                     <a-col :span="16">
                         <a-form-item field="chapterId" label="章节" label-col-flex="100px" :rules="chapterIdRules"
                             tooltip="部分功能可不选，不选则应用到所有章节">
-                            <SelectChapter v-model="form.chapterId" :volume="Volumes" :chapters="Chapters" multiple/>
+                            <SelectChapter v-model="form.chapterId" :volume="Volumes" :chapters="Chapters" multiple />
                         </a-form-item>
                     </a-col>
                 </a-row>
@@ -131,6 +131,7 @@ import type { Chapter } from "@/types/book";
 import type { Rule } from '@/api/workplace';
 
 import { ref, reactive, computed, nextTick } from 'vue';
+import { useRoute } from 'vue-router';
 import SelectBook from '@/components/select-book/index.vue';
 import SelectChapter from '@/components/chapter/select.vue';
 import Diff from '@/components/diff/index.vue'
@@ -143,14 +144,16 @@ import { useAppStore } from '@/store';
 import { Form, FieldRule, Message } from '@arco-design/web-vue';
 import { editChapter } from '@/api/book';
 
+const route = useRoute();
 const appStore = useAppStore();
+const bookid = Number(route.params.bookid);
 const theme = computed<any>(() => {
     return appStore.theme;
 });
 
 const formRef = ref<Form>(null);
 const form = reactive({
-    bookId: undefined as number | undefined,
+    bookId: bookid as number | undefined,
     chapterId: [] as number[],
     curRegex: '' as string,
     curReplace: '' as string,
@@ -361,20 +364,20 @@ async function onUndoAll() {
 }
 
 function onSuspiciousCharsAnalysis() {
-  if (!form.bookId) {
-    Message.error('请先选择要校阅的书');
-    return;
-  }
-  
-  // 构建URL参数
-  const params = new URLSearchParams();
-  params.append('bookId', form.bookId.toString());
-  
-  if (form.chapterId && form.chapterId.length > 0) {
-    params.append('chapterIds', form.chapterId.join(','));
-  }
-  
-  // 在新标签页打开特殊字符分析页面
-  window.open(`/workplace/suspiciouschars?${params.toString()}`, '_blank');
+    if (!form.bookId) {
+        Message.error('请先选择要校阅的书');
+        return;
+    }
+
+    // 构建URL参数
+    const params = new URLSearchParams();
+    params.append('bookId', form.bookId.toString());
+
+    if (form.chapterId && form.chapterId.length > 0) {
+        params.append('chapterIds', form.chapterId.join(','));
+    }
+
+    // 在新标签页打开特殊字符分析页面
+    window.open(`/workplace/suspiciouschars?${params.toString()}`, '_blank');
 }
 </script>
