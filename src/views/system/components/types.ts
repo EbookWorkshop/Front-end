@@ -1,0 +1,23 @@
+import { VNode } from 'vue'
+
+export type SettingFormType = {
+    dataId: string;
+    title: string;
+    description?: string;
+    status?: string;
+    controlType: 'VNode' | 'select' | 'switch' | 'number' | 'color' | 'text' | 'password' | 'button';
+
+    /***************************************************/
+    /** 自定义VNode */
+    vnode?: {
+        type: VNode,
+        default: () => null,
+    };
+
+    /** select/switch 选项列表 */
+    options?: Array<{ label: string, value: any }>;
+
+    /** button 按钮文本 */
+    buttonText?: string;
+    callback?: () => void;
+}

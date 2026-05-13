@@ -1,7 +1,7 @@
 <template>
   <a-breadcrumb class="container-breadcrumb" v-show="appStore.device !== 'mobile'">
     <a-breadcrumb-item>
-      <icon-apps />
+      <icon-home />
     </a-breadcrumb-item>
     <a-breadcrumb-item v-for="item in items" :key="item">
       {{/^\w+(\.\w+)+?/.test(item)? $t(item) : item }}<!-- 非xxx.yyy格式的文本就尝试国际化，直接显示文本 -->

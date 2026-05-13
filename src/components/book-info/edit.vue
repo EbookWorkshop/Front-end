@@ -145,7 +145,7 @@ async function InitFont() {
  * @param {File} file 
  */
 function onSetConverFile(file: File) {
-    if (!file) return;
+    if (!file) return false;
 
     let tempFileUrl = URL.createObjectURL(file);
     setTimeout(() => {
@@ -153,6 +153,7 @@ function onSetConverFile(file: File) {
     }, 1000);
     tempConverFile.value = file;
     form.bookCover = tempFileUrl;
+    return true;
 }
 
 </script>

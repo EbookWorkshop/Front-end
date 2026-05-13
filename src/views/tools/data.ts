@@ -19,6 +19,11 @@ export const OtherTools = [
         icon: 'amkjk87*vppRtTgt.qTWfg5cg.fYl4tTgt.q4efagUjmf',
         url: 'amkjk87*vppRtTgt.qTWfg5',
     }, {
+        "name": "TTSMaker",
+        "description": "免费的文本转语音工具，提供语音合成服务，支持多种语言，包括中文、英语、日语、韩语、法语、德语、西班牙语、阿拉伯语等50多种语言，以及超过300种语音风格。您可以用它制作视频配音，也可用于有声书朗读，或下载音频文件用于商业用途（完全免费）。",
+        "icon": "amkjk87*smldVcZlZbg6jnTncb*ow_n.Zgd_tu_VkmZs*ehYi5Zrodkm_fgai_uvTghZ",
+        "url": "amkjk87*smldVcZlZbg6"
+    }, {
         name: '书伴',
         description: 'Kindle阅读器的辅助工具，能帮助您更便捷、深入地使用手中的Kindle阅读器。',
         icon: 'amkjk87*ahhb.XlZZbhf4qh5XnmmYen5nbdlYl4WgieedkYmw5Vmrdml4cVih*80Ywvyy0z8uzvVz0Z11wTjpZ',

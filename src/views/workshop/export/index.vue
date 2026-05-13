@@ -72,6 +72,9 @@
                   <a-form-item label="发送到默认邮箱">
                     <a-switch v-model="form.isSendEmail" />
                   </a-form-item>
+                  <a-form-item label="导出到库存">
+                    <a-switch v-model="form.isExportToInventory" />
+                  </a-form-item>
                   <a-table>
                     <a-tr><a-th>导出文件类型</a-th><a-th>优点</a-th><a-th>缺点</a-th></a-tr>
                     <a-tr>
@@ -189,6 +192,7 @@ const form = ref({
   fileType: "epub",
   isSendEmail: false,
   isEmbedTitle: true,
+  isExportToInventory: false,
 });
 const current = ref(1);
 const Chapters = ref<Array<any>>([]);
