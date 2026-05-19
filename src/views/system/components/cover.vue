@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-divider orientation="center">封面存储</a-divider>
+    <a-divider orientation="center">封面</a-divider>
     <SettingForm :form="settingData" :value="value" @update="save" />
   </div>
 </template>

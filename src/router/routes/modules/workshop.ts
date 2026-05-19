@@ -50,7 +50,7 @@ const WORKSHOP: AppRouteRecordRaw = {
           name: 'ProductsManagement',
           component: () => import('@/views/exception/404/index.vue'),
           meta: {
-            icon: 'icon-select-all',
+            icon: 'icon-storage',
             locale: 'menu.workshop.export.productsmanagement',
             requiresAuth: true,
             roles: ['*'],

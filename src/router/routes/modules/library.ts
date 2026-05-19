@@ -9,7 +9,7 @@ const LIBRARY: AppRouteRecordRaw = {
     locale: 'menu.library',
     requiresAuth: true,
     // hideChildrenInMenu: true,
-    icon: 'icon-home',
+    icon: 'icon-desktop',
     order: 2,
   },
   children: [

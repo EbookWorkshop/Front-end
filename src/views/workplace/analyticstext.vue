@@ -17,7 +17,7 @@
           <a-descriptions :column="2" class="mb-6">
             <a-descriptions-item label="总章节数">{{ analyticsData.totalChapters }}</a-descriptions-item>
             <a-descriptions-item label="空章节数">{{ analyticsData.emptyChapters }}</a-descriptions-item>
-            <a-descriptions-item label="总字数">{{ analyticsData.totalWords }}</a-descriptions-item>
+            <a-descriptions-item label="总字数">{{ analyticsData.totalWords }}<a-tag color="orange"  v-if="analyticsData.totalWords>10000" style="margin-left: 8px;" >{{ (analyticsData.totalWords / 10000).toFixed(1) }}万</a-tag>  </a-descriptions-item>
             <a-descriptions-item label="总段落数">{{ analyticsData.totalParagraphs }}</a-descriptions-item>
             <a-descriptions-item label="预计阅读时间">约{{ Math.ceil(Number(analyticsData.readingTime))
             }}分钟</a-descriptions-item>

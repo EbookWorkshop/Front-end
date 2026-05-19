@@ -2,13 +2,17 @@
   <a-empty v-if="renderData != null && renderData.length == 0 && !loading" />
 
   <a-spin v-else :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%;min-height: 200px;">
-    <a-row :gutter="20" align="stretch" style="overflow-x: hidden">
+    <a-row :gutter="20" align="stretch" :wrap="false" style="overflow-x: hidden">
       <!-- 标签工具栏 -->
-      <a-col :span="24" v-if="renderData.length > 0">
+      <a-col flex="34px" v-if="renderData.length > 0">
         <a-button @click="toggleFilter" shape="circle"> <template #icon><icon-filter title="筛选" /></template></a-button>
+      </a-col>
+      <a-col flex="auto" v-if="renderData.length > 0">
         <TagList :tagid="props.tagid" :Api="props.Api" @change="renderData = $event" />
       </a-col>
-      <a-col :span="24" v-if="isFiltered">
+    </a-row>
+    <a-row :gutter="20" align="stretch" style="overflow-x: hidden">
+      <a-col :span="24" v-if="isFiltered" >
         <a-input :style="{ width: '100%' }" placeholder="输入过滤的书名，按回车执行过滤" allow-clear @change="filterBookName">
           <template #prefix><icon-filter title="筛选" /></template>
         </a-input>
@@ -70,13 +74,15 @@
                         <a-button type="text" long @click="gotoAnalyticsText(item.BookId)">统计</a-button>
                       </template>
                     </a-doption>
-                    <a-doption>
-                      <template #icon> <icon-delete /> </template>
-                      <template #default>
-                        <a-button type="text" status="danger" @click="DeleteABook(item.BookId, item.BookName)"
-                          long>删除书本</a-button>
-                      </template>
-                    </a-doption>
+                    <a-dgroup title="危险操作">
+                      <a-doption>
+                        <template #icon> <icon-delete /> </template>
+                        <template #default>
+                          <a-button type="text" status="danger" @click="DeleteABook(item.BookId, item.BookName)"
+                            long>删除书本</a-button>
+                        </template>
+                      </a-doption>
+                    </a-dgroup>
                   </template>
                 </a-dropdown>
               </a-col>

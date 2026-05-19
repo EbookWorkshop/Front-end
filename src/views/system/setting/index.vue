@@ -16,22 +16,25 @@
                             <a-sub-menu key="0">
                                 <!-- <template #icon><icon-apps></icon-apps></template> -->
                                 <template #title>常规设置</template>
-                                <a-menu-item @click="scrollToMenu('0_0')"
-                                    key="0_0">界面设置</a-menu-item><!-- 界面的字体、颜色模式、默认语言 -->
-                                <a-menu-item @click="scrollToMenu('0_1')" key="0_1">阅读偏好</a-menu-item><!-- 阅读字体 -->
+                                <a-menu-item @click="scrollToMenu('0_0')" key="0_0">界面设置</a-menu-item>
+                                <a-menu-item @click="scrollToMenu('0_1')" key="0_1">阅读偏好</a-menu-item>
                                 <!-- <a-menu-item @click="scrollToMenu('0_0')" key="0_3">文本转语音</a-menu-item> -->
                             </a-sub-menu>
                             <a-sub-menu key="1">
                                 <template #title>存储设置</template>
                                 <a-menu-item @click="scrollToMenu('1_0')" key="1_0">数据存储</a-menu-item>
-                                <a-menu-item @click="scrollToMenu('1_1')" key="1_1">制品存储</a-menu-item>
+                                <a-menu-item @click="scrollToMenu('1_1')" key="1_1">本地书库</a-menu-item>
                                 <a-menu-item @click="scrollToMenu('1_2')" key="1_2">临时缓存</a-menu-item>
                                 <a-menu-item @click="scrollToMenu('1_3')" key="1_3">封面</a-menu-item>
                             </a-sub-menu>
                             <a-sub-menu key="2">
+                                <template #title>调试设置</template>
+                                <a-menu-item @click="scrollToMenu('2_0')" key="2_0">调试输出</a-menu-item>
+                            </a-sub-menu>
+                            <a-sub-menu key="3">
                                 <template #title>邮箱设置</template>
-                                <a-menu-item @click="scrollToMenu('2_0')" key="2_0">默认收件箱</a-menu-item>
-                                <a-menu-item @click="scrollToMenu('2_1')" key="2_1">发件箱</a-menu-item>
+                                <a-menu-item @click="scrollToMenu('3_0')" key="3_0">默认收件箱</a-menu-item>
+                                <a-menu-item @click="scrollToMenu('3_1')" key="3_1">发件箱</a-menu-item>
                             </a-sub-menu>
                         </a-menu>
                     </div>
@@ -46,8 +49,9 @@
                                 <Inventory class="scroll-to-unit" scroll-key="1_1" />
                                 <Temp class="scroll-to-unit" scroll-key="1_2" />
                                 <Cover class="scroll-to-unit" scroll-key="1_3" />
-                                <Inbox class="scroll-to-unit" scroll-key="2_0" />
-                                <Outbox class="scroll-to-unit" scroll-key="2_1" />
+                                <Debug class="scroll-to-unit" scroll-key="2_0" />
+                                <Inbox class="scroll-to-unit" scroll-key="3_0" />
+                                <Outbox class="scroll-to-unit" scroll-key="3_1" />
                             </div>
                         </a-scrollbar>
                     </div>
@@ -71,7 +75,7 @@ import Data from '../components/data.vue';
 import Inventory from '../components/inventory.vue';
 import Temp from '../components/temp.vue';
 import Cover from '../components/cover.vue';
-
+import Debug from '../components/debug.vue';
 import Inbox from '../components/inbox.vue';
 import Outbox from '../components/outbox.vue';
 

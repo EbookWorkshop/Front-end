@@ -6,6 +6,7 @@ export type SettingFormType = {
     description?: string;
     status?: string;
     controlType: 'VNode' | 'select' | 'switch' | 'number' | 'color' | 'text' | 'password' | 'button';
+    message?: string;
 
     /***************************************************/
     /** 自定义VNode */

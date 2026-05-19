@@ -14,6 +14,26 @@ export function checkSiteAccessibility(host: string) {
 }
 
 /**
+ * 获取数据集配置
+ * @returns 
+ */
+export function getDatasetting() {
+  return axios.get('/services/config/datasetting');
+}
+
+export function getDebugSetting() {
+  return axios.get('/services/config/debug');
+}
+/**
+ * 保存调试配置
+ * @param setting 
+ * @returns 
+ */
+export function saveDebugSetting(setting: any) {
+  return axios.patch('/services/config/debug', setting);
+}
+
+/**
  * 保存发邮箱信息
  * @param email 发邮件用邮箱地址
  * @param password 邮箱密码/身份识别码
@@ -54,7 +74,7 @@ export function saveKindleInbox(address: string) {
  * @param {FormData} email 
  * @returns 
  */
-export function sendAEMail(email:FormData) {
+export function sendAEMail(email: FormData) {
   // console.log("准备发送邮件:", email);
   // return new Promise(() => { });
   return axios.post('/services/email/send', email);
@@ -66,18 +86,18 @@ export function sendAEMail(email:FormData) {
  * 可用于设置页的尺寸，封面大小等
  */
 export const resolutionOptions = [
-    {
-        width: 1072,
-        height: 1448,
-        ppi: 300,
-        id: "kpw4",
-        label: "Kindle Paperwhite 4",
-    },
-    {
-        width: 1236,
-        height: 1648,
-        ppi: 300,
-        id: "kpw5",
-        label: "Kindle Paperwhite 5",
-    },
+  {
+    width: 1072,
+    height: 1448,
+    ppi: 300,
+    id: "kpw4",
+    label: "Kindle Paperwhite 4",
+  },
+  {
+    width: 1236,
+    height: 1648,
+    ppi: 300,
+    id: "kpw5",
+    label: "Kindle Paperwhite 5",
+  },
 ]

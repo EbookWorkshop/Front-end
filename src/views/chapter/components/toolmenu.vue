@@ -97,6 +97,9 @@ let fontDataMap = new Map();
 async function InitFont() {
     fontData = await queryFontList();
     fontDataMap = new Map(fontData.map(t => [t.name, t]));
+
+    selectedFont.value = props.defaultFont;
+    onChangeFont();
 }
 InitFont();
 function onChangeFont() {

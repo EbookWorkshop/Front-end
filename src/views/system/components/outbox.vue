@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-divider orientation="left">发件箱</a-divider>
+    <a-divider orientation="center">发件箱</a-divider>
     <SettingForm :form="settingData" :value="value" @update="save" />
   </div>
 </template>

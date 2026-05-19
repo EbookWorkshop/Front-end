@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-divider orientation="center">制品存储</a-divider>
+    <a-divider orientation="center">本地书库</a-divider>
     <SettingForm :form="settingData" :value="value" @update="save" />
   </div>
 </template>
@@ -13,7 +13,8 @@ import type { SettingFormType } from './types'
 
 const settingData: SettingFormType[] = [{
   dataId: 'inventoryPath',
-  title: '制品存储路径',
+  title: '库存图书路径',
+  description: '用于存储文件型图书，如 PDF、EPUB 等。',
   controlType: 'text',
   status:'disabled',
 // }, {
