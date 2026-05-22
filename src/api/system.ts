@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { HttpResponse } from '@/types/global';
 
 export function getSystemVersion() {
   return axios.get('/services/version');
@@ -11,6 +12,13 @@ export function getSystemVersion() {
  */
 export function checkSiteAccessibility(host: string) {
   return axios.get(`/services/checkSiteAccessibility?host=${host}`);
+}
+/**
+ * 压缩数据库
+ * @returns 压缩后数据
+ */
+export function compressDB() {
+  return axios.post<HttpResponse<any>>('/services/compress_db');
 }
 
 /**

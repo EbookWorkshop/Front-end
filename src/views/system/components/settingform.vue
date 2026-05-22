@@ -14,7 +14,7 @@
                 </div>
                 <div class="setting-item-value">
                     <!-- 编辑控件 -->
-                    <div v-if="item.controlType === 'VNode'">{{ item.vnode }}</div>
+                    <slot v-if="item.controlType === 'VNode'" :name="item.dataId"> </slot>
                     <a-select v-else-if="item.controlType === 'select'" v-model="value[item.dataId]"
                         @change="updateValue(item.dataId)" :id="item.dataId" :defaultValue="value[item.dataId]">
                         <a-option v-for="option in item.options" :key="option.value" :value="option.value">
@@ -32,11 +32,11 @@
                     <a-color-picker v-else-if="item.controlType === 'color'" v-model:value="value[item.dataId]"
                         size="large" @change="updateValue(item.dataId)" :id="item.dataId" />
 
-                    <a-input v-else-if="item.controlType === 'text'" v-model="value[item.dataId]" 
+                    <a-input v-else-if="item.controlType === 'text'" v-model="value[item.dataId]"
                         :disabled="item.status === 'disabled'" @change="updateValue(item.dataId)" :id="item.dataId" />
 
                     <a-input-password v-else-if="item.controlType === 'password'" v-model="value[item.dataId]"
-                        @change="updateValue(item.dataId)" :id="item.dataId" autocomplete/>
+                        @change="updateValue(item.dataId)" :id="item.dataId" autocomplete />
 
                     <a-button v-else-if="item.controlType === 'button'" type="primary" @click="item.callback"
                         :id="item.dataId">{{ item.buttonText }}</a-button>

@@ -1,4 +1,4 @@
-import { VNode } from 'vue'
+import type { Component } from 'vue'
 
 export type SettingFormType = {
     dataId: string;
@@ -9,12 +9,6 @@ export type SettingFormType = {
     message?: string;
 
     /***************************************************/
-    /** 自定义VNode */
-    vnode?: {
-        type: VNode,
-        default: () => null,
-    };
-
     /** select/switch 选项列表 */
     options?: Array<{ label: string, value: any }>;
 
