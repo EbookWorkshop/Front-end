@@ -3,7 +3,7 @@ import type { VNode } from 'vue';
 export interface MessageRecord {
     /**
      * ## 消息ID
-     * * ### 前端生成的错误消息记得设置id为-1，因为后端无法获取详情
+     * * ### 前端消息ID<0，后端消息ID>0
      */
     id: number;
     /**
@@ -31,6 +31,15 @@ export interface MessageRecord {
      * 0未读、1已读
      */
     status: 0 | 1;
+
+    /**
+     * 错误信息
+     */
+    error?: ErrorEvent | any;
+    /**
+     * 消息附加数据
+     */
+    data?: any;
 }
 export type MessageListType = MessageRecord[];
 

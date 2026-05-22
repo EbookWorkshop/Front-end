@@ -114,6 +114,7 @@ import { useSocket } from '@/hooks/socket';
 import MessageBox from '@/components/message-box/index.vue';
 import MessageDetail from '@/components/message-box/detail.vue';
 import ConnectStatus from './connect-status.vue';
+import { MessageRecord } from '@/types/Message';
 
 const logoLight = "/logo.svg?t=navbar";
 const logoDark = "/logo-dark.svg?t=navbar";
@@ -174,8 +175,8 @@ const setDropDownVisible = () => {
 const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
 
 // 处理消息详情显示
-const handleReadOne = (messageId: number) => {
-  messageDetailRef.value?.open(messageId);
+const handleReadOne = (message: MessageRecord) => {
+  messageDetailRef.value?.open(message);
 };
 // 计算未读消息数量
 const unreadCount = computed(() => {

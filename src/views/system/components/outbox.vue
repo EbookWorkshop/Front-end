@@ -39,9 +39,11 @@ function save(dataId: string) {
   const newValue = (value as any)[dataId];
   switch (dataId) {
     case 'outbox_address':
+      if (value.outbox_password === "") return;
       saveSMTPServer(newValue, value.outbox_password);
       break;
     case 'outbox_password':
+      if (newValue === "") return;
       saveSMTPServer(value.outbox_address, newValue);
       break;
   }

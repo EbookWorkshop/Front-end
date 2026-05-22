@@ -1,7 +1,16 @@
 <template>
   <div>
     <a-divider orientation="center">阅读偏好</a-divider>
-    <SettingForm :form="settingData" :value="value" @update="save" />
+    <SettingForm :form="settingData" :value="value" @update="save">
+      <template #readingSpeed>
+        <a-input-number name="readingSpeed" v-model="value.readingSpeed">
+          <template #suffix>
+            字/分钟
+          </template>
+        </a-input-number>
+        <a-button type="primary">测试阅读速度</a-button>
+      </template>
+    </SettingForm>
   </div>
 </template>
 
@@ -29,12 +38,19 @@ const settingData: SettingFormType[] = [{
   description: '设置默认的阅读背景颜色，仅网页阅读生效',
   controlType: 'color',
   status: 'warning',
+}, {
+  dataId: 'readingSpeed',
+  title: '阅读速度',
+  description: '用于评估阅读时间（字/分钟）',
+  controlType: 'VNode',
+  status: 'warning',
 }]
 
 const value = reactive({
   defaultReadingFont: '',
   fontSize: 24,
   readingBackground: '#f5f5f5',
+  readingSpeed: 250,
 });
 
 

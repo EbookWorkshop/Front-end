@@ -22,7 +22,7 @@ export function createMessageService(): MessageService {
     // 注册socket消息监听
     socketOn('WebBook.UpdateChapter.Finish', ({ bookid, bookName, doneNum, failNum }) => {
         messages.push({
-            id: bookid,
+            id: Date.now() *  -1,
             type: 'notice',
             title: `《${bookName}》已完成任务。`,
             subTitle: '',
@@ -44,7 +44,7 @@ export function createMessageService(): MessageService {
         }, '前往查看') as VNode;
 
         messages.push({
-            id: bookid,
+            id: Date.now() * -1,
             type: 'notice',
             title: `《${bookName}》已导入完成。`,
             content: '',
@@ -65,8 +65,8 @@ export function createMessageService(): MessageService {
         messages: readonly(messages) as ReadonlyArray<MessageRecord>,
         addMessage: (message: MessageRecord) => messages.push(message),
         markAsRead: (messageId: number) => {
-            const message = messages.find(m => m.id === messageId)
-            if (message) message.status = 1
+            const message = messages.filter(m => m.id === messageId)
+           message.map(m => m.status = 1);
         },
         clearAll: () => messages.splice(0)
     }

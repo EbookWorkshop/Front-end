@@ -9,6 +9,8 @@
                         <div class="title-section">
                             <a-tag>{{ messageDetail.message.id }}</a-tag>
                             <h3 class="message-title">{{ messageDetail.message.title }}</h3>
+                        </div>
+                        <div>
                             <a-tag v-if="messageDetail.message.subTitle" size="small" color="arcoblue">
                                 {{ messageDetail.message.subTitle }}
                             </a-tag>
@@ -58,7 +60,7 @@ import { ref, computed, watch } from 'vue';
 import { Message } from '@arco-design/web-vue';
 import { ApiResultCode } from '@/types/global';
 import { getMessage } from '@/api/message';
-import type { MessageDetail } from '@/types/Message';
+import type { MessageDetail, MessageRecord } from '@/types/Message';
 import InfoBlock from './components/InfoBlock.vue';
 
 // Props
@@ -148,10 +150,18 @@ const fetchMessageDetail = async (messageId: number) => {
 };
 
 // 打开模态框
-const open = (messageId?: number) => {
-    const targetMessageId = messageId || props.messageId;
-    if (targetMessageId) {
+const open = (message: MessageRecord) => {
+    const targetMessageId = message.id || props.messageId || -1;
+    if (targetMessageId > 0) {
         fetchMessageDetail(targetMessageId);
+    } else {
+        console.log(message.error);
+        messageDetail.value = {
+            type: message.error ? 'ErrorMessage' : message.type,
+            message: message,
+            err: message.error,
+            data: message.data,
+        }
     }
     visible.value = true;
 };

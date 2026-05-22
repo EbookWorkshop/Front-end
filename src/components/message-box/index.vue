@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, toRefs, computed, watch } from 'vue';
+  import { ref, reactive, toRefs, computed, watch, toRaw } from 'vue';
   import { useI18n } from 'vue-i18n';
   import type { MessageRecord, MessageListType} from '@/types/Message';
   import { useMessageService } from '@/services/messageService';
@@ -131,11 +131,10 @@
   };
 
   // 处理消息详情显示
-  const handleItemDetail = (item: MessageRecord) => {
-    // // 打开消息详情模态框
-    //-1为前端生成的错误消息，后端无法获取详情
-    if (item.id !== -1) emit('readOne', item.id);
-    
+  const handleItemDetail = (item:any) => {
+    //打开消息详情查看模态框
+    emit('readOne', toRaw(item));
+
     // 如果是未读消息，标记为已读
     if (!item.status) {
       messageService.markAsRead(item.id);

@@ -7,8 +7,8 @@
         <BookInfo :loading="loading" :bookId="bookId" :BookName="bookData.BookName" :convertImg="bookData.CoverImg"
           :Author="bookData.Author" :Introduction="bookData.Introduction">
           <template #toolbar>
-            <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Volumes="bookData.Volumes" :Chapters="bookData.Index"
-              :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar"
+            <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Volumes="bookData.Volumes"
+              :Chapters="bookData.Index" :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar"
               @start-update-chapter="(rsl: any) => curDoingProcent = rsl" ref="toolbarRef"></Toolbar>
           </template>
         </BookInfo>
@@ -113,6 +113,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
     bookid: _bookid,    //出错的书ID
     chapterId,          //出错的章节ID
     err,                //错误信息
+    msgId
   }: OneChapterStatus) => {
     const curChapter = chapterRefMap.get(chapterId);
     if (!curChapter) return;
@@ -126,7 +127,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
 
     // 使用消息服务添加错误消息
     const errInfo: MessageRecord = {
-      id: -1,
+      id: msgId || (Date.now() * -1),
       type: "message",
       title: `《${bookData.value?.BookName}》获取章节出错：${err?.name || ""}`,
       subTitle: `章节-${curChapter.value.getTitle()}`,
@@ -134,6 +135,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
       status: 1,
       avatar: "error",
+      error:err,
     };
     messageService.addMessage(errInfo);
   });
@@ -162,7 +164,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
 
     // 同时将完成消息添加到消息服务
     messageService.addMessage({
-      id: -1,
+      id: Date.now() * -1,
       type: "message",
       title: `《${bookData.value?.BookName}》已尝试任务${chapterIndexArray.length}个`,
       subTitle: `成功：${doneNum}，失败：${failNum}`,

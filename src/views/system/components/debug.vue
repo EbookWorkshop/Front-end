@@ -52,7 +52,7 @@ const settingData: SettingFormType[] = [{
   controlType: 'switch',
 }, {
   dataId: 'bookChapter',
-  title: '是否开启书籍章节更新调试',
+  title: '是否开启书籍章节抓取调试',
   controlType: 'switch',
 }, {
   dataId: 'saveBookCover',
