@@ -26,37 +26,24 @@ const WORKSHOP: AppRouteRecordRaw = {
     {
       path: 'export',
       name: 'export',
-      component: () => import('@/layout/page-layout.vue'),
+      component: () => import('@/views/workshop/export/index.vue'),
       meta: {
         locale: 'menu.workshop.export',
         requiresAuth: true,
         icon: 'icon-export',
         roles: ['*'],
       },
-      children: [
-        {
-          path: 'exportguide/:bookid?',
-          name: 'exportguide',
-          component: () => import('@/views/workshop/export/index.vue'),
-          meta: {
-            icon: 'icon-select-all',
-            locale: 'menu.workshop.export.guide',
-            requiresAuth: true,
-            roles: ['*'],
-          },
-        },
-        {
-          path: 'productsmanagement',
-          name: 'ProductsManagement',
-          component: () => import('@/views/exception/404/index.vue'),
-          meta: {
-            icon: 'icon-storage',
-            locale: 'menu.workshop.export.productsmanagement',
-            requiresAuth: true,
-            roles: ['*'],
-          },
-        },
-      ],
+    },
+    {
+      path: 'productsmanagement',
+      name: 'ProductsManagement',
+      component: () => import('@/views/workshop/productsmanagement/index.vue'),
+      meta: {
+        icon: 'icon-archive',
+        locale: 'menu.workshop.export.productsmanagement',
+        requiresAuth: true,
+        roles: ['*'],
+      },
     },
     {
       path: 'webbookmanage',

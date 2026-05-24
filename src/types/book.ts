@@ -75,3 +75,14 @@ export interface ChapterOrderSetting {
     indexId: number,
     newOrder: number
 }
+
+/**
+ * 文件信息
+ */
+export interface FileInfo {
+    name: string;
+    size: number;
+    file: string;
+    ext: string;
+    createTime: string;
+}

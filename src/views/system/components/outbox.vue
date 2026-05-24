@@ -10,6 +10,7 @@ import { reactive } from 'vue'
 import SettingForm from './settingform.vue'
 import { getSMTPServer, saveSMTPServer } from '@/api/system';
 import type { SettingFormType } from './types'
+import { p } from 'vue-router/dist/router-CWoNjPRp.mjs';
 
 
 const settingData: SettingFormType[] = [{
@@ -27,11 +28,18 @@ const value = reactive({
   outbox_address: '',
   outbox_password: '',
 });
+const def ={
+  address:"",
+  password:"",
+}
+
 
 // 加载初始值
 getSMTPServer().then((rsl: any) => {
   value.outbox_address = rsl.data?.address || '';
   value.outbox_password = rsl.data?.password || '';
+  def.address = value.outbox_address;
+  def.password = value.outbox_password;
 })
 
 
@@ -39,11 +47,11 @@ function save(dataId: string) {
   const newValue = (value as any)[dataId];
   switch (dataId) {
     case 'outbox_address':
-      if (value.outbox_password === "") return;
+      if (value.outbox_password === "" || newValue === def.address) return;
       saveSMTPServer(newValue, value.outbox_password);
       break;
     case 'outbox_password':
-      if (newValue === "") return;
+      if (newValue === "" || newValue === def.password) return;
       saveSMTPServer(value.outbox_address, newValue);
       break;
   }

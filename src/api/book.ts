@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Chapter, ChapterOrderSetting } from '@/types/book';
+import type { Chapter, ChapterOrderSetting, FileInfo } from '@/types/book';
 import type { HttpResponse } from '@/types/global';
 
 /**
@@ -233,6 +233,13 @@ export function reorderVolumes(volumeOrders: any[]) {
   });
 }
 
+/**
+ * 获取归档书籍列表
+ * @returns 
+ */
+export function getArchiveBookList(){
+  return axios.get(`/assets/archive/book`);
+}
 
 /**
  * 创建一本网文，新书入库
