@@ -146,7 +146,7 @@ const goto = (bookid: number) => {
 
 const gotoExport = (bookid: number) => {
   router.push({
-    path: `/workshop/export/exportguide/${bookid}`,
+    path: `/workshop/export/${bookid}`,
   });
 };
 /**

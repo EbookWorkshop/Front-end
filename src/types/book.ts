@@ -83,6 +83,8 @@ export interface FileInfo {
     name: string;
     size: number;
     file: string;
+    path: string;
+    filePath: string;
     ext: string;
     createTime: string;
 }

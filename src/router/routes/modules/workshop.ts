@@ -24,7 +24,7 @@ const WORKSHOP: AppRouteRecordRaw = {
       },
     },
     {
-      path: 'export',
+      path: 'export/:bookid?',
       name: 'export',
       component: () => import('@/views/workshop/export/index.vue'),
       meta: {
@@ -35,12 +35,12 @@ const WORKSHOP: AppRouteRecordRaw = {
       },
     },
     {
-      path: 'productsmanagement',
-      name: 'ProductsManagement',
-      component: () => import('@/views/workshop/productsmanagement/index.vue'),
+      path: 'inventory',
+      name: 'inventory',
+      component: () => import('@/views/workshop/inventory/index.vue'),
       meta: {
         icon: 'icon-archive',
-        locale: 'menu.workshop.export.productsmanagement',
+        locale: 'menu.workshop.export.inventory',
         requiresAuth: true,
         roles: ['*'],
       },

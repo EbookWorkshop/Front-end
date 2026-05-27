@@ -19,7 +19,7 @@ import type { HttpResponse } from '@/types/global';
 import type { SettingFormType } from './types'
 
 import { reactive, ref } from 'vue'
-import { getDatasetting, compressDB } from '@/api/system'
+import { getDataSetting, compressDB } from '@/api/system'
 import SettingForm from './settingform.vue'
 
 const dbCompressing = ref(false);
@@ -48,7 +48,7 @@ const value = reactive({
 });
 
 // 加载初始值
-getDatasetting().then((response) => {
+getDataSetting().then((response) => {
   const { dataPath, databasePath, dataPathAbsolute, databasePathAbsolute } = response.data;
   value.dataPath = dataPath;
   value.databasePath = databasePath;

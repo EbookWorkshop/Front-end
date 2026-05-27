@@ -9,19 +9,20 @@
 import { reactive } from 'vue'
 import SettingForm from './settingform.vue'
 import type { SettingFormType } from './types'
+import { getCoverSetting } from '@/api/system'
 
 
 const settingData: SettingFormType[] = [{
   dataId: 'coverPath',
   title: '封面存储路径',
   controlType: 'text',
-  status:'disabled',
+  status: 'disabled',
 }, {
   dataId: 'coverClean',
   title: '检查无用封面',
   controlType: 'button',
   buttonText: '检查',
-  status:'warning',
+  status: 'warning',
   callback: () => {
     console.log('检查无用封面');
   },
@@ -32,7 +33,11 @@ const value = reactive({
 });
 
 // 加载初始值
-
+getCoverSetting().then((response) => {
+  const { path, pathAbsolute } = response.data;
+  value.coverPath = path;
+  settingData.find(item => item.dataId === 'coverPath')!.message = `实际路径：  ${pathAbsolute}`;
+});
 
 function save(dataId: string) {
   const newValue = (value as any)[dataId];

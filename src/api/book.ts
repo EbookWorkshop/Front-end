@@ -229,7 +229,7 @@ export function removeChapterFromVolume(chapterIds: number[]) {
  */
 export function reorderVolumes(volumeOrders: any[]) {
   return axios.post<HttpResponse<boolean>>(`/library/book/volume/reorder`, {
-    volumeOrders  
+    volumeOrders
   });
 }
 
@@ -237,8 +237,12 @@ export function reorderVolumes(volumeOrders: any[]) {
  * 获取归档书籍列表
  * @returns 
  */
-export function getArchiveBookList(){
+export function getArchiveBookList() {
   return axios.get(`/assets/archive/book`);
+}
+
+export function deleteArchiveBook(fileName: string) {
+  return axios.delete(`/assets/archive/book/${fileName}`);
 }
 
 /**
@@ -297,6 +301,7 @@ export function createPDF(
   volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
+  isExportToInventory: boolean,
   fontFamily: string,
   embedTitle: boolean,
   enableIndent: boolean,
@@ -307,6 +312,7 @@ export function createPDF(
     volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
+    isExportToInventory,
     fontFamily,
     embedTitle,
     enableIndent,
@@ -320,6 +326,7 @@ export function createPDF(
  * @param volumeIds 要包含的卷ID列表
  * @param chapterIds 
  * @param isSendEmail 
+ * @param isExportToInventory 是否保存到存储
  * @param fontFamily 没用，对齐API用
  * @param embedTitle 是否嵌入章节标题
  * @param enableIndent 是否启用缩进
@@ -331,6 +338,7 @@ export function createTXT(
   volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
+  isExportToInventory: boolean,
   fontFamily: string,
   embedTitle: boolean,
   enableIndent: boolean,
@@ -341,6 +349,7 @@ export function createTXT(
     volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
+    isExportToInventory,
     embedTitle,
     enableIndent,
     coverImageData,
@@ -353,6 +362,7 @@ export function createTXT(
  * @param volumeIds 要包含的卷ID列表
  * @param chapterIds 
  * @param isSendEmail 
+ * @param isExportToInventory 是否保存到存储
  * @param fontFamily 没用，对齐API用
  * @param embedTitle 是否嵌入章节标题
  * @param enableIndent 是否启用缩进
@@ -364,6 +374,7 @@ export function createEPUB(
   volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
+  isExportToInventory: boolean,
   fontFamily: string,
   embedTitle: boolean,
   enableIndent: boolean,
@@ -374,6 +385,7 @@ export function createEPUB(
     volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
+    isExportToInventory,
     fontFamily,
     embedTitle,
     enableIndent,

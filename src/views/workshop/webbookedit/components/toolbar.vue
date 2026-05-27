@@ -282,8 +282,9 @@ function onCheckNot() {
 /**
  * 选择整卷
  */
-function onCheckVolume(volumeId: number) {
-    // chapterHasCheckedNum.value = 0;
+function onCheckVolume(value: string | number | Record<string, any> | undefined, ev: Event) {
+    const volumeId = Number(value);
+    if (Number.isNaN(volumeId)) return;
     props.Chapters.forEach(c => {
         if (c.VolumeId === volumeId) {
             props.ChapterStatus.set(c.IndexId, true);

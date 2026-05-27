@@ -123,5 +123,25 @@ function updateValue(dataId: string) {
         background-color: var(--color-fill-3);
         border-color: rgb(var(--arcoblue-6));
     }
+    &.disabled {
+        color: var(--color-text-3);
+        cursor: not-allowed;
+
+        .setting-item-title,
+        .setting-item-description {
+            color: var(--color-text-3);
+        }
+
+        .setting-item-value {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        &:hover,
+        &:active,
+        &.active {
+            border-color: transparent;
+            background-color: transparent;
+        }
+    }
 }
 </style>

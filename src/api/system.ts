@@ -25,8 +25,18 @@ export function compressDB() {
  * 获取数据集配置
  * @returns 
  */
-export function getDatasetting() {
+export function getDataSetting() {
   return axios.get('/services/config/datasetting');
+}
+
+export function getInventorySetting() {
+  return axios.get('/services/config/inventory');
+}
+export function getCoverSetting() {
+  return axios.get('/services/config/cover');
+}
+export function getTempSetting() {
+  return axios.get('/services/config/temp');
 }
 
 export function getDebugSetting() {
