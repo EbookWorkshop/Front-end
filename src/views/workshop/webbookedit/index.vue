@@ -132,7 +132,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       title: `《${bookData.value?.BookName}》获取章节出错：${err?.name || ""}`,
       subTitle: `章节-${curChapter.value.getTitle()}`,
       content: err?.message || "未知错误",
-      time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
+      time: new Date().toLocaleString(),
       status: 1,
       avatar: "error",
       error:err,
@@ -169,7 +169,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       title: `《${bookData.value?.BookName}》已尝试任务${chapterIndexArray.length}个`,
       subTitle: `成功：${doneNum}，失败：${failNum}`,
       content: `成功率：${Math.round(doneNum / chapterIndexArray.length * 10000) / 100}%`,
-      time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
+      time: new Date().toLocaleString(),
       status: 1,
       avatar: "info",
     });

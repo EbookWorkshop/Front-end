@@ -27,7 +27,7 @@ export function createMessageService(): MessageService {
             title: `《${bookName}》已完成任务。`,
             subTitle: '',
             content: `其中，成功：${doneNum}失败：${failNum}。`,
-            time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
+            time: new Date().toLocaleString(),
             status: 1,
             avatar: '/logo.svg?t=msg',
         })
@@ -49,7 +49,7 @@ export function createMessageService(): MessageService {
             title: `《${bookName}》已导入完成。`,
             content: '',
             vnodeContent: buttonVNode,
-            time: new Date().toJSON().replace(/[A-Za-z]/g, ' '),
+            time: new Date().toLocaleString(),
             avatar: '/logo.svg?t=msg',
             status: 1,
             subTitle: '',

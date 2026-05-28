@@ -92,9 +92,9 @@
   }
   
   const renderList = computed(() => {
-    return messageData.messageList.filter(
+    return [...messageData.messageList.filter(
       (item) => messageType.value === item.type || messageType.value === 'history'
-    );
+    )].reverse();
   });
   
   const unreadCount = computed(() => {
