@@ -63,6 +63,9 @@
                       </a-option>
                     </a-select>
                   </a-form-item>
+                  <a-form-item v-if="form.fileType == 'epub'" label="紧凑排版">
+                    <a-switch v-model="form.isCompact" />
+                  </a-form-item>
                   <a-form-item label="嵌入章节标题">
                     <a-switch v-model="form.isEmbedTitle" />
                   </a-form-item>
@@ -167,7 +170,7 @@ import BookCover from '@/components/book-cover/index.vue';
 import SelectChapter from '@/components/chapter/select.vue';
 
 import { HeatABook } from '@/api/library'
-import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';
+import { queryBookById, createTXT, createPDF, createEPUB, type ICreateBookAPI } from '@/api/book';
 import { queryFontList, } from '@/api/font';
 import { getKindleInbox } from '@/api/system';
 import { ApiResultCode } from '@/types/global'
@@ -191,6 +194,7 @@ const form = ref({
   cEnd: undefined as number | undefined,
   fileType: "epub",
   isSendEmail: false,
+  isCompact: false,
   isEmbedTitle: true,
   isExportToInventory: false,
 });
@@ -282,7 +286,7 @@ const onSubmit = () => {
     }
   };
 
-  let CreateBookAPI = null as any;
+  let CreateBookAPI: ICreateBookAPI | null = null;
   switch (form.value.fileType) {
     case "pdf":
       CreateBookAPI = createPDF;
@@ -298,7 +302,7 @@ const onSubmit = () => {
 
   let imageData = coverData.value?.startsWith("data:image/png;base64,") ? coverData.value.replace("data:image/png;base64,", "") : "";
 
-  CreateBookAPI(form.value?.bookId ?? 0, form.value.volumes, chapterIds, form.value.isSendEmail, form.value.isExportToInventory, form.value.fontFamily, form.value.isEmbedTitle, form.value.isEnableIndent, imageData).then((res: any) => {
+  CreateBookAPI?.(form.value?.bookId ?? 0, form.value.volumes, chapterIds, form.value.isSendEmail, form.value.isExportToInventory, form.value.fontFamily, form.value.isEmbedTitle, form.value.isEnableIndent, form.value.isCompact, imageData).then((res: any) => {
     saving.value = false;
     current.value = 4;
     if (res.code === ApiResultCode.Success) {

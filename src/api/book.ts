@@ -284,6 +284,19 @@ export function updateChapter(
   });
 }
 
+export interface ICreateBookAPI {
+  (bookid: number,
+    volumeIds: number[],
+    chapterIds: number[],
+    isSendEmail: boolean,
+    isExportToInventory: boolean,
+    fontFamily: string,
+    embedTitle: boolean,
+    enableIndent: boolean,
+    isCompact: boolean,
+    coverImageData?: string): Promise<unknown>
+}
+
 /**
  * 制作pdf——可发到默认邮箱
  * @param bookid
@@ -296,7 +309,7 @@ export function updateChapter(
  * @param coverImageData 封面图片base64数据
  * @returns
  */
-export function createPDF(
+export const createPDF: ICreateBookAPI = (
   bookid: number,
   volumeIds: number[],
   chapterIds: number[],
@@ -305,8 +318,9 @@ export function createPDF(
   fontFamily: string,
   embedTitle: boolean,
   enableIndent: boolean,
+  isCompact: boolean,
   coverImageData?: string,
-) {
+) => {
   return axios.post(`/export/pdf`, {
     bookId: bookid,
     volumeIds,
@@ -333,7 +347,7 @@ export function createPDF(
  * @param coverImageData 封面图片base64数据
  * @returns 
  */
-export function createTXT(
+export const createTXT: ICreateBookAPI = (
   bookid: number,
   volumeIds: number[],
   chapterIds: number[],
@@ -342,8 +356,9 @@ export function createTXT(
   fontFamily: string,
   embedTitle: boolean,
   enableIndent: boolean,
+  isCompact: boolean,
   coverImageData?: string,
-) {
+) => {
   return axios.post(`/export/txt`, {
     bookId: bookid,
     volumeIds,
@@ -369,7 +384,7 @@ export function createTXT(
  * @param coverImageData 封面图片base64数据
  * @returns 
  */
-export function createEPUB(
+export const createEPUB: ICreateBookAPI = (
   bookid: number,
   volumeIds: number[],
   chapterIds: number[],
@@ -378,8 +393,9 @@ export function createEPUB(
   fontFamily: string,
   embedTitle: boolean,
   enableIndent: boolean,
+  isCompact: boolean,
   coverImageData?: string,
-) {
+) => {
   return axios.post(`/export/epub`, {
     bookId: bookid,
     volumeIds,
@@ -390,5 +406,6 @@ export function createEPUB(
     embedTitle,
     enableIndent,
     coverImageData,
+    isCompact,
   });
 }
