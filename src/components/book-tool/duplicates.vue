@@ -46,7 +46,7 @@ const showDiff = ref(false);
 const diffLeft = ref('');
 const diffRight = ref('');
 const resultData = ref<any>([]);
-const columns = [
+const columns: any[] = [
     {
         title: '章节ID',
         dataIndex: 'id',
@@ -54,7 +54,7 @@ const columns = [
     {
         title: '章节标题',
         dataIndex: 'title',
-        width: '400'
+        width: 400
     },
     {
         title: '相似度',
@@ -111,12 +111,12 @@ let clockInterval = 0;//防抖
  * 调整相似度阈值
  * @param value 
  */
-function onThresholdChange(value: number) {
+function onThresholdChange(value: number | [number, number]) {
     if (clockInterval) {
         clearTimeout(clockInterval);
     }
     clockInterval = setTimeout(() => {
-        threshold.value = value;
+        threshold.value = value as number;
         loadData();
     }, 500);
 }

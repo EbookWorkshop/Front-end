@@ -34,7 +34,7 @@
             <a-card hoverable :style="{ width: '320px' }" title="替换内容-筛选">
               <a-form-item>
                 <a-select v-model="filterValue[0]" allow-clear placeholder="请选择筛选内容" allow-search
-                  @change="(value: string) => { setFilterValue([value]); handleFilterConfirm() }">
+                  @change="(value: any) => { setFilterValue([value]); handleFilterConfirm() }">
                   <a-option v-for="item of uniqueRenderData" :value="item" :label="item" />
                 </a-select>
                 <a-button @click="handleFilterReset">重置</a-button>

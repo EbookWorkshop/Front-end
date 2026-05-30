@@ -141,7 +141,7 @@ import { HeatABook } from "@/api/library";
 import { queryBookById, queryChapterById } from '@/api/book';
 import useRequest from '@/hooks/request';
 import { useAppStore } from '@/store';
-import { Form, FieldRule, Message } from '@arco-design/web-vue';
+import { FieldRule, Message ,type FormInstance} from '@arco-design/web-vue';
 import { editChapter } from '@/api/book';
 
 const route = useRoute();
@@ -151,7 +151,7 @@ const theme = computed<any>(() => {
     return appStore.theme;
 });
 
-const formRef = ref<Form>(null);
+const formRef = ref<FormInstance | null>(null);
 const form = reactive({
     bookId: bookid as number | undefined,
     chapterId: [] as number[],
@@ -234,7 +234,7 @@ function onLoadRulefromBook() {
  * 更新预览
  */
 async function onTryIt() {
-    await formRef.value.validate();
+    await formRef.value?.validate();
     if (!form.bookId || form.chapterId.length == 0 || form.curRegex == '') {
         return;
     }
@@ -259,7 +259,7 @@ async function onTryIt() {
 async function onSave() {
     SetChapterRequire(false);
     await nextTick();
-    await formRef.value.validate();
+    await formRef.value?.validate();
     SetChapterRequire(true);
 
     if (!form.bookId || form.curRegex == '') {
@@ -281,7 +281,7 @@ async function onSave() {
 }
 
 async function onSaveWithChapter() {
-    await formRef.value.validate();
+    await formRef.value?.validate();
     if (!form.chapterId || form.chapterId?.length == 0) return;
     await onSave();
 }
@@ -290,7 +290,7 @@ async function onSaveWithChapter() {
  * 载入一个章节预览
  */
 async function onViewChapter() {
-    await formRef.value.validate();
+    await formRef.value?.validate();
     if (!form.chapterId || form.chapterId?.length == 0) return;
     const chapterId = form.chapterId[0];
 
