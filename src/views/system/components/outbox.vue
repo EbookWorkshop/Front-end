@@ -10,8 +10,6 @@ import { reactive } from 'vue'
 import SettingForm from './settingform.vue'
 import { getSMTPServer, saveSMTPServer } from '@/api/system';
 import type { SettingFormType } from './types'
-import { p } from 'vue-router/dist/router-CWoNjPRp.mjs';
-
 
 const settingData: SettingFormType[] = [{
   dataId: 'outbox_address',

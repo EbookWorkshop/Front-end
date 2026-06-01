@@ -2,15 +2,17 @@
   <div class="container">
     <Breadcrumb :items="['menu.about']" />
     <div class="wrapper">
-      <a-card title="项目信息" :bordered="false">
-        <a-descriptions :data="appData" bordered :column="2" />
-      </a-card>
-      <a-card title="UI环境依赖" :bordered="false">
-        <a-descriptions :data="dependData" bordered />
-      </a-card>
-      <a-card title="服务器环境依赖" :bordered="false">
-        <a-descriptions :data="serverData" bordered />
-      </a-card>
+      <div class="content">
+        <a-card title="项目信息" :bordered="false">
+          <a-descriptions :data="appData" bordered :column="2" />
+        </a-card>
+        <a-card title="UI环境依赖" :bordered="false">
+          <a-descriptions :data="dependData" bordered />
+        </a-card>
+        <a-card title="服务器环境依赖" :bordered="false">
+          <a-descriptions :data="serverData" bordered />
+        </a-card>
+      </div>
     </div>
   </div>
 </template>
@@ -100,3 +102,11 @@ getSystemVersion().then((result: any) => {
 });
 
 </script>
+<style lang="less">
+.wrapper{
+  overflow:auto;
+}
+.content{
+  min-width: 800px;
+}
+</style>
