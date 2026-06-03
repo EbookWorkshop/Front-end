@@ -5,6 +5,7 @@
                 <a-button-group type="primary">
                     <a-button @click="isEditBookInfo = true"> <icon-pen /> 元数据 </a-button>
                     <a-button @click="() => { isOrdering = !isOrdering; emit('EditChapterOrdering', isOrdering); }" :status="isOrdering ? 'success' : 'normal'"> {{ isOrdering ? "保存并退出排序" : "章节排序" }} </a-button>
+                    <a-button v-if="isOrdering" @click="isOrderingByNumber = true" status="warning"> 按数字排序 </a-button>
                     <a-button @click="isFormatTitle = true"> 标题格式化 </a-button>
                     <a-button @click="showHiddenChapters(bookid ?? 0)"> 已隐藏章节 </a-button>
                     <a-button @click="isVolumeSetting = true"> 分卷设置 </a-button>
@@ -27,6 +28,7 @@
     <Descriptions :bookId="bookid ?? 0" :show="checkDescriptions" @close="checkDescriptions = false" />
     <FormatTitle v-model:visible="isFormatTitle" :bookId="bookid ?? 0" :chapters="chapters" />
     <PairedPunctuation v-model:visible="isPairedPunctuation" :bookId="bookid ?? 0" />
+    <OrderByNumber v-model:visible="isOrderingByNumber" :bookId="bookid ?? 0" :volumes="volumes" :chapters="chapters" />
     <VolumeSetting 
         v-model:visible="isVolumeSetting" 
         :bookId="bookid ?? 0" 
@@ -46,6 +48,7 @@ import TagTool from '@/components/tag-toolbar/index.vue';
 import FormatTitle from './FormatTitle.vue';
 import PairedPunctuation from './PairedPunctuation.vue';
 import VolumeSetting from './VolumeSetting.vue';
+import OrderByNumber from './OrderByNumber.vue';
 import type { Chapter, Volume } from "@/types/book";
 import useChapterHiddenHelper from "@/hooks/chapter-hidden";
 
@@ -56,6 +59,7 @@ const checkDescriptions = ref(false);
 const isFormatTitle = ref(false);
 const isPairedPunctuation = ref(false);
 const isVolumeSetting = ref(false);
+const isOrderingByNumber = ref(false);
 
 const props = defineProps<{
     bookid: number | undefined;
