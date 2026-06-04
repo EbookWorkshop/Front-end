@@ -3,8 +3,7 @@
         <Breadcrumb :items="['menu.workplace', 'menu.workshop.export.inventory']" />
         <div class="wrapper">
             <a-spin :spinning="loading" style="width: 100%;">
-                <div
-                    style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;padding: 0 10%;">
+                <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;padding: 0 10%;">
                     <div>
                         文件数：<a-statistic :value="data.length"></a-statistic>，总大小：
                         <a-statistic :value="(data.reduce((acc, cur) => acc + cur.size, 0) / 1024 / 1024)"
@@ -37,6 +36,7 @@
                         </a-button-group>
                     </div>
                 </div>
+                <a-empty v-if="data.length === 0" />
                 <a-card :bordered="false" :style="{ width: '100%' }">
                     <a-card-grid v-for="(item, index) in data" :key="index" :hoverable="true"
                         :style="{ width: '18%', margin: '10px 10px' }">
