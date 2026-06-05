@@ -1,8 +1,15 @@
 <script lang="ts" setup>
-import diffMatchPatch from 'diff-match-patch';
 import { watch, ref } from 'vue';
 
-const { DIFF_DELETE, DIFF_INSERT, DIFF_EQUAL } = diffMatchPatch;
+let DIFF_DELETE: number, DIFF_INSERT: number, DIFF_EQUAL: number;
+
+// 动态导入 diff-match-patch
+const loadDiffMatchPatch = async () => {
+  if (typeof DIFF_DELETE === 'undefined') {
+    const diffMatchPatch = await import('diff-match-patch');
+    ({ DIFF_DELETE, DIFF_INSERT, DIFF_EQUAL } = diffMatchPatch);
+  }
+};
 
 const props = defineProps<{
     left: string,
@@ -15,16 +22,19 @@ const rightHtml = ref("");
 
 
 // 监听props变化
-watch([() => props.left, () => props.right], ([newLeft, newRight]) => {
+watch([() => props.left, () => props.right], async ([newLeft, newRight]) => {
     if (newLeft == newRight && newLeft == "") return;
 
+    await loadDiffMatchPatch();
     generateDiffHtml(newLeft, newRight);
 
 }, { immediate: true });
 
-function generateDiffHtml(left: string, right: string) {
-    const dmp = new diffMatchPatch();
-    dmp.Diff_EditCost = 4; // 调整编辑成本阈值//
+async function generateDiffHtml(left: string, right: string) {
+    await loadDiffMatchPatch();
+    const diffMatchPatchModule = await import('diff-match-patch');
+    const dmp = new diffMatchPatchModule.default();
+    dmp.Diff_EditCost = 4; // 调整编辑成本阈值
     const diffs = dmp.diff_main(left, right);
     dmp.diff_cleanupSemantic(diffs); // 清理和优化差异
 

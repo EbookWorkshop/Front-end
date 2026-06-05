@@ -20,10 +20,6 @@ export default mergeConfig(
       rollupOptions: {
         output: {
           manualChunks: (id:string) => {
-            const backList: string[] = [  //频率比较低的单独打成一个包
-              'jszip','epubjs','@xmldom/xmldom',   //vue-reader依赖的库，体积较大且使用频率较低，单独打包
-            ];
-
             if (id.includes('node_modules')) {
               const moduleGroup = new Map();
               moduleGroup.set('reader', ['vue-reader','jszip','epubjs','@xmldom','core-js','event-emitter','localforage','marks-pane','path-webpack']);//Epub阅读器，用`npm ls 包名`可查看依赖关系，若多处引用则可以移除
