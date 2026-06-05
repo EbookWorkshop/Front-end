@@ -115,7 +115,7 @@ function onThresholdChange(value: number | [number, number]) {
     if (clockInterval) {
         clearTimeout(clockInterval);
     }
-    clockInterval = setTimeout(() => {
+    clockInterval = window.setTimeout(() => {
         threshold.value = value as number;
         loadData();
     }, 500);

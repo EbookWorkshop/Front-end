@@ -39,15 +39,15 @@
                 <a-empty v-if="data.length === 0" />
                 <a-card :bordered="false" :style="{ width: '100%' }">
                     <a-card-grid v-for="(item, index) in data" :key="index" :hoverable="true"
-                        :style="{ width: '18%', margin: '10px 10px' }">
+                        :style="{ minWidth: '18%', margin: '10px 10px' }">
                         <a-card :class="['card-book', item.ext]" :title="item.name" :bordered="false">
                             <template #extra>
                                 <a-dropdown>
                                     <a-button class="card-opt">操作</a-button>
                                     <template #content>
                                         <a-doption @click="DownLoad(item.filePath)">下载</a-doption>
-                                        <a-doption>发送</a-doption>
-                                        <a-doption>查看</a-doption>
+                                        <a-doption @click="SendByMail(item.filePath)">发送</a-doption>
+                                        <a-doption @click="OpenReader(item.filePath,item.ext)">查看</a-doption>
                                         <a-doption @click="Delete(item.file)">删除</a-doption>
                                     </template>
                                 </a-dropdown>
@@ -70,6 +70,7 @@
 
 <script lang="ts" setup>
 import { getArchiveBookList, deleteArchiveBook } from '@/api/book';
+import { sendAEMail } from '@/api/system'
 import type { FileInfo } from '@/types/book';
 import useRequest from '@/hooks/request';
 import { getApiBaseUrl } from '@/utils/config';
@@ -100,6 +101,22 @@ function DownLoad(filePath: string) {
     window.open(`${ASSETS_HOST}/assets/download/${encodeURIComponent(filePath)}`);
 }
 
+function OpenReader(filePath: string, fileType:string) {
+    if(fileType==='epub') window.open(`/reader/${ASSETS_HOST}/assets/download/${encodeURIComponent(encodeURIComponent(filePath))}`);
+    else window.open(`${ASSETS_HOST}/assets/view/${encodeURIComponent(filePath)}`);
+}
+
+function SendByMail(filePath:string){
+    const eMailForm = new FormData();
+    eMailForm.append('filePath', JSON.stringify([filePath]));
+    sendAEMail(eMailForm).then((response) => {
+        Modal.success({
+            title: '发送成功',
+            content: `书籍已成功发送，请注意查收。\n${filePath}`,
+            okText: '确认',
+        });
+    });
+}
 
 function Delete(fileName: string) {
     Modal.warning({

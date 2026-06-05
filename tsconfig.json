@@ -13,7 +13,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "lib": ["es2020", "dom"],
+    "lib": ["es2020", "dom", "esnext"],
     "skipLibCheck": true,
     "typeRoots": ["./src/types"]
   },
