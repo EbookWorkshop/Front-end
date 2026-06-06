@@ -134,8 +134,14 @@
                   </a-table>
                 </div>
                 <div v-if="current == 4" class="main-content">
-                  <a-result :status="resultData.result" :title="resultData.result == 'success' ? '导出成功' : '导出失败'"
-                    :subtitle="resultData.msg" />
+                  <a-result :status="resultData.result" :title="resultData.result == 'success' ? '导出成功' : '导出失败'">
+                    <template #subtitle>
+                      <div>{{ resultData.msg }}</div>
+                    </template>
+                    <template #extra v-if="resultData.url">
+                      <a-button :href="resultData.url">下载文件</a-button>
+                    </template>
+                  </a-result>
                 </div>
               </a-form>
             </keep-alive>
@@ -307,11 +313,13 @@ const onSubmit = () => {
     current.value = 4;
     if (res.code === ApiResultCode.Success) {
       resultData.value.result = 'success';
+      resultData.value.url=`${ASSETS_HOST}/assets/download/${encodeURIComponent(res.data.download)}`
+
       if (form.value.isSendEmail) {
         resultData.value.msg = '已发送到您的邮箱';
       } else {
         resultData.value.msg = "正在准备下载..."
-        window.open(`${ASSETS_HOST}/assets/download/${encodeURIComponent(res.data.download)}`);
+        window.open(resultData.value.url);
       }
     } else {
       resultData.value.result = 'error';

@@ -14,7 +14,7 @@ export default mergeConfig(
       configVisualizerPlugin(),
       configArcoResolverPlugin(),
       configImageminPlugin(),
-      configPwa()
+      configPwa(),
     ],
     build: {
       rollupOptions: {

@@ -6,6 +6,17 @@ export function getSystemVersion() {
 }
 
 /**
+ * 获取UI的包信息
+ * @returns 
+ */
+export function getUIPackVersion() {
+  return fetch('/version.json').then((result:any)=>{
+    if(!result.ok) return {};
+    return result.json();
+  });
+}
+
+/**
  * 检查站点是否可以访问
  * @param host 
  * @returns 

@@ -85,8 +85,9 @@
                   <div class="showContent"
                     :style="{ fontFamily: f.fontFamily, fontSize: `${form.fontSize}px`}" >
                     <a-typography-title :heading="4">{{ demoContext[form.contentIndex]?.name }}</a-typography-title>
-                    <a-typography-paragraph v-for="(p, pI) in demoContext[form.contentIndex]?.content.split('\n')" :key="pI">{{ p
-                    }}</a-typography-paragraph>
+                    <a-typography-paragraph v-for="(p, pI) in demoContext[form.contentIndex]?.content.split('\n')" :key="pI">
+                      {{ p }}
+                    </a-typography-paragraph>
                   </div>
                 </a-card>
               </a-col>

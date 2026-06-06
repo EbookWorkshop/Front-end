@@ -5,12 +5,14 @@ import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import svgLoader from 'vite-svg-loader';
 import configArcoStyleImportPlugin from './plugin/arcoStyleImport';
+import configPackVersion from './plugin/packVersion'
 
 
 import { dependencies, devDependencies, name, version } from "../package.json"
 
 export default defineConfig({
   plugins: [
+    configPackVersion(),
     vue(),
     vueJsx(),
     svgLoader({ svgoConfig: {} }),
