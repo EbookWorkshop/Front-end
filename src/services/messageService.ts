@@ -4,6 +4,7 @@ import { reactive, readonly, inject, provide, h, type InjectionKey, type VNode }
 import { useSocket } from '@/hooks/socket'
 import router from '@/router'
 import { Button } from '@arco-design/web-vue';
+import { content } from 'html2canvas/dist/types/css/property-descriptors/content';
 
 interface MessageService {
     messages: ReadonlyArray<MessageRecord>
@@ -22,7 +23,7 @@ export function createMessageService(): MessageService {
     // 注册socket消息监听
     socketOn('WebBook.UpdateChapter.Finish', ({ bookid, bookName, doneNum, failNum }) => {
         messages.push({
-            id: Date.now() *  -1,
+            id: Date.now() * -1,
             type: 'notice',
             title: `《${bookName}》已完成任务。`,
             subTitle: '',
@@ -66,7 +67,7 @@ export function createMessageService(): MessageService {
         addMessage: (message: MessageRecord) => messages.push(message),
         markAsRead: (messageId: number) => {
             const message = messages.filter(m => m.id === messageId)
-           message.map(m => m.status = 1);
+            message.map(m => m.status = 1);
         },
         clearAll: () => messages.splice(0)
     }
@@ -94,4 +95,58 @@ export function provideMessageService() {
     if (myMS) return myMS;
     myMS = createMessageService();
     provide(MessageServiceSymbol, myMS);
+}
+
+/**
+ * 发消息
+ * @param message 
+ */
+export function sendMessage(message: MessageRecord) {
+    useMessageServiceOutsiteVue().addMessage(message);
+}
+
+/**
+ * 发出一条消息
+ * @param title 
+ * @param content 
+ * @param subTitle 
+ * @param isReaded 
+ */
+export function sendMsg(title: string, content: string, setting: {
+    subTitle?: string | undefined,
+    isRead?: 0 | 1,
+    error?: any
+}) {
+    sendMessage({
+        id: Date.now() * -1,
+        type: "message",
+        title,
+        content,
+        time: new Date().toLocaleString(),
+        status: setting?.isRead || 0,
+        ...setting
+    })
+}
+
+/**
+ * 发出一条通知
+ * @param title 
+ * @param content 
+ * @param subTitle 
+ * @param isReaded 
+ */
+export function sendNotice(title: string, content: string, setting: {
+    subTitle?: string | undefined,
+    isRead?: 0 | 1,
+    error?: any
+}) {
+    sendMessage({
+        id: Date.now() * -1,
+        type: "notice",
+        title,
+        content,
+        time: new Date().toLocaleString(),
+        status: setting?.isRead || 0,
+        ...setting
+    })
 }

@@ -5,13 +5,11 @@
     </a-card>
     <a-card v-else :bordered="false" hoverable>
       <template #cover>
-        <div :style="{
-          overflow: 'hidden',
-        }">
+        <div :style="{ overflow: 'hidden', }">
           <img :style="{ width: '100%' }" :alt="title" :src=showImageUrl @error="imgError" />
         </div>
       </template>
-      <a-space align="start">
+      <a-space align="start" v-if="showEmbedBookName">
         <a-card-meta>
           <template #title>
             <a-typography-text>
@@ -40,6 +38,10 @@ const props = defineProps({
   coverImg: {
     type: String,
     default: '',
+  },
+  showEmbedBookName: {
+    type: Boolean,
+    default: true,
   },
 });
 const emiter = defineEmits(["error"]);
@@ -77,7 +79,7 @@ function imgError(event: Event) {
     overflow: hidden;
     border-radius: 4px;
 
-    .arco-card-body {
+    .arco-card-body:has(div) {
       /* 标题部分 */
       position: absolute;
       width: 100%;

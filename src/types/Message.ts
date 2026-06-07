@@ -14,7 +14,7 @@ export interface MessageRecord {
      */
     type: "notice" | "message" | "history";
     title: string;
-    subTitle: string;
+    subTitle?: string;
     /**
      * ## 消息图标
      * * ### string 自定义图片作图标，提供图片地址

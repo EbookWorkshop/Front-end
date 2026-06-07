@@ -3,7 +3,8 @@
         <Breadcrumb :items="['menu.workplace', 'menu.workshop.export.inventory']" />
         <div class="wrapper">
             <a-spin :spinning="loading" style="width: 100%;">
-                <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;padding: 0 10%;">
+                <div
+                    style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;padding: 0 10%;">
                     <div>
                         文件数：<a-statistic :value="data.length"></a-statistic>，总大小：
                         <a-statistic :value="(data.reduce((acc, cur) => acc + cur.size, 0) / 1024 / 1024)"
@@ -23,8 +24,7 @@
                                 </template>
                             </a-dropdown>
                             <a-dropdown @select="(value) => SortTheList(false, value as string)">
-                                <a-button size="large"> <template #icon><icon-sort-descending /></template>
-                                    降序</a-button>
+                                <a-button size="large"> <template #icon><icon-sort-descending /></template> 降序</a-button>
                                 <template #content>
                                     <a-doption value="name">名字</a-doption>
                                     <a-doption value="size">大小</a-doption>
@@ -32,14 +32,12 @@
                                     <a-doption value="type">类型</a-doption>
                                 </template>
                             </a-dropdown>
-
                         </a-button-group>
                     </div>
                 </div>
                 <a-empty v-if="data.length === 0" />
                 <a-card :bordered="false" :style="{ width: '100%' }">
-                    <a-card-grid v-for="(item, index) in data" :key="index" :hoverable="true"
-                        :style="{ minWidth: '18%', margin: '10px 10px' }">
+                    <a-card-grid v-for="(item, index) in data" :key="index" :hoverable="true" :style="{ margin: '10px 10px',maxWidth:'22%' }">
                         <a-card :class="['card-book', item.ext]" :title="item.name" :bordered="false">
                             <template #extra>
                                 <a-dropdown>
@@ -47,7 +45,7 @@
                                     <template #content>
                                         <a-doption @click="DownLoad(item.filePath)">下载</a-doption>
                                         <a-doption @click="SendByMail(item.filePath)">发送</a-doption>
-                                        <a-doption @click="OpenReader(item.filePath,item.ext)">查看</a-doption>
+                                        <a-doption @click="OpenReader(item.filePath, item.ext)">查看</a-doption>
                                         <a-doption @click="Delete(item.file)">删除</a-doption>
                                     </template>
                                 </a-dropdown>
@@ -101,12 +99,12 @@ function DownLoad(filePath: string) {
     window.open(`${ASSETS_HOST}/assets/download/${encodeURIComponent(filePath)}`);
 }
 
-function OpenReader(filePath: string, fileType:string) {
-    if(fileType==='epub') window.open(`/reader/${ASSETS_HOST}/assets/download/${encodeURIComponent(encodeURIComponent(filePath))}`);
+function OpenReader(filePath: string, fileType: string) {
+    if (fileType === 'epub') window.open(`/reader/${ASSETS_HOST}/assets/download/${encodeURIComponent(encodeURIComponent(filePath))}`);
     else window.open(`${ASSETS_HOST}/assets/view/${encodeURIComponent(filePath)}`);
 }
 
-function SendByMail(filePath:string){
+function SendByMail(filePath: string) {
     const eMailForm = new FormData();
     eMailForm.append('filePath', JSON.stringify([filePath]));
     sendAEMail(eMailForm).then((response) => {

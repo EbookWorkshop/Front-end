@@ -1,6 +1,6 @@
 <template>
-  <BookWrap v-if="curCover && !curCover?.startsWith('#')" :loading="loading" :title="curBookName" :cover-img="curCover"
-    @error="CoverImgError">
+  <BookWrap v-if="curCover && !curCover?.startsWith('#')" :loading="loading" :title="curBookName" 
+    :cover-img="curCover" :show-embed-book-name="showEmbedBookName" @error="CoverImgError">
     <a-descriptions style="margin-top: 16px" layout="inline-horizontal" :column="2" />
   </BookWrap>
   <BookClassical v-else :loading="loading" :title="curBookName" :title-show="curBookName.replace(/[\(（)].*$/, '')"
@@ -32,6 +32,10 @@ const props = defineProps({
   coverImg: {
     type: String,
     default: '',
+  },
+  showEmbedBookName:{
+    type:Boolean,
+    default:true,
   },
 });
 

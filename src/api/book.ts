@@ -292,6 +292,7 @@ export interface ICreateBookAPI {
     isExportToInventory: boolean,
     fontFamily: string,
     embedTitle: boolean,
+    embedBookName: boolean,
     enableIndent: boolean,
     isCompact: boolean,
     coverImageData?: string): Promise<unknown>
@@ -317,6 +318,7 @@ export const createPDF: ICreateBookAPI = (
   isExportToInventory: boolean,
   fontFamily: string,
   embedTitle: boolean,
+  embedBookName: boolean,
   enableIndent: boolean,
   isCompact: boolean,
   coverImageData?: string,
@@ -329,6 +331,7 @@ export const createPDF: ICreateBookAPI = (
     isExportToInventory,
     fontFamily,
     embedTitle,
+    embedBookName,
     enableIndent,
     coverImageData,
   });
@@ -355,6 +358,7 @@ export const createTXT: ICreateBookAPI = (
   isExportToInventory: boolean,
   fontFamily: string,
   embedTitle: boolean,
+  embedBookName: boolean,
   enableIndent: boolean,
   isCompact: boolean,
   coverImageData?: string,
@@ -380,6 +384,7 @@ export const createTXT: ICreateBookAPI = (
  * @param isExportToInventory 是否保存到存储
  * @param fontFamily 没用，对齐API用
  * @param embedTitle 是否嵌入章节标题
+ * @param embedBookName 封面是否嵌入书名
  * @param enableIndent 是否启用缩进
  * @param coverImageData 封面图片base64数据
  * @returns 
@@ -392,6 +397,7 @@ export const createEPUB: ICreateBookAPI = (
   isExportToInventory: boolean,
   fontFamily: string,
   embedTitle: boolean,
+  embedBookName: boolean,
   enableIndent: boolean,
   isCompact: boolean,
   coverImageData?: string,
@@ -404,6 +410,7 @@ export const createEPUB: ICreateBookAPI = (
     isExportToInventory,
     fontFamily,
     embedTitle,
+    embedBookName,
     enableIndent,
     coverImageData,
     isCompact,
