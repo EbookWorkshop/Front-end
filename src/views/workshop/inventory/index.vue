@@ -37,7 +37,7 @@
                 </div>
                 <a-empty v-if="data.length === 0" />
                 <a-card :bordered="false" :style="{ width: '100%' }">
-                    <a-card-grid v-for="(item, index) in data" :key="index" :hoverable="true" :style="{ margin: '10px 10px',maxWidth:'22%' }">
+                    <a-card-grid v-for="(item, index) in data" :key="index" :hoverable="true" :style="{ margin: '10px 10px',width:'340px' }">
                         <a-card :class="['card-book', item.ext]" :title="item.name" :bordered="false">
                             <template #extra>
                                 <a-dropdown>

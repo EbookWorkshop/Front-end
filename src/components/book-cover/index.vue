@@ -35,7 +35,7 @@ const props = defineProps({
   },
   showEmbedBookName:{
     type:Boolean,
-    default:true,
+    default:false,
   },
 });
 

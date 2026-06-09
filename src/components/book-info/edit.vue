@@ -42,9 +42,13 @@
                         <a-upload v-model="form.bookCover" :show-file-list="false" :auto-upload="false"
                             :on-before-upload="onSetConverFile">
                             <template #upload-button>
-                                <BookCover :book-name="form.name" :cover-img="form.bookCover" />
+                                <BookCover :book-name="form.name" :cover-img="form.bookCover"
+                                    :show-embed-book-name="form.embelBookName" />
                             </template>
                         </a-upload>
+                    </a-form-item>
+                    <a-form-item v-if="form.coverType == '图片'" label="嵌入书名">
+                        <a-switch v-model="form.embelBookName"></a-switch>
                     </a-form-item>
                 </template>
             </a-split>
@@ -53,11 +57,14 @@
 </template>
 <script lang="ts" setup>
 import { reactive, ref } from 'vue';
-import { queryFontList, ASSETS_HOST, } from '@/api/font';
+import { queryFontList, } from '@/api/font';
 import { queryBookInfo, patchBookInfo } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
 
 import BookCover from "@/components/book-cover/index.vue";
+import { fromPairs } from 'lodash';
+
+const SHOW_BOOKNAME = "#showname";
 
 // let fontDataMap = new Map();
 let fontData: Array<any> = [];      //系统已安装字体
@@ -66,7 +73,7 @@ const prop = defineProps<{
     bookId: number,
 }>();
 let oldBookMeta = {} as any;       // 保存旧的书籍元数据
-const history = ref(['#0b3154', '#cb1f2f', '#f2e3a4', '#212f30']); // 封面预设色
+const history = ref(['#0b3154', '#cb1f2f', '#f2e3a4', '#212f30', '#034934', '#9B4B8C', '#E0873A']); // 封面预设色
 let tempConverFile = ref<File>(); // 临时封面文件
 
 const emit = defineEmits(["submit", "cancel"]);
@@ -79,12 +86,13 @@ const form = reactive<any>({
     introduction: '',
     bookCover: '',
     coverType: "线装本",
+    embelBookName: false,
 });
 
 /**
  * 加载数据
  */
- async function LoadData() {
+async function LoadData() {
     if (prop.bookId !== 0) {
         const result = await queryBookInfo(prop.bookId);
         const bookInfo = result.data;
@@ -97,9 +105,10 @@ const form = reactive<any>({
         form.bookCover = bookInfo.CoverImg;
         form.coverType = bookInfo.CoverImg.startsWith("#") ? "线装本" : "图片";
         oldBookMeta = { ...form };
-
+        form.embelBookName = bookInfo.CoverImg.includes("#showname");
+        console.log("xXXx")
     }
-    if(fontData.length == 0) {
+    if (fontData.length == 0) {
         await InitFont();
     }
 };
@@ -111,9 +120,16 @@ const form = reactive<any>({
 async function handleBeforeOk(callback: any) {
     let metaForm = new FormData();
     metaForm.append('id', form.id);
-    if (form.bookCover?.startsWith("blob:")) {
+    if (form.bookCover?.startsWith("blob:")) {          //新上传的封面图片情况
         metaForm.append('coverFile', tempConverFile.value ?? "");
         form.bookCover = oldBookMeta.bookCover;//还原，跳过设置，直接用文件
+        if (form.embelBookName) form.bookCover = SHOW_BOOKNAME;
+    }
+
+    //在文件末尾加入标签用于识别是否嵌入标题
+    if (!form.bookCover.startsWith("#")) {//线装本模式
+        if (form.embelBookName && !form.bookCover.includes(SHOW_BOOKNAME)) form.bookCover += SHOW_BOOKNAME;
+        else if (!form.embelBookName && form.bookCover.includes(SHOW_BOOKNAME)) form.bookCover = form.bookCover.replace(SHOW_BOOKNAME, '');
     }
 
     for (let key in form) {

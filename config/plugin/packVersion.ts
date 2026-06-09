@@ -24,8 +24,6 @@ export default function configPackVersion() {
         });
 
         await fsp.writeFile("./public/version.json", JSON.stringify(versionInfo, null, 2));
-
-        console.log("生成版本文件")
     });
     return {} as any;//不影响后续的生成
 }

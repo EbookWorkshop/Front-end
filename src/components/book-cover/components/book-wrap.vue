@@ -9,7 +9,7 @@
           <img :style="{ width: '100%' }" :alt="title" :src=showImageUrl @error="imgError" />
         </div>
       </template>
-      <a-space align="start" v-if="showEmbedBookName">
+      <a-space align="start" v-if="isShowBookName">
         <a-card-meta>
           <template #title>
             <a-typography-text>
@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { getApiBaseUrl } from '@/utils/config';
 const ASSETS_HOST = getApiBaseUrl();
 const props = defineProps({
@@ -45,14 +45,20 @@ const props = defineProps({
   },
 });
 const emiter = defineEmits(["error"]);
+const isShowBookName = ref(props.showEmbedBookName);
 
 const showImageUrl = computed<string>(() => {
+  if (props.coverImg.includes("#showname")) isShowBookName.value = true;
   if (props.coverImg.startsWith('blob:')) {
     return props.coverImg;
   } else {
     return ASSETS_HOST + props.coverImg;
   }
 });
+
+watch(() => props.showEmbedBookName, (value, old) => {
+  isShowBookName.value = props.showEmbedBookName;
+})
 
 function imgError(event: Event) {
   emiter("error", event);
