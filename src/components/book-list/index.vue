@@ -2,7 +2,7 @@
   <a-empty v-if="renderData != null && renderData.length == 0 && !loading" />
 
   <a-spin v-else :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%;min-height: 200px;">
-    <a-row :gutter="20" align="stretch" :wrap="false" style="overflow-x: hidden">
+    <a-row :gutter="20" align="stretch" :wrap="false" style="overflow-x: hidden;">
       <!-- 标签工具栏 -->
       <a-col flex="34px" v-if="renderData.length > 0">
         <a-button @click="toggleFilter" shape="circle"> <template #icon><icon-filter title="筛选" /></template></a-button>
@@ -11,8 +11,8 @@
         <TagList :tagid="props.tagid" :Api="props.Api" @change="renderData = $event" />
       </a-col>
     </a-row>
-    <a-row :gutter="20" align="stretch" style="overflow-x: hidden">
-      <a-col :span="24" v-if="isFiltered" >
+    <a-row :gutter="20" align="stretch" style="overflow-x: hidden;">
+      <a-col :span="24" v-if="isFiltered">
         <a-input :style="{ width: '100%' }" placeholder="输入过滤的书名，按回车执行过滤" allow-clear @change="filterBookName">
           <template #prefix><icon-filter title="筛选" /></template>
         </a-input>
@@ -27,7 +27,9 @@
                 :xl="6" :xxl="4" @click="goto(item.BookId)">
                 <a-dropdown trigger="contextMenu" alignPoint :style="{ display: 'block' }" :popup-max-height="false"
                   class="book-context-menu">
-                  <BookCover :loading="loading" :book-name="item.BookName" :cover-img="item.CoverImg"> </BookCover>
+                  <BookCover :loading="loading" :book-name="item.BookName" :cover-img="item.CoverImg"
+                    class="book-cover">
+                  </BookCover>
                   <template #content>
                     <a-dgroup title="标签">
                       <a-doption disabled>
@@ -43,7 +45,7 @@
                       <template #icon> <icon-export /> </template>
                       <template #default>
                         <a-button type="text" long @click="gotoExport(item.BookId)">{{ $t('menu.workshop.export')
-                        }}</a-button>
+                          }}</a-button>
                       </template>
                     </a-doption>
                     <a-dsubmenu value="edit" trigger="hover">
@@ -246,6 +248,14 @@ function toggleFilter() {
 
     .arco-result-title {
       color: rgb(var(--gray-6));
+    }
+  }
+}
+
+.book-list-wrap {
+  .book-cover {
+    @media (max-width: 576px) {
+      margin: 5px auto;
     }
   }
 }
