@@ -92,7 +92,7 @@ const props = defineProps<{
 const isUrlDialogVisible = ref(false);
 // const urlForm = reactive({ path: '' });
 const editingIndex = ref(-1);
-const urlList = ref<Array<{ id: number; Path: string }>>([...props.chapter.URL]);
+const urlList = ref<Array<{ id: number; Path: string }>>((props.chapter?.URL || []));
 
 defineExpose({
     handleCheckIt: (checked: boolean) => { isChecked.value = checked; },

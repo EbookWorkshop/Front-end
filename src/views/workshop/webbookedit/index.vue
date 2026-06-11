@@ -13,9 +13,14 @@
           </template>
         </BookInfo>
         <a-divider />
-        <ChapterList :loading="loading" :Chapters="bookData.Index" :Volumes="bookData.Volumes">
+        <ChapterList :loading="loading" :Chapters="chapterList" :Volumes="bookData.Volumes">
           <template #chapter="{ chapter }">
-            <ChapterOpt :chapter="chapter as WebChapter" @toggle="OnToggleChapter"
+            <a-button v-if="loadingChapter" type="dashed" size="small" style="justify-content:left;overflow:hidden;"
+              :status="chapter.IsHasContent ? 'normal' : 'warning'" long @click="gotoChapter(chapter.IndexId, true)">
+              <template #icon> <icon-loading /> </template>
+              <template #default>{{ chapter.Title }}</template>
+            </a-button>
+            <ChapterOpt v-else :chapter="chapter as WebChapter" @toggle="OnToggleChapter"
               :ref="chapterRefMap.get(chapter.IndexId)" @hide="onHideChapter(chapter.IndexId)" />
           </template>
         </ChapterList>
@@ -45,7 +50,7 @@ import ChapterOpt from './components/chapter-opt.vue';
 import ProcessBar from './components/processbar.vue';
 import { Notification } from '@arco-design/web-vue';
 
-import { queryWebBookById, } from '@/api/book';
+import { queryWebBookById, queryBookById } from '@/api/book';
 
 
 //变量定义
@@ -53,26 +58,33 @@ const curDoingProcent = ref(-1);        //进度条状态
 const hasCheckChapter = reactive(new Map());      //已选中的章节
 const chapterRefMap = reactive(new Map());        //所有章节控件的引用
 const toolbarRef = ref<any>(null);       //工具栏对象
+const chapterList = ref<WebChapter[]>([]);//展示用的章节数据
+const loadingChapter = ref<boolean>(true);
 
 //数据请求
 const queryBook = () => {
   curDoingProcent.value = -1;
-  return queryWebBookById(bookId).then((rsl: any) => {
-    new Promise((ok: any) => {
-      ok();
-    }).then(() => {
-      rsl.data.Index.forEach((iCpt: WebChapter) => {
-        // console.log(iCpt);
-        chapterRefMap.set(iCpt.IndexId, ref(null));
-      })
-    });
-    return rsl;
+  return queryBookById(bookId).then((result) => {
+    chapterList.value = result.data.Index;
+    nextTick(LoadWebBookData);
+    return result;
   });
 };
-const { bookId } = useBookHelper();
+
+const { bookId, gotoChapter } = useBookHelper();
 const { loading, response: bookData } = useRequest<Book>(queryBook);
 const { io: socket, on: socketOn } = useSocket();
 const messageService = useMessageService();
+
+function LoadWebBookData() {
+  queryWebBookById(bookId).then((result) => {
+    result.data.Index.forEach((iCpt: WebChapter) => {
+      chapterRefMap.set(iCpt.IndexId, ref(null));
+    });
+    chapterList.value = result.data.Index;
+    loadingChapter.value = false;
+  });
+}
 
 //操作定义
 /**
@@ -135,7 +147,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       time: new Date().toLocaleString(),
       status: 1,
       avatar: "error",
-      error:err,
+      error: err,
     };
     messageService.addMessage(errInfo);
   });
