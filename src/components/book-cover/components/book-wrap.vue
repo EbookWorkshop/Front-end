@@ -52,6 +52,7 @@ const showImageUrl = computed<string>(() => {
   if (props.coverImg.startsWith('blob:')) {
     return props.coverImg;
   } else {
+    if (!props.coverImg.startsWith("/")) return ASSETS_HOST + "/" + props.coverImg;
     return ASSETS_HOST + props.coverImg;
   }
 });

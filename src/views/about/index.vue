@@ -69,7 +69,7 @@ function ShowOutdatedVersion({ version, wanted, latest }: VersionCompare) {
     { content: "最新版本", version: latest, style: "rgb(var(--red-5))" },
   ];
   const renderVersion = (version: string, color: string, tips: string) => h(Tooltip, { content: tips }, () => h("span", { style: "color:" + color }, version));
-  return h(Space, () => versions.map(t => renderVersion(t.version || "    ", t.style, t.content)));
+  return h(Space, () => versions.map(t => renderVersion(t.version || "", t.style, t.content)));
 }
 
 
@@ -104,10 +104,10 @@ getUIPackVersion().then((result: any) => {
 </script>
 <style lang="less">
 .wrapper {
-  overflow: auto;
-}
+  overflow: auto !important;
 
-.content {
-  min-width: 800px;
+  .content {
+    min-width: 880px;
+  }
 }
 </style>
