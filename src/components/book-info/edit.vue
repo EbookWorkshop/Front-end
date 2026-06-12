@@ -29,6 +29,7 @@
                 <template #second>
                     <a-form-item field="bookCover" label="封面模式">
                         <a-radio-group v-model="form.coverType" type='button'>
+                            <a-radio value="默认">默认</a-radio>
                             <a-radio value="线装本">线装本</a-radio>
                             <a-radio value="图片">图片</a-radio>
                         </a-radio-group>
@@ -101,12 +102,13 @@ async function LoadData() {
         form.author = bookInfo.Author ?? '佚名';
         form.font = bookInfo.FontFamily;
         form.introduction = bookInfo.Introduction;
-        if (!bookInfo.CoverImg) bookInfo.CoverImg = "#000000";
         form.bookCover = bookInfo.CoverImg;
-        form.coverType = bookInfo.CoverImg.startsWith("#") ? "线装本" : "图片";
+        if(!bookInfo.CoverImg || bookInfo.CoverImg==="") form.coverType = "默认";
+        else if(bookInfo.CoverImg.startsWith("#")) form.coverType = "线装本";
+        else form.coverType = "图片";
+
         oldBookMeta = { ...form };
-        form.embelBookName = bookInfo.CoverImg.includes("#showname");
-        console.log("xXXx")
+        form.embelBookName = bookInfo.CoverImg?.includes("#showname");
     }
     if (fontData.length == 0) {
         await InitFont();
@@ -125,11 +127,12 @@ async function handleBeforeOk(callback: any) {
         form.bookCover = oldBookMeta.bookCover;//还原，跳过设置，直接用文件
         if (form.embelBookName) form.bookCover = SHOW_BOOKNAME;
     }
+    if(form.coverType == "默认") form.bookCover = "";
 
     //在文件末尾加入标签用于识别是否嵌入标题
-    if (!form.bookCover.startsWith("#")) {//线装本模式
-        if (form.embelBookName && !form.bookCover.includes(SHOW_BOOKNAME)) form.bookCover += SHOW_BOOKNAME;
-        else if (!form.embelBookName && form.bookCover.includes(SHOW_BOOKNAME)) form.bookCover = form.bookCover.replace(SHOW_BOOKNAME, '');
+    if (!form.bookCover?.startsWith("#")) {//线装本模式
+        if (form.embelBookName && !form.bookCover?.includes(SHOW_BOOKNAME)) form.bookCover += SHOW_BOOKNAME;
+        else if (!form.embelBookName && form.bookCover?.includes(SHOW_BOOKNAME)) form.bookCover = form.bookCover.replace(SHOW_BOOKNAME, '');
     }
 
     for (let key in form) {

@@ -21,7 +21,7 @@
                       <a-form-item label="选择书籍" field="bookId" :rules="[{ required: true, message: '需要先选择书籍' }]">
                         <SelectBook v-model="form.bookId" />
                       </a-form-item>
-                      <a-form-item label="嵌入书名">
+                      <a-form-item label="嵌入书名" v-if="isImgCover">
                         <a-switch v-model="form.isEmbedBookName" />
                       </a-form-item>
                     </a-col>
@@ -234,6 +234,7 @@ let fontData: Array<any> = [];
 const resultData = ref({} as any);
 const captureCover = ref<InstanceType<typeof BookCover> | null>(null); // 截图的封面
 const coverData = ref("");
+const isImgCover = ref(false);
 
 function getBookIndex() {
   if (!form.value.bookId || form.value.chapterScope == 'all' || chapterBookId == form.value.bookId) return;
@@ -252,6 +253,7 @@ function getBookIndex() {
 function onCaptureCover() {
   nextTick(() => {
     if (captureCover.value?.$el) {  // 使用$el访问组件根元素
+      isImgCover.value = captureCover.value?.$el.querySelector("img") != null;//通过检查封面组件是否含img标签来判断是否为图片封面
       captureElement(captureCover.value.$el, { scale: 4 }).then(result => {
         coverData.value = result;
       }).catch(error => {
