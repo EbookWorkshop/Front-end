@@ -156,7 +156,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //é˜
   socketOn(WebBookStatus.Success + `.${bookId}`, (chaptOne: OneChapterStatus) => {
     const curChapter = chapterRefMap.get(chaptOne.chapterId);
     if (!curChapter) return;
-    let thisCpt = bookData.value.Index.filter(c => c.IndexId == chaptOne.chapterId);
+    let thisCpt = chapterList.value.filter(c => c.IndexId == chaptOne.chapterId);
     if (thisCpt.length > 0) thisCpt[0].IsHasContent = true;
     curChapter.value.handleChangeStatus("success");
   });
