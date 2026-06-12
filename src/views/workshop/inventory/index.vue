@@ -46,6 +46,7 @@
                                         <a-doption @click="DownLoad(item.filePath)">下载</a-doption>
                                         <a-doption @click="SendByMail(item.filePath)">发送</a-doption>
                                         <a-doption @click="OpenReader(item.filePath, item.ext)">查看</a-doption>
+                                        <a-doption >重命名</a-doption>
                                         <a-doption @click="Delete(item.file)">删除</a-doption>
                                     </template>
                                 </a-dropdown>

@@ -1,6 +1,6 @@
 <template>
   <a-spin style="display: block" :loading="loading">
-    <a-tabs v-model:activeKey="messageType" type="rounded" destroy-on-hide>
+    <a-tabs v-model:activeKey="messageType" type="rounded" destroy-on-hide class="message-box">
       <a-tab-pane v-for="item in tabList" :key="item.key">
         <template #title>
           <span> {{ item.title }}{{ formatUnreadLength(item.key) }} </span>
@@ -152,13 +152,10 @@
 </script>
 
 <style scoped lang="less">
-  :deep(.arco-popover-popup-content) {
-    padding: 0;
+  .message-box{
+    max-width:100vw;
   }
 
-  :deep(.arco-list-item-meta) {
-    align-items: flex-start;
-  }
   :deep(.arco-tabs-nav) {
     padding: 14px 0 12px 16px;
     border-bottom: 1px solid var(--color-neutral-3);

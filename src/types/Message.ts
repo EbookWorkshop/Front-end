@@ -47,7 +47,7 @@ export type MessageListType = MessageRecord[];
  * 后台缓存的消息
  */
 export interface MessageDetail {
-    type: string;
+    // type: string;       //
     message: MessageRecord;
     err: ErrorEvent | undefined;
     data: any | undefined;

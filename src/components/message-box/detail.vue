@@ -20,10 +20,10 @@
                             <a-space>
                                 <icon-clock-circle />
                                 <span class="time-text">{{ messageDetail.message.time }}</span>
-                                <a-divider direction="vertical" />
+                                <!-- <a-divider direction="vertical" />
                                 <a-tag :color="getTypeColor(messageDetail.type)" size="small">
                                     {{ getTypeText(messageDetail.type) }}
-                                </a-tag>
+                                </a-tag> -->
                                 <a-divider direction="vertical" />
                                 <a-tag :color="getMessageTypeColor(messageDetail.message.type)" size="small">
                                     {{ getMessageTypeText(messageDetail.message.type) }}
@@ -37,8 +37,8 @@
                 <a-divider />
                 <div class="message-content">
                     <a-typography-paragraph v-for="(item, index) in showContent" :key="index">{{ item
-                    }}</a-typography-paragraph>
-                    <div v-if="messageDetail.type == 'ErrorMessage'">
+                        }}</a-typography-paragraph>
+                    <div v-if="messageDetail.err">
                         <a-divider />
                         <InfoBlock title="错误信息" :showData="messageDetail.err" />
                     </div>
@@ -91,19 +91,19 @@ const showContent = computed(() => {
     return messageDetail.value?.message.content?.split('\n') || [];
 });
 
-// 方法
-const getTypeColor = (type: string) => {
-    const typeMap: Record<string, string> = {
-        'ErrorMessage': 'red'
-    };
-    return typeMap[type] || 'gray';
-};
-const getTypeText = (type: string) => {
-    const typeMap: Record<string, string> = {
-        'ErrorMessage': '系统错误'
-    };
-    return typeMap[type] || type;
-};
+// // 方法
+// const getTypeColor = (type: string) => {
+//     const typeMap: Record<string, string> = {
+//         'ErrorMessage': 'red'
+//     };
+//     return typeMap[type] || 'gray';
+// };
+// const getTypeText = (type: string) => {
+//     const typeMap: Record<string, string> = {
+//         'ErrorMessage': '系统错误'
+//     };
+//     return typeMap[type] || type;
+// };
 
 const getMessageTypeColor = (type: string) => {
     const typeMap: Record<string, string> = {
@@ -142,7 +142,7 @@ const fetchMessageDetail = async (messageId: number) => {
             Message.error(`获取消息详情失败: ${response.data.message}`);
         }
     } catch (error: any) {
-        messageDetail.value = null;
+        // messageDetail.value = null;
         errMessage.value = error.toString();
     } finally {
         loading.value = false;
@@ -151,17 +151,17 @@ const fetchMessageDetail = async (messageId: number) => {
 
 // 打开模态框
 const open = (message: MessageRecord) => {
+    messageDetail.value = {
+        // type: message.error ? 'ErrorMessage' : message.type,
+        message: message,
+        err: message.error,
+        data: message.data,
+    }
     const targetMessageId = message.id || props.messageId || -1;
     if (targetMessageId > 0) {
         fetchMessageDetail(targetMessageId);
-    } else {
-        console.log(message.error);
-        messageDetail.value = {
-            type: message.error ? 'ErrorMessage' : message.type,
-            message: message,
-            err: message.error,
-            data: message.data,
-        }
+        // } else {
+        // console.log(message.error);
     }
     visible.value = true;
 };
