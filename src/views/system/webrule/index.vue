@@ -451,7 +451,7 @@ function ChangeWebHostname() {
 }
 </script>
 
-<style>
+<style scoped>
 .container {
   height: 90vh;
   overflow: auto;

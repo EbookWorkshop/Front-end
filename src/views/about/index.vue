@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container about-me">
     <Breadcrumb :items="['menu.about']" />
     <div class="wrapper">
       <div class="content">
@@ -106,7 +106,7 @@ getUIPackVersion().then((result: any) => {
 .wrapper {
   overflow: auto !important;
 
-  .content {
+  .content.about-me {
     min-width: 880px;
   }
 }
