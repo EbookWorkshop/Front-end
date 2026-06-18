@@ -17,10 +17,12 @@
           <a-descriptions :column="2" class="mb-6">
             <a-descriptions-item label="总章节数">{{ analyticsData.totalChapters }}</a-descriptions-item>
             <a-descriptions-item label="空章节数">{{ analyticsData.emptyChapters }}</a-descriptions-item>
-            <a-descriptions-item label="总字数">{{ analyticsData.totalWords }}<a-tag color="orange"  v-if="analyticsData.totalWords>10000" style="margin-left: 8px;" >{{ (analyticsData.totalWords / 10000).toFixed(1) }}万</a-tag>  </a-descriptions-item>
+            <a-descriptions-item label="总字数">{{ analyticsData.totalWords }}<a-tag color="orange"
+                v-if="analyticsData.totalWords > 10000" style="margin-left: 8px;">{{ (analyticsData.totalWords /
+                  10000).toFixed(1) }}万</a-tag> </a-descriptions-item>
             <a-descriptions-item label="总段落数">{{ analyticsData.totalParagraphs }}</a-descriptions-item>
             <a-descriptions-item label="预计阅读时间">约{{ Math.ceil(Number(analyticsData.readingTime))
-            }}分钟</a-descriptions-item>
+              }}分钟</a-descriptions-item>
             <a-descriptions-item label="阅读速度">约{{ analyticsData.wpm }}字/分钟</a-descriptions-item>
             <a-descriptions-item label="平均每章字数">{{ analyticsData.avgWordsPerChapter }}</a-descriptions-item>
             <a-descriptions-item label="平均每章段落数">{{ analyticsData.avgParagraphsPerChapter }}</a-descriptions-item>
@@ -40,6 +42,10 @@
                   <div class="card-row">
                     <div class="card-key">字数</div>
                     <div class="card-value">{{ chapter.words }}</div>
+                  </div>
+                  <div class="card-row">
+                    <div class="card-key">偏差字数</div>
+                    <div class="card-value">{{ Math.ceil(chapter.words - analyticsData.avgWordsPerChapter) }}</div>
                   </div>
                   <div class="card-row">
                     <div class="card-key">阅读时间</div>
@@ -73,7 +79,7 @@ interface AnalyticsData {
   totalParagraphs: number;
   readingTime: string;
   wpm: number;
-  avgWordsPerChapter: string;
+  avgWordsPerChapter: number;
   avgParagraphsPerChapter: string;
   chapters: ChapterAnalytics[];
 }

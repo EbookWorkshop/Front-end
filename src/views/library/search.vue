@@ -70,6 +70,8 @@
                                                             v-html="'&nbsp;&nbsp;' + item.Title + '&nbsp;&nbsp;'"
                                                             style="font-size: inherit;"></a-link>
                                                     </a-badge>
+                                                    &nbsp;
+                                                    <span>{{ item.VolumeTitle }}</span>
                                                     &nbsp;&nbsp;
                                                     <a-link :href="`/book/${item.BookId}`" target="_blank"
                                                         style="font-size: inherit;">《{{ item.BookName }}》</a-link>
@@ -153,6 +155,7 @@ function RenderResult(data) {
             index: ++i,
             id: item.id,
             BookName: item.BookName,
+            VolumeTitle: item.VolumeTitle,
             Title: title,
             Content: content,
             HitCount: item.HitCount,
@@ -174,6 +177,7 @@ function RenderResult(data) {
         showResult.push({
             BookName: key,
             BookId: groupedResults[key][0].BookId,
+            VolumeTitle: groupedResults[key][0].VolumeTitle,
             data: groupedResults[key],
             HitCount: groupedResults[key].reduce((sum, item) => sum + item.HitCount, 0),
         });

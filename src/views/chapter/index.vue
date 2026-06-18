@@ -18,7 +18,6 @@
           </a-skeleton>
         </a-col>
       </a-row>
-
       <a-row class="grid-chapter" :gutter="[0, 120]">
         <a-col v-if="!pdfModel" :span="20" class="content" :offset="2">
           <a-typography :style="{ marginTop: '-40px', color: ftColor }">
@@ -29,7 +28,7 @@
         </a-col>
         <a-col v-else :span="24" style="text-align: center">
           <iframe class="pdfFrame" width="1072" height="1448" style="border:0px"
-            :src="`${ASSETS_HOST}/services/pdf/view?chapterId=${chapterId}&fontsize=${ftSize}&fontfamily=${ftFamily}`"></iframe>
+            :src="`${ASSETS_HOST}/services/pdf/view?chapterId=${chapterId}&fontsize=${ftSize}&fontfamily=${ftFontFile}`"></iframe>
         </a-col>
       </a-row>
 
@@ -72,6 +71,7 @@ const pdfModel = ref(false);//在PDF模式查看
 const ftColor = ref("var(--color-neutral-8)");
 const ftSize = ref(20);
 const ftFamily = ref("");
+const ftFontFile = ref("");
 const bgColor = ref("var(--color-bg-2)");
 const { chapterId, gotoChapter, gotoIndex } = useBookHelper();
 const processedContent = ref<ContentItem[]>([]);
@@ -79,7 +79,7 @@ const processedContent = ref<ContentItem[]>([]);
 const { loading, response: renderData } = useRequest<Chapter>(() => new Promise((resolve, reject) => {
   queryChapterById(chapterId).then((res) => {
     let data = res.data;
-    
+
     HeatABook(data.Book.id ?? 0);
     if (keyword.value && keyword.value?.length > 0) data.Content = data.Content?.replaceAll(keyword.value, `<span class='keyword'>${keyword.value}</span>`);
 
@@ -93,6 +93,7 @@ const { loading, response: renderData } = useRequest<Chapter>(() => new Promise(
     }));
 
     ftFamily.value = data.Book.FontFamily;
+    ftFontFile.value = data.Book.FontFamily;
     resolve({ data: data } as any);
   }).catch((err) => {
     reject(err);
@@ -104,6 +105,7 @@ const keyword = ref<string>(route.query.keyword as string || "");
 function ftFamilyChange(fontFamily: any) {
   if (!fontFamily) return;
   ftFamily.value = fontFamily.path;
+  ftFontFile.value = fontFamily.fontFile;
 
   let fontStyle = document.getElementById("fontStyle");
   if (!fontStyle) {

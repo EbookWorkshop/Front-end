@@ -56,11 +56,15 @@
                 </a-form-item>
                 <template v-if="isAdvanced">
                   <a-form-item label="超时设置" field="timeout" validate-status="warning">
-                    <a-input-number v-model="form.timeout" placeholder="不填默认就是30_000ms" allow-clear>
-                      <template #append>
-                        ms
-                      </template>
+                    <a-input-number v-model="form.timeout" placeholder="不填默认就是40_000ms" allow-clear>
+                      <template #append> ms </template>
                     </a-input-number>
+                  </a-form-item>
+                  <a-form-item label="采集方式" field="scraping" validate-status="warning">
+                    <a-radio-group type="button" v-model="form.scraping">
+                      <a-radio value="puppeteer">Puppeteer</a-radio>
+                      <a-radio value="http">Http</a-radio>
+                    </a-radio-group>
                   </a-form-item>
                   <a-form-item label="浏览器代理" field="userAgent" validate-status="warning">
                     <a-input v-model="form.userAgent" placeholder="设置浏览器UA字符串" allow-clear></a-input>
@@ -177,6 +181,7 @@ const form = reactive({
   hostname: '',
   timeout: 40_000,
   userAgent: '',
+  scraping: 'puppeteer',
   rulename: ['BookName'], // ,"ChapterList","Content"],
   rules: [
     {
@@ -227,6 +232,9 @@ const setFormWithSetting = (setting: any) => {
       return 0;
     } else if (item.ruleName === 'UserAgent') {
       form.userAgent = item.selector;
+      return 0;
+    } else if (item.ruleName === 'Scraping') {
+      form.scraping = item.selector;
       return 0;
     }
 
@@ -289,6 +297,7 @@ function resetForm() {
   form.rules = [];
   form.userAgent = '';
   form.timeout = 40_000;
+  form.scraping = "puppeteer";
   changeRuleNamelist(form.rulename);
 }
 //初始化表单
@@ -331,6 +340,11 @@ function Submit({ values, errors }: any) {
       selector: form.userAgent,
     });
   }
+  myRule.push({
+    host: values.hostname,
+    ruleName: 'Scraping',
+    selector: form.scraping,
+  });
 
   dataLoading.value = true;
   saveHostSetting(myRule)

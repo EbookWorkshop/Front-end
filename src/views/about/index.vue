@@ -1,8 +1,8 @@
 <template>
-  <div class="container about-me">
+  <div class="container">
     <Breadcrumb :items="['menu.about']" />
     <div class="wrapper">
-      <div class="content">
+      <div class="content about-me">
         <a-card title="系统信息" :bordered="false">
           <a-descriptions :data="sysData" bordered :column="2" />
         </a-card>
