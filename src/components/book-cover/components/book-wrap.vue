@@ -5,7 +5,7 @@
     </a-card>
     <a-card v-else :bordered="false" hoverable>
       <template #cover>
-        <div :style="{ overflow: 'hidden', }">
+        <div class="coverDiv">
           <img :style="{ width: '100%' }" :alt="title" :src=showImageUrl @error="imgError" />
         </div>
       </template>
@@ -79,6 +79,16 @@ function imgError(event: Event) {
     transform: translateY(-4px);
     cursor: pointer;
     // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .coverDiv {
+    width: 264px;
+    height: 360px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.22);
   }
 
   :deep(.arco-card) {

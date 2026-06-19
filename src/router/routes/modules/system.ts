@@ -27,7 +27,7 @@ const SYSTEM: AppRouteRecordRaw = {
     {
       path: 'workerpool',
       name: 'workerpool',
-      component: () => import('@/views/system/workerpool.vue'),
+      component: () => import('@/views/system/workerpool/index.vue'),
       meta: {
         locale: 'menu.system.workerpool',
         icon: 'icon-dashboard',
