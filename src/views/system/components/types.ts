@@ -1,5 +1,3 @@
-import type { Component } from 'vue'
-
 export type SettingFormType = {
     dataId: string;
     title: string;
@@ -7,6 +5,7 @@ export type SettingFormType = {
     status?: string;
     controlType: 'VNode' | 'select' | 'switch' | 'number' | 'color' | 'text' | 'password' | 'button';
     message?: string;
+    isHide?:boolean;
 
     /***************************************************/
     /** select/switch 选项列表 */

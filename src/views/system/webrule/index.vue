@@ -2,7 +2,7 @@
   <div class="container">
     <Breadcrumb :items="['menu.system', 'menu.system.webrule']" />
     <div class="wrapper">
-      <a-spin dot :loading="dataLoading">
+      <a-spin dot :loading="dataLoading" style="width:100%">
         <a-form :model="form" @submit="Submit">
           <a-row :gutter="16">
             <a-col :span="20" :offset="2">
@@ -37,7 +37,7 @@
             </a-col>
           </a-row>
           <a-row style="margin-top: 50px;">
-            <a-col :span="24">
+            <a-col :span="20">
               <!--方案表单 -->
               <a-space direction="vertical" size="large" :style="{ width: '100%' }">
                 <a-form-item field="hostname" label="网站域名" :rules="[{ required: true, message: '网站名为必填' }]"
@@ -67,7 +67,7 @@
                     </a-radio-group>
                   </a-form-item>
                   <a-form-item label="浏览器代理" field="userAgent" validate-status="warning">
-                    <a-input v-model="form.userAgent" placeholder="设置浏览器UA字符串" allow-clear></a-input>
+                    <a-auto-complete v-model="form.userAgent" placeholder="设置浏览器UA字符串" allow-clear :data="UAChoose"></a-auto-complete>
                   </a-form-item>
                 </template>
                 <a-form-item field="rulename" label="添加规则" :rules="[{ required: true, message: '至少得有一个规则' }]"
@@ -161,7 +161,7 @@ import {
 } from '@/api/webbot';
 import { FileItem, Message, Modal } from '@arco-design/web-vue';
 import WebList from './components/web-list.vue';
-import { rulesOptions } from './data';  // 规则类型选项
+import { rulesOptions,UAChoose } from './data';  // 规则类型选项
 
 import SelectAction from './components/SelectAction.vue';
 import ChangeHostname from './components/ChangeHostname.vue';

@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <Breadcrumb :items="['menu.system', 'menu.system', 'menu.system.setting']" />
-        <div class="">
+        <div class="myMenu">
             <!-- -->
             <a-split :style="{
                 height: '85vh',
@@ -14,7 +14,6 @@
                         <!-- 左侧菜单 -->
                         <a-menu :style="{ width: '200px', height: '100%' }" auto-open :default-selected-keys="['0_0']">
                             <a-sub-menu key="0">
-                                <!-- <template #icon><icon-apps></icon-apps></template> -->
                                 <template #title>常规设置</template>
                                 <a-menu-item @click="scrollToMenu('0_0')" key="0_0">界面设置</a-menu-item>
                                 <a-menu-item @click="scrollToMenu('0_1')" key="0_1">阅读偏好</a-menu-item>
@@ -61,8 +60,8 @@
         </div>
     </div>
 </template>
-<style lang="less">
-.arco-menu-icon-suffix {
+<style lang="less" scoped>
+.myMenu ::v-deep .arco-menu-icon-suffix {
     display: none;
 }
 </style>

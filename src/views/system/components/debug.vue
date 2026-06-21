@@ -12,7 +12,6 @@ import type { SettingFormType } from './types'
 import { getDebugSetting, saveDebugSetting } from '@/api/system'
 
 
-
 const settingData: SettingFormType[] = [{
   dataId: 'debug',
   title: '开启调试',
@@ -20,43 +19,43 @@ const settingData: SettingFormType[] = [{
   controlType: 'switch',
 }, {
   dataId: 'init',
-  title: '是否监控模块装载情况',
+  title: '监控模块装载情况',
   controlType: 'switch',
 }, {
   dataId: 'database',
-  title: '是否开启数据库调试',
+  title: '开启数据库调试',
   controlType: 'switch',
 }, {
   dataId: 'workerPool',
-  title: '是否开启线程池调试',
+  title: '开启线程池调试',
   controlType: 'switch',
 }, {
   dataId: 'email',
-  title: '是否开启邮件服务调试',
+  title: '开启邮件服务调试',
   controlType: 'switch',
 }, {
   dataId: 'puppeteer',
-  title: '是否开启爬虫调试',
+  title: '开启爬虫调试',
   controlType: 'switch',
 }, {
   dataId: 'router',
-  title: '是否开启路由调试',
+  title: '开启路由调试',
   controlType: 'switch',
 }, {
   dataId: 'pdf',
-  title: '是否开启PDF制作调试',
+  title: '开启PDF制作调试',
   controlType: 'switch',
 }, {
   dataId: 'bookIndex',
-  title: '是否开启书籍目录更新调试',
+  title: '开启书籍目录更新调试',
   controlType: 'switch',
 }, {
   dataId: 'bookChapter',
-  title: '是否开启书籍章节抓取调试',
+  title: '开启书籍章节抓取调试',
   controlType: 'switch',
 }, {
   dataId: 'saveBookCover',
-  title: '是否开启书书籍封面抓取调试',
+  title: '开启书书籍封面抓取调试',
   controlType: 'switch',
 }]
 
@@ -100,9 +99,12 @@ function save(dataId: string) {
 
 function updateSwitch() {
   const debugControl = value.debug ? undefined : 'disabled';
+  const isHide = !!value.debug;
+
   for (const item of settingData) {
     if (item.dataId === "debug") continue;
     item.status = debugControl;
+    item.isHide = isHide;
   }
 }
 </script>
