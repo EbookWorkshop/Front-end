@@ -240,7 +240,15 @@ export function reorderVolumes(volumeOrders: any[]) {
 export function getArchiveBookList() {
   return axios.get(`/assets/archive/book`);
 }
-
+/**
+ * 重命名文件名
+ * @param newFileName 新文件名，不含文件后缀
+ * @param filePath 
+ * @returns 
+ */
+export function editArchiveBook(name: string, file: string) {
+  return axios.post(`/assets/archive/book`, { file, name });
+}
 export function deleteArchiveBook(fileName: string) {
   return axios.delete(`/assets/archive/book/${fileName}`);
 }

@@ -98,11 +98,11 @@
                           </a-select>
                         </a-form-item>
                         <a-form-item label="获取内容" :field="`rules.${index}.getContentAction`">
-                          <SelectAction v-model="rule.getContentAction" />
+                          <SelectAction v-model="rule.getContentAction" :selector="`${rule.selector}`"/>
                         </a-form-item>
                         <a-form-item v-if="[`ChapterList`, `IndexNextPage`, `ContentNextPage`].includes(rule.ruleName)"
                           label="获取链接" :field="`rules.${index}.getUrlAction`">
-                          <SelectAction v-model="rule.getUrlAction" />
+                          <SelectAction v-model="rule.getUrlAction" :selector="`${rule.selector}`"/>
                         </a-form-item>
                         <a-form-item label="内容类型" :field="`rules.${index}.type`"
                           tooltip="部分规则即使配置了多个目标也不生效的，如‘书名’、‘标题’、‘正文’等">

@@ -37,7 +37,8 @@
                 </div>
                 <a-empty v-if="data.length === 0" />
                 <a-card :bordered="false" :style="{ width: '100%' }">
-                    <a-card-grid v-for="(item, index) in data" :key="index" :hoverable="true" :style="{ margin: '10px 10px',width:'340px' }">
+                    <a-card-grid v-for="(item, index) in data" :key="index" :hoverable="true"
+                        :style="{ margin: '10px 10px', width: '340px' }">
                         <a-card :class="['card-book', item.ext]" :title="item.name" :bordered="false">
                             <template #extra>
                                 <a-dropdown>
@@ -46,7 +47,7 @@
                                         <a-doption @click="DownLoad(item.filePath)">下载</a-doption>
                                         <a-doption @click="SendByMail(item.filePath)">发送</a-doption>
                                         <a-doption @click="OpenReader(item.filePath, item.ext)">查看</a-doption>
-                                        <a-doption >重命名</a-doption>
+                                        <a-doption @click="Rename(item)">重命名</a-doption>
                                         <a-doption @click="Delete(item.file)">删除</a-doption>
                                     </template>
                                 </a-dropdown>
@@ -68,12 +69,13 @@
 </template>
 
 <script lang="ts" setup>
-import { getArchiveBookList, deleteArchiveBook } from '@/api/book';
+import { h, ref } from 'vue';
+import { getArchiveBookList, deleteArchiveBook, editArchiveBook } from '@/api/book';
 import { sendAEMail } from '@/api/system'
 import type { FileInfo } from '@/types/book';
 import useRequest from '@/hooks/request';
 import { getApiBaseUrl } from '@/utils/config';
-import { Modal } from '@arco-design/web-vue';
+import { Modal, Input, Button } from '@arco-design/web-vue';
 
 const ASSETS_HOST = getApiBaseUrl();
 
@@ -114,6 +116,30 @@ function SendByMail(filePath: string) {
             content: `书籍已成功发送，请注意查收。\n${filePath}`,
             okText: '确认',
         });
+    });
+}
+
+function Rename(item: FileInfo) {
+    const m = Modal.open({
+        title: `重命名 - ${item.name}`,
+        content: () => h({
+            setup() {
+                const newName = ref(item.name);
+                const onClick = () => {
+                    editArchiveBook(newName.value, item.file).then(() => {
+                        m.close();
+                    });
+                };
+                return () => h('div', { class: 'info-modal-content' }, [
+                    h('span', { style: 'margin-bottom: 10px; display: block;' }, '请输入新名字：'),
+                    h(Input, {
+                        modelValue: newName.value,
+                        'onUpdate:modelValue': (v: string) => { newName.value = v; }
+                    }),
+                    h(Button, { type: 'primary', status: 'success', onClick }, '重命名')
+                ])
+            },
+        }),
     });
 }
 
@@ -176,8 +202,6 @@ function Delete(fileName: string) {
         visibility: hidden;
     }
 }
-
-
 
 .card-book :deep(.arco-card-header) {
     border: none;
