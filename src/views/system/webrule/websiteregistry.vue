@@ -20,7 +20,7 @@
                             <a-table-column title="重定向站点" :width="210">
                                 <template #cell="{ record }">
                                     <a v-if="statuses[record.Host].result" target="_blank"
-                                        :href="`https://${statuses[record.Host]?.data?.location}`">
+                                        :href="`${statuses[record.Host]?.data?.location}`">
                                         {{ statuses[record.Host]?.data?.location }}
                                     </a>
                                 </template>
@@ -97,6 +97,7 @@ async function checkHost(host: string, force = false) {
         statuses[host].data = res.data;
         statuses[host].title = res.data.title;
         statuses[host].status = res?.status;
+        statuses[host].style = (res?.status === 200 || newHost == host) ? "row-success" : "row-failure";
         if (newHost != host) statuses[host].result = newHost;
     } catch (err: any) {
         statuses[host].result = err?.message || '检测失败';

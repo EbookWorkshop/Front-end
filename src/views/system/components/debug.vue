@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-divider orientation="center">调试输出</a-divider>
+    <a-divider orientation="center">调试设置</a-divider>
     <SettingForm :form="settingData" :value="value" @update="save" />
   </div>
 </template>
@@ -78,8 +78,8 @@ getDebugSetting().then(res => {
   for (const item of settingData) {
     (value as any)[item.dataId] = data[item.dataId];
   }
+  updateSwitch();
 })
-updateSwitch();
 
 function save(dataId: string) {
   const newValue = (value as any)[dataId];

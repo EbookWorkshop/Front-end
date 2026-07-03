@@ -61,6 +61,16 @@ export function getDebugSetting() {
 export function saveDebugSetting(setting: any) {
   return axios.patch('/services/config/debug', setting);
 }
+/**
+ * 自动人物配置
+ * @returns 
+ */
+export function getAutoWrokSetting(){
+  return axios.get("/services/config/autoworker");
+}
+export function saveAutoWrokSetting(setting: any) {
+  return axios.patch('/services/config/autoworker', setting);
+}
 
 /**
  * 保存发邮箱信息
