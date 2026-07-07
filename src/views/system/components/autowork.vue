@@ -58,20 +58,26 @@ getAutoWrokSetting().then(res => {
     updateSwitch();
 })
 
+function getRunIntervalMS() {
+    let newValue = 0;
+    switch (value.intervalUnit) {
+        case "天": newValue = value.intervalData * HOUR_MS * 24; break;
+        case "小时": newValue = value.intervalData * HOUR_MS; break;
+        case "分钟": newValue = value.intervalData * 60000; break;
+        case "秒": newValue = value.intervalData * 1000; break;
+    }
+    return newValue;
+}
+
 function save(dataId: string) {
     let newValue = (value as any)[dataId];
-    if (dataId === "runInterval") {
-        switch (value.intervalUnit) {
-            case "天": newValue = value.intervalData * HOUR_MS * 24; break;
-            case "小时": newValue = value.intervalData * HOUR_MS; break;
-            case "分钟": newValue = value.intervalData * 60000; break;
-            case "秒": newValue = value.intervalData * 1000; break;
-        }
-    }
-
     let setting = {
-        [dataId]: newValue
+        runInterval: getRunIntervalMS(),
     };
+
+    if (dataId === "autowork" && newValue === false) {
+        setting.runInterval = -1;
+    }
 
     saveAutoWrokSetting(setting).then(() => {
         // 成功提示
@@ -87,7 +93,7 @@ function updateSwitch() {
     let item = settingData.filter(item => item.dataId === "runInterval")
     item[0].isHide = value.autowork;
 }
-function nexUpdate(){
+function nexUpdate() {
     setTimeout(() => updateSwitch, 2000)
 }
 </script>

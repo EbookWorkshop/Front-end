@@ -48,7 +48,7 @@
           </a-card>
         </a-layout-content>
         <a-layout-footer resize-directions="bottom">
-          <TaskBoard :data="WaitingTask"/>
+          <TaskBoard :data="WaitingTask" />
         </a-layout-footer>
       </a-layout>
 
@@ -89,7 +89,11 @@ function Refresh() {
 }
 
 function setWorkerPool(data: any) {
-  WaitingTask.value = data.WaitingTask;
+  const wattingTask: any[] = [];
+  for (const t of data.WaitingTask) {
+    wattingTask.push(...t.list.map((item: any) => item.taskParam));
+  }
+  WaitingTask.value = wattingTask;
   WorkerPool.value = data.WorkerPool;
   workerData.value = [{
     label: '最大线程数',

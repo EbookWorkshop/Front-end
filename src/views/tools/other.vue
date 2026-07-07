@@ -11,9 +11,9 @@
                 <a-row :gutter="[0, { xs: 0, sm: 20 }]" :style="{ marginBottom: '20px' }">
                     <a-col :span="6" v-for="(item, index) in OtherTools" :key="index" :xs="24" :lg="12" :xxl="6">
                         <a :href="easyDecrypt(item.url, EKEY)" target="_blank">
-                            <a-card hoverable :style="{ width: '90%' ,maxWidth: '360px'}">
+                            <a-card hoverable :style="{ width: '90%', maxWidth: '360px' }">
                                 <template #cover>
-                                    <div :style="{
+                                    <div v-if="item.icon" :style="{
                                         display: 'flex',
                                         alignItems: 'center',
                                         height: '204px',
@@ -22,6 +22,9 @@
                                         backgroundColor: item.backgroundColor,
                                     }">
                                         <img class="banner" :alt="item.name" :src="easyDecrypt(item.icon, EKEY)" />
+                                    </div>
+                                    <div v-else style="display: flex;font-size: 7em;height:204px;">
+                                        <span style="margin:auto auto;">{{ item.name }}</span>
                                     </div>
                                 </template>
                                 <a-card-meta :title="item.name">

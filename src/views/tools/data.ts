@@ -29,10 +29,10 @@ export const OtherTools = [
         icon: 'amkjk87*ahhb.XlZZbhf4qh5XnmmYen5nbdlYl4WgieedkYmw5Vmrdml4cVih*80Ywvyy0z8uzvVz0Z11wTjpZ',
         url: 'amkjk87*ahhb.XlZZbhf4',
     }, {
-        name: '可阅文学',
-        description: '可阅文学-KEPUB.net 是一个在线阅读网站，提供了大量的收录公共版权书籍。',
-        icon: 'amkjk87*vppReXjoaZgYk7aga*oW_ciZi_1ZigY',
-        url: 'amkjk87*vppReXjoaZgYk7',
+        name: '书斋阁',
+        description: '书斋阁给广大网友提供最好的小说阅读服务,全站小说免费阅读并且无弹窗,书斋阁是最好看的小说在线阅读网。',
+        icon: '',
+        url: 'amkjk87*vppRm.otg.b.WUVig*',
     }, {
         name: '字体天下',
         description: '可以免登录查找下载字体的网站。',

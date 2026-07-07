@@ -2,6 +2,7 @@
     <a-popover v-once title="Title">
         <div :class="showClass" @click="showTaskInfo"></div>
         <template #content>
+            <p v-if="data?.taskType">分类：{{ data?.taskType }}</p>
             <p>程序：{{ data?.taskfile }}</p>
             <p>参数：{{ data?.param }}</p>
         </template>

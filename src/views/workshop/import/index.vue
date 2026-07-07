@@ -15,7 +15,7 @@
             <a-col :span="8" flex="auto" class="col-align-center">
               <a-upload :action="`${ASSETS_HOST}/import/add`" :show-file-list="false" @success="() => {Message.success('导入成功。');}">
                 <template #upload-button>
-                  <BookClassical :title-show="'不可编辑格式导入：PDF\'-EPUB等'" conver-color="#cb1f2f" />
+                  <BookClassical :title-show="'不可编辑格式导入：PDF、EPUB、ZIP等'" conver-color="#cb1f2f" />
                 </template>
               </a-upload>
             </a-col>
