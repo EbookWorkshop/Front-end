@@ -19,8 +19,9 @@ import SettingForm from './settingform.vue'
 import type { SettingFormType } from './types'
 import { getAutoWrokSetting, saveAutoWrokSetting } from '@/api/system'
 const HOUR_MS = 360_0000;
+const ONE_DAY_MS = 8640_0000;
 
-const settingData: SettingFormType[] = [{
+const settingData = reactive<SettingFormType[]>([{
     dataId: 'autowork',
     title: '开启自动任务',
     controlType: 'switch',
@@ -29,7 +30,8 @@ const settingData: SettingFormType[] = [{
     title: "执行间隔",
     controlType: "VNode",
     isHide: false,
-}]
+}]);
+
 
 const value = reactive({
     autowork: false,
@@ -92,6 +94,12 @@ function save(dataId: string) {
 function updateSwitch() {
     let item = settingData.filter(item => item.dataId === "runInterval")
     item[0].isHide = value.autowork;
+    let ms = getRunIntervalMS();
+    if (ONE_DAY_MS >= ms) {
+        item[0].message = `每天执行${Math.floor(ONE_DAY_MS / ms)}次`
+    } else {
+        item[0].message = "";
+    }
 }
 function nexUpdate() {
     setTimeout(() => updateSwitch, 2000)

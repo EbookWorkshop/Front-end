@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { Book, Chapter } from "@/types/book";
+import type { Chapter } from "@/types/book";
 import { reactive } from 'vue';
 import { AxiosResponse } from 'axios';
 import { Message } from "@arco-design/web-vue";
@@ -52,6 +52,7 @@ const formData = reactive({
     nextTitle: '',
     nextContent: '',
     nextOrderNum: 0,
+    VolumeId:0 as number | undefined,
 })
 
 const loadData = (cid: number) => {
@@ -64,6 +65,7 @@ const loadData = (cid: number) => {
         formData.content = result.data.Content as any;
         formData.orderNum = result.data.OrderNum;
         formData.nextOrderNum = result.data.OrderNum + 1;
+        formData.VolumeId = result.data.VolumeId;
     }).catch(result => {
         // form.chapTitle = result.value;
     });
@@ -84,6 +86,7 @@ const submit = () => {
                 content: formData.nextContent,
                 orderNum: formData.nextOrderNum,
                 title: formData.nextTitle,
+                volumeId:formData.VolumeId,
             }]
         }]
     }

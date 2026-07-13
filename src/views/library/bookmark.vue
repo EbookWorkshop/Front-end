@@ -14,7 +14,7 @@
                 <a-avatar :size="32">
                   <icon-subscribe :style="{ color: 'red' }" />
                 </a-avatar>
-                {{ item.Title }}
+                <span v-if="item.VolumeName">  {{ item.VolumeName }} /</span> {{ item.Title }}
               </a-typography-text>
               <a-card-meta>
                 <template #avatar>
