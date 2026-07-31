@@ -3,7 +3,7 @@
     <Breadcrumb :items="['menu.system', 'menu.system.webrule']" />
     <div class="wrapper">
       <a-spin dot :loading="dataLoading" style="width:100%">
-        <a-form :model="form" @submit="Submit">
+        <a-form ref="formRef" :model="form" @submit="Submit">
           <a-row :gutter="16">
             <a-col :span="20" :offset="2">
               <a-space>
@@ -51,25 +51,34 @@
                         </a-tooltip>
                       </template>
                     </a-input-search>
-                    <a-button @click="isAdvanced = !isAdvanced" status="warning">高级设置</a-button>
+                    <a-button @click="isAdvanced = !isAdvanced" status="warning"
+                      :type="isAdvanced ? 'primary' : 'secondary'">高级设置</a-button>
                   </a-input-group>
                 </a-form-item>
-                <template v-if="isAdvanced">
-                  <a-form-item label="超时设置" field="timeout" validate-status="warning">
+                <div v-if="isAdvanced" style="background-color:rgb(var(--orange-1))"><!-- 高级配置 -->
+                  <a-form-item label="超时设置" field="timeout">
                     <a-input-number v-model="form.timeout" placeholder="不填默认就是40_000ms" allow-clear>
                       <template #append> ms </template>
                     </a-input-number>
                   </a-form-item>
-                  <a-form-item label="采集方式" field="scraping" validate-status="warning">
+                  <a-form-item label="采集方式" field="scraping">
                     <a-radio-group type="button" v-model="form.scraping">
                       <a-radio value="puppeteer">Puppeteer</a-radio>
                       <a-radio value="http">Http</a-radio>
                     </a-radio-group>
                   </a-form-item>
-                  <a-form-item label="浏览器代理" field="userAgent" validate-status="warning">
-                    <a-auto-complete v-model="form.userAgent" placeholder="设置浏览器UA字符串" allow-clear :data="UAChoose"></a-auto-complete>
+                  <a-form-item label="浏览器代理" field="userAgent">
+                    <a-auto-complete v-model="form.userAgent" placeholder="设置浏览器UA字符串" allow-clear
+                      :data="UAChoose"></a-auto-complete>
                   </a-form-item>
-                </template>
+                  <a-form-item label="字典校阅">
+                    <a-button status="warning" type="primary" @click="OpenDictionaryModal">设置转码字典</a-button>
+                    <Dictionary v-model:visible="showDictionary"
+                      @success="(newData) => { dictionaryData = newData; showDictionary = false; }"
+                      :data="dictionaryData" :host="form.hostname" />
+                  </a-form-item>
+                </div>
+                <!-- 常规配置 -->
                 <a-form-item field="rulename" label="添加规则" :rules="[{ required: true, message: '至少得有一个规则' }]"
                   :validate-trigger="['change', 'input']">
                   <a-select v-model="form.rulename" placeholder="选择需要启用的规则" multiple :options="rulesOptions"
@@ -98,11 +107,11 @@
                           </a-select>
                         </a-form-item>
                         <a-form-item label="获取内容" :field="`rules.${index}.getContentAction`">
-                          <SelectAction v-model="rule.getContentAction" :selector="`${rule.selector}`"/>
+                          <SelectAction v-model="rule.getContentAction" :selector="`${rule.selector}`" />
                         </a-form-item>
                         <a-form-item v-if="[`ChapterList`, `IndexNextPage`, `ContentNextPage`].includes(rule.ruleName)"
                           label="获取链接" :field="`rules.${index}.getUrlAction`">
-                          <SelectAction v-model="rule.getUrlAction" :selector="`${rule.selector}`"/>
+                          <SelectAction v-model="rule.getUrlAction" :selector="`${rule.selector}`" />
                         </a-form-item>
                         <a-form-item label="内容类型" :field="`rules.${index}.type`"
                           tooltip="部分规则即使配置了多个目标也不生效的，如‘书名’、‘标题’、‘正文’等">
@@ -117,13 +126,13 @@
                         </a-form-item>
                         <a-button v-if="isUseVisModel" status="warning" @click="VisRuleSetting(rule)">预览规则：{{
                           rule.ruleShowName
-                        }}</a-button>
+                          }}</a-button>
                       </a-space>
                     </a-form-item>
                     <a-form-item>
                       <a-button type="primary" status="success" html-type="submit">{{
                         $t('common.save')
-                      }}</a-button>
+                        }}</a-button>
                     </a-form-item>
                   </a-col>
                 </a-row>
@@ -145,7 +154,7 @@
       </a-spin>
     </div>
     <WebList ref="myWebList" @set-form="setFormWithSetting"></WebList>
-    <ChangeHostname ref="changeHostname" v-model:visible="showChangeHostname" @success="showChangeHostname = false" />
+    <ChangeHostname v-model:visible="showChangeHostname" @success="showChangeHostname = false" />
   </div>
 </template>
 
@@ -161,11 +170,13 @@ import {
 } from '@/api/webbot';
 import { FileItem, Message, Modal } from '@arco-design/web-vue';
 import WebList from './components/web-list.vue';
-import { rulesOptions,UAChoose } from './data';  // 规则类型选项
+import { rulesOptions, UAChoose } from './data';  // 规则类型选项
 
 import SelectAction from './components/SelectAction.vue';
 import ChangeHostname from './components/ChangeHostname.vue';
+import Dictionary from './components/Dictionary.vue';
 
+const formRef = ref<any>(null);
 const formUrlForVisVisible = ref(false); // 配置弹窗是否显示
 const formUrlForVis = reactive({ indexUrl: '', contentUrl: '' }); // 弹窗表单——辅助预览的网址采集表单
 const isUseVisModel = ref(false);
@@ -175,6 +186,7 @@ const isUseVisStatus = computed(() =>
 const dataLoading = ref(false);
 const showChangeHostname = ref(false);
 const isAdvanced = ref(false);
+const showDictionary = ref(false);
 
 // 绑定数据的规则配置表单
 const form = reactive({
@@ -196,6 +208,7 @@ const form = reactive({
     },
   ],
 });
+const dictionaryData = ref<any[]>([])
 
 // 展开右边网站列表
 const myWebList = ref(WebList);
@@ -235,6 +248,9 @@ const setFormWithSetting = (setting: any) => {
       return 0;
     } else if (item.ruleName === 'Scraping') {
       form.scraping = item.selector;
+      return 0;
+    } else if (item.ruleName === "Dictionary") {
+      dictionaryData.value = item.data;
       return 0;
     }
 
@@ -456,12 +472,25 @@ function importScheme(fileItem: FileItem) {
 
 }
 function FormatHost() {
+  if (!/^https?:\/\//i.test(form.hostname)) {
+    form.hostname = 'http://' + form.hostname;
+  }
   let host = new URL(form.hostname);
   if (host != null && host.hostname != form.hostname) form.hostname = host.hostname;
 }
 
 function ChangeWebHostname() {
   showChangeHostname.value = true;
+}
+
+function OpenDictionaryModal() {
+  if (typeof formRef.value?.validateField === 'function') {
+    formRef.value.validateField('hostname').catch(() => {
+      // 由表单规则自身展示校验提示
+    }).then((ckRsl: any) => {
+      if (!ckRsl) showDictionary.value = true;
+    });
+  }
 }
 </script>
 
