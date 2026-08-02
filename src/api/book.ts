@@ -258,9 +258,18 @@ export function deleteArchiveBook(fileName: string) {
  * @param url 书目录地址
  * @returns
  */
-export function addANewWebBook(url: string) {
-  return axios.post<HttpResponse<string>>(`/library/webbook`, url, {
-    headers: { 'Content-Type': 'text/plan' },
+export function addANewWebBook(url: string, isEmbedBookName: boolean) {
+  return axios.post<HttpResponse<string>>(`/library/webbook`, {
+    url, isEmbedBookName
+  });
+}
+/**
+ * 抓取单章
+ * @param url 章节地址
+ */
+export function scrapingSingleChapter(url: string, useless: boolean = false) {
+  return axios.post<HttpResponse<string>>(`/library/webbook/singlechapter`, {
+    url,
   });
 }
 
