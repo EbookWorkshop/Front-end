@@ -202,7 +202,7 @@ import { getKindleInbox } from '@/api/system';
 import { ApiResultCode } from '@/types/global'
 import { getApiBaseUrl } from '@/utils/config';
 import { captureElement } from '@/utils/screenshot';
-import { sendMsg } from '@/services/messageService'
+import { messageService } from '@/services/messageService'
 
 const ASSETS_HOST = getApiBaseUrl();
 const route = useRoute();
@@ -257,7 +257,16 @@ function onCaptureCover() {
       captureElement(captureCover.value.$el, { scale: 4 }).then(result => {
         coverData.value = result;
       }).catch(error => {
-        sendMsg("生成封面失败，请点击封面图片重试", error?.message, { error });
+        messageService.addMessage({
+          id: Date.now() * -1,
+          type: "message",
+          title: "生成封面失败，请点击封面图片重试",
+          content: error?.message,
+          time: new Date().toLocaleString(),
+          avatar: "error",
+          status: 0,
+          error
+        });
         coverData.value = "";
       });
     }

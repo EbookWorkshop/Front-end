@@ -35,7 +35,7 @@
 import type { Book, WebChapter } from '@/types/book';
 import { WebBookStatus } from './data'
 import type { OneChapterStatus } from './data'
-import { useMessageService } from '@/services/messageService';
+import { messageService } from '@/services/messageService';
 import type { MessageRecord } from '@/types/Message';
 
 import { ref, reactive, nextTick } from 'vue';
@@ -73,7 +73,6 @@ const queryBook = () => {
 const { bookId, gotoChapter } = useBookHelper();
 const { loading, response: bookData } = useRequest<Book>(queryBook);
 const { io: socket, on: socketOn } = useSocket();
-const messageService = useMessageService();
 
 function LoadWebBookData() {
   queryWebBookById(bookId).then((result) => {
