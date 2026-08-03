@@ -6,7 +6,9 @@
     <a-card v-else :bordered="false" hoverable>
       <template #cover>
         <div class="coverDiv">
-          <img :style="{ width: '100%' }" :alt="title" :src=showImageUrl @error="imgError" />
+          <!-- 骨架屏（图片未加载时显示） -->
+          <div v-if="!isLoaded" class="skeleton-placeholder" />
+          <img v-show="isLoaded" :style="{ width: '100%' }" :alt="title" :src=showImageUrl @error="imgError" @load="isLoaded = true" />
         </div>
       </template>
       <a-space align="start" v-if="isShowBookName">
@@ -46,7 +48,7 @@ const props = defineProps({
 });
 const emiter = defineEmits(["error"]);
 const isShowBookName = ref(props.showEmbedBookName);
-
+const isLoaded = ref(false);
 const showImageUrl = computed<string>(() => {
   if (props.coverImg.includes("#showname")) isShowBookName.value = true;
   if (props.coverImg.startsWith('blob:')) {
@@ -84,11 +86,11 @@ function imgError(event: Event) {
   .coverDiv {
     width: 264px;
     height: 360px;
-    display:flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    box-shadow:inset 0 2px 8px rgba(0, 0, 0, 0.22);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.22);
   }
 
   :deep(.arco-card) {
@@ -139,6 +141,35 @@ function imgError(event: Event) {
       justify-content: flex-end;
       margin-top: 20px;
     }
+  }
+
+  .skeleton-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #f2f3f5;
+    border-radius: 4px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.4;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 }
 </style>

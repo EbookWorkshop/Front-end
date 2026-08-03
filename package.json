@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@arco-design/web-vue": "^2.58.0",
+    "@tanstack/vue-virtual": "^3.13.35",
     "@vueuse/core": "^14.4.0",
     "axios": "^1.19.0",
     "diff-match-patch": "^1.0.5",
