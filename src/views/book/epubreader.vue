@@ -1,6 +1,6 @@
 <template>
   <div class="reader-container">
-    <component :is="VueReader" ref="reader" :url="bookUrl" @on-ready="onReaderReady" @on-location-change="onLocationChange"  />
+    <component :is="VueReader" :url="bookUrl" @on-ready="onReaderReady" @on-location-change="onLocationChange"  />
   </div>
 </template>
 
@@ -13,7 +13,6 @@ import { useAppStore } from '@/store'
 const route = useRoute()
 const appStore = useAppStore()
 
-const reader = ref(null)
 const bookUrl = ref(route.params.path) //epub 文件地址
 appStore.updateSettings({menu: false}) // 阅读时隐藏菜单
 

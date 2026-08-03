@@ -5,11 +5,10 @@ import type {
   AxiosRequestHeaders,
   AxiosResponse,
 } from 'axios';
-// import { Message } from '@arco-design/web-vue';
 import { getToken } from '@/utils/auth';
 import { getApiBaseUrl } from '@/utils/config';
 import type { MessageRecord } from '@/types/Message';
-import { useMessageServiceOutsiteVue } from '@/services/messageService';
+import { messageService } from '@/services/messageService';
 
 axios.defaults.baseURL = getApiBaseUrl();
 
@@ -52,7 +51,6 @@ axios.interceptors.response.use(
         status: 0,
         data: res,
       };
-      const messageService = useMessageServiceOutsiteVue();
       messageService.addMessage(message);
 
       return Promise.reject(new Error(res.msg || 'Error'));
@@ -71,7 +69,6 @@ axios.interceptors.response.use(
       status: 0,
       error,
     };
-    const messageService = useMessageServiceOutsiteVue();
     messageService.addMessage(message);
     return Promise.reject(error);
   }

@@ -103,7 +103,7 @@
           }">
             <a-row>
               <a-col :span="24" style="text-align: center">
-                <iframe :ref="pdfFrame" width="1072" height="1448" :src="`${ASSETS_HOST}/services/pdf/view?content=${encodeURIComponent(
+                <iframe width="1072" height="1448" :src="`${ASSETS_HOST}/services/pdf/view?content=${encodeURIComponent(
                   demoContext[form.contentIndex]?.content
                 )}&fontsize=${form.fontSize}&fontfamily=${form.font}`"></iframe>
               </a-col>
@@ -155,7 +155,6 @@ const demoContext: Array<ContentType> = reactive([]);
 const renderData: FontFace[][] = reactive([]);
 const fontData: FontFace[] = []; // 默认的字体数据
 const defaultFont = ref("无");//默认字体
-const pdfFrame = ref(null) as any;
 const newFontName = ref('');
 const activeViewModel = ref('web'); // 激活的预览模式
 

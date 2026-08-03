@@ -9,7 +9,7 @@
               <a-space>
                 <a-button-group>
                   <a-button type="primary" @click="resetForm">新增新方案</a-button>
-                  <a-button type="primary" @click="showWebList">编辑现有方案</a-button>
+                  <a-button type="primary" @click="() => { showWebList = true }">编辑现有方案</a-button>
                 </a-button-group>
                 <a-button @click="GoToRegisteredWebsites">已登记网站</a-button>
                 <a-button-group>
@@ -126,13 +126,13 @@
                         </a-form-item>
                         <a-button v-if="isUseVisModel" status="warning" @click="VisRuleSetting(rule)">预览规则：{{
                           rule.ruleShowName
-                          }}</a-button>
+                        }}</a-button>
                       </a-space>
                     </a-form-item>
                     <a-form-item>
                       <a-button type="primary" status="success" html-type="submit">{{
                         $t('common.save')
-                        }}</a-button>
+                      }}</a-button>
                     </a-form-item>
                   </a-col>
                 </a-row>
@@ -153,7 +153,7 @@
         </a-modal>
       </a-spin>
     </div>
-    <WebList ref="myWebList" @set-form="setFormWithSetting"></WebList>
+    <WebList :visible="showWebList" @set-form="setFormWithSetting" @hide="showWebList = false" />
     <ChangeHostname v-model:visible="showChangeHostname" @success="showChangeHostname = false" />
   </div>
 </template>
@@ -180,13 +180,12 @@ const formRef = ref<any>(null);
 const formUrlForVisVisible = ref(false); // 配置弹窗是否显示
 const formUrlForVis = reactive({ indexUrl: '', contentUrl: '' }); // 弹窗表单——辅助预览的网址采集表单
 const isUseVisModel = ref(false);
-const isUseVisStatus = computed(() =>
-  isUseVisModel.value ? 'warning' : 'normal'
-);
+const isUseVisStatus = computed(() => isUseVisModel.value ? 'warning' : 'normal');
 const dataLoading = ref(false);
 const showChangeHostname = ref(false);
 const isAdvanced = ref(false);
 const showDictionary = ref(false);
+const showWebList = ref(false);   //站点选择列表是否显示
 
 // 绑定数据的规则配置表单
 const form = reactive({
@@ -210,14 +209,6 @@ const form = reactive({
 });
 const dictionaryData = ref<any[]>([])
 
-// 展开右边网站列表
-const myWebList = ref(WebList);
-const showWebList = () => {
-  myWebList.value.show();
-};
-
-// const siteAccessibilityData = ref<any[]>([]);      // 站点存活情况数据
-
 /**
  * 根据规则值-找到对应的规则显示名称
  * @param type 规则值
@@ -235,6 +226,7 @@ function findOptionName(type: string) {
 // 按选好的内容设置表单——加载已知网站配置
 const setFormWithSetting = (setting: any) => {
   if (setting.length === 0) return;
+  showWebList.value = false;
 
   form.hostname = setting[0].host;
   form.rulename = [];
@@ -483,13 +475,13 @@ function ChangeWebHostname() {
   showChangeHostname.value = true;
 }
 
-function OpenDictionaryModal() {
-  if (typeof formRef.value?.validateField === 'function') {
-    formRef.value.validateField('hostname').catch(() => {
-      // 由表单规则自身展示校验提示
-    }).then((ckRsl: any) => {
-      if (!ckRsl) showDictionary.value = true;
-    });
+async function OpenDictionaryModal() {
+  try {
+    let ckRsl = await formRef.value.validateField('hostname')
+    if (!ckRsl) showDictionary.value = true;
+  } catch (errors) {
+    // 由表单规则自身展示校验提示
+  } finally {
   }
 }
 </script>

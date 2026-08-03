@@ -5,31 +5,15 @@
     </div>
     <a-layout>
       <a-layout>
-        <a-layout-sider
-          v-if="renderMenu"
-          v-show="!hideMenu"
-          class="layout-sider"
-          breakpoint="xl"
-          :collapsed="collapsed"
-          :collapsible="true"
-          :width="menuWidth"
-          :style="{ paddingTop: navbar ? '60px' : '' }"
-          :hide-trigger="true"
-          @collapse="setCollapsed"
-        >
+        <a-layout-sider v-if="renderMenu" v-show="!hideMenu" class="layout-sider" breakpoint="xl" :collapsed="collapsed"
+          :collapsible="true" :width="menuWidth" :style="{ paddingTop: navbar ? '60px' : '' }" :hide-trigger="true"
+          @collapse="setCollapsed">
           <div class="menu-wrapper">
             <Menu />
           </div>
         </a-layout-sider>
-        <a-drawer
-          v-if="hideMenu"
-          :visible="drawerVisible"
-          placement="left"
-          :footer="false"
-          mask-closable
-          :closable="false"
-          @cancel="drawerCancel"
-        >
+        <a-drawer v-if="hideMenu" :visible="drawerVisible" placement="left" :footer="false" mask-closable
+          :closable="false" @cancel="drawerCancel">
           <Menu />
         </a-drawer>
         <a-layout class="layout-content" :style="paddingStyle">
@@ -48,18 +32,16 @@
 import { ref, computed, watch, provide, onMounted, defineAsyncComponent } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAppStore, useUserStore } from '@/store';
+import { Notification } from '@arco-design/web-vue';
 import NavBar from '@/components/navbar/index.vue';
 import Menu from '@/components/menu/index.vue';
 import Footer from '@/components/footer/index.vue';
 import TabBar from '@/components/tab-bar/index.vue';
 import usePermission from '@/hooks/permission';
 import useResponsive from '@/hooks/responsive';
-import { provideMessageService } from '@/services/messageService';
+import { messageService } from '@/services/messageService';
 import { useUserUIFont } from '@/hooks/font';
 const PageLayout = defineAsyncComponent(() => import('./page-layout.vue'));
-
-// 在应用顶层提供消息服务
-provideMessageService();
 
 useUserUIFont();
 const isInit = ref(false);
@@ -109,6 +91,26 @@ provide('toggleDrawerMenu', () => {
 onMounted(() => {
   isInit.value = true;
 });
+
+//监听消息，发现未读消息则出一个通知
+watch(
+  () => messageService.messages.length,
+  (newLength, oldLength) => {
+    if (newLength > oldLength) {
+      const lastMsg = messageService.messages[0];
+      if (lastMsg?.type === 'notice') {
+        Notification.info({
+          id: lastMsg.id?.toString() || Date.now().toString(),
+          title: lastMsg.title,
+          content: lastMsg.vnodeContent ? () => lastMsg.vnodeContent : lastMsg.content,
+          duration: 0,
+          showIcon: true,
+          closable: true,
+        });
+      }
+    }
+  }, { deep: true }
+);
 </script>
 
 <style scoped lang="less">

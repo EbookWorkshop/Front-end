@@ -1,8 +1,8 @@
 <template>
     <div class="chapter-opt">
-        <a-button-group :status="updateStatus" style="width: 100%;">
+        <a-button-group :status="status" style="width: 100%;">
             <a-button long type="dashed" class="chapter-title" @click="onToggle">
-                <a-checkbox :model-value="isChecked">
+                <a-checkbox :model-value="checked">
                     {{ chapter.Title }}
                 </a-checkbox>
             </a-button>
@@ -11,18 +11,16 @@
                     <icon-settings />
                 </a-button>
                 <template #content>
-                    <a-doption :disabled="chapter.IsHasContent ? false : true"
+                    <a-doption :disabled="!chapter.IsHasContent"
                         @click="gotoChapter(chapter.IndexId, true)">阅读</a-doption>
                     <a-doption @click="onToggleHideChapter">隐藏本章</a-doption>
                     <a-doption @click="isUrlDialogVisible = true">管理来源</a-doption>
                     <a-doption @click="OpenWin">打开来源网页</a-doption>
                     <a-doption @click="isEdit = true">直接录入/修正</a-doption>
-                    <!-- <a-doption>属性</a-doption> -->
                 </template>
             </a-dropdown>
         </a-button-group>
 
-        <!-- 原有按钮组保持不变... -->
         <a-modal v-model:visible="isUrlDialogVisible" :title="`来源管理-【${chapter.Title}】`" @ok="handleUrlConfirm"
             width="50%" draggable unmount-on-close>
             <a-table :data="urlList" :pagination="false">
@@ -62,20 +60,16 @@ import { ref } from 'vue';
 import { updateWebBookChapterSourcesById } from '@/api/book';
 import { openWindow } from '@/utils';
 import ChapterEdit from "@/components/chapter/edit.vue";
-import useChapterHiddenHelper from "@/hooks/chapter-hidden";
-
-
 //类型
 import type { WebChapter } from '@/types/book';
 
-
 //操作
+import useChapterHiddenHelper from "@/hooks/chapter-hidden";
 import useBookHelper from '@/hooks/book-helper';
 const { gotoChapter } = useBookHelper();
 const { toggleChapterHidden } = useChapterHiddenHelper();
 
 //变量范围
-const isChecked = ref(false);
 const isEdit = ref(false);
 
 //出参定义
@@ -84,37 +78,29 @@ const emit = defineEmits(['toggle', 'hide']);
 //入参定义
 const props = defineProps<{
     chapter: WebChapter;
+    checked: boolean;          // 是否被选中
     status?: "normal" | "success" | "warning" | "danger" | undefined;
 }>();
 
 
 // URL 管理相关状态
 const isUrlDialogVisible = ref(false);
-// const urlForm = reactive({ path: '' });
 const editingIndex = ref(-1);
 const urlList = ref<Array<{ id: number; Path: string }>>((props.chapter?.URL || []));
-
-defineExpose({
-    handleCheckIt: (checked: boolean) => { isChecked.value = checked; },
-    handleChangeStatus: (status: "normal" | "success" | "warning" | "danger" | undefined) => { updateStatus.value = status; },
-    getTitle: () => { return props.chapter.Title; },
-})
-
-let updateStatus = ref<"normal" | "success" | "warning" | "danger" | undefined>(props.chapter.IsHasContent ? 'normal' : 'warning');
 
 //操作定义
 /**
  * 切换选中状态
  */
 function onToggle() {
-    isChecked.value = !isChecked.value;
-    emit("toggle", isChecked.value, props.chapter.IndexId);
+    // 不再修改内部状态，直接通知父组件
+    emit('toggle', !props.checked, props.chapter.IndexId);
 }
 
 function onToggleHideChapter() {
-    toggleChapterHidden(props.chapter.IndexId).then((res) => {
-        emit("hide", props.chapter.IndexId);
-    })
+    toggleChapterHidden(props.chapter.IndexId).then(() => {
+        emit('hide', props.chapter.IndexId);
+    });
 }
 
 function OpenWin() {

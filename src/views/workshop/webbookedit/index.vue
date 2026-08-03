@@ -8,8 +8,8 @@
           :Author="bookData.Author" :Introduction="bookData.Introduction">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Volumes="bookData.Volumes"
-              :Chapters="bookData.Index" :ChapterOptMap="chapterRefMap" @toggle-check="onToggleToolbar"
-              @start-update-chapter="(rsl: any) => curDoingProcent = rsl" ref="toolbarRef"></Toolbar>
+              :Chapters="bookData.Index" @toggle-check="onToggleToolbar"
+              @start-update-chapter="(rsl: any) => curDoingProcent = rsl" />
           </template>
         </BookInfo>
         <a-divider />
@@ -20,8 +20,9 @@
               <template #icon> <icon-loading /> </template>
               <template #default>{{ chapter.Title }}</template>
             </a-button>
-            <ChapterOpt v-else :chapter="chapter as WebChapter" @toggle="OnToggleChapter"
-              :ref="chapterRefMap.get(chapter.IndexId)" @hide="onHideChapter(chapter.IndexId)" />
+            <ChapterOpt v-else :chapter="chapter as WebChapter" :checked="hasCheckChapter.get(chapter.IndexId) || false"
+              :status="(chapter as any).status || (chapter.IsHasContent ? 'normal' : 'warning')"
+              @toggle="OnToggleChapter" @hide="onHideChapter" />
           </template>
         </ChapterList>
       </a-spin>
@@ -55,9 +56,7 @@ import { queryWebBookById, queryBookById } from '@/api/book';
 
 //变量定义
 const curDoingProcent = ref(-1);        //进度条状态
-const hasCheckChapter = reactive(new Map());      //已选中的章节
-const chapterRefMap = reactive(new Map());        //所有章节控件的引用
-const toolbarRef = ref<any>(null);       //工具栏对象
+const hasCheckChapter = ref(new Map<number, boolean>()); // 仅存储选中状态
 const chapterList = ref<WebChapter[]>([]);//展示用的章节数据
 const loadingChapter = ref<boolean>(true);
 
@@ -78,10 +77,14 @@ const messageService = useMessageService();
 
 function LoadWebBookData() {
   queryWebBookById(bookId).then((result) => {
-    result.data.Index.forEach((iCpt: WebChapter) => {
-      chapterRefMap.set(iCpt.IndexId, ref(null));
+    // 直接替换 chapterList，Vue 会响应式更新
+    // 每个章节对象扩展一个 status 字段（也可以单独维护，但直接添加属性更简单）
+    const indexedChapters = result.data.Index.map((c: any) => {
+      // 如果已有状态则保留，否则根据 IsHasContent 设置默认
+      (c as any).status = (c as any).status || (c.IsHasContent ? 'normal' : 'warning');
+      return c;
     });
-    chapterList.value = result.data.Index;
+    chapterList.value = indexedChapters;
     loadingChapter.value = false;
   });
 }
@@ -94,15 +97,14 @@ function LoadWebBookData() {
  * @param chapterId 章节id
  */
 function OnToggleChapter(isChecked: boolean, chapterId: number) {
-  hasCheckChapter.set(chapterId, isChecked);
-  toolbarRef.value.updateChecked();
+  hasCheckChapter.value.set(chapterId, isChecked);
 }
 
 function onHideChapter(chapterId: number) {
   //console.log(`隐藏章节：${chapterId}`);
-  const index = bookData.value?.Index.findIndex(chap => chap.IndexId === chapterId);
-  if (index !== undefined && index !== -1) {
-    bookData.value?.Index.splice(index, 1);
+  const index = chapterList.value.findIndex(chap => chap.IndexId === chapterId);
+  if (index !== -1) {
+    chapterList.value.splice(index, 1);
   }
 }
 
@@ -114,8 +116,7 @@ function onHideChapter(chapterId: number) {
  * @param isChecked 是否已选中
  */
 function onToggleToolbar(chapterId: number, isChecked: boolean) {
-  hasCheckChapter.set(chapterId, isChecked);
-  chapterRefMap.get(chapterId).value.handleCheckIt(isChecked);
+  hasCheckChapter.value.set(chapterId, isChecked);
 }
 
 
@@ -127,13 +128,14 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
     err,                //错误信息
     msgId
   }: OneChapterStatus) => {
-    const curChapter = chapterRefMap.get(chapterId);
-    if (!curChapter) return;
-    curChapter.value.handleChangeStatus("danger");
+    const target = chapterList.value.find(c => c.IndexId === chapterId);
+    if (target) {
+      (target as any).status = 'danger';
+    }
 
     Notification.error({
       title: `获取章节出错：${err?.name || ""}`,
-      content: `章节-${curChapter.value.getTitle()}：${err?.message || "未知错误"}`,
+      content: `章节-${target?.Title || chapterId}：${err?.message || "未知错误"}`,
       showIcon: true,
     });
 
@@ -142,7 +144,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       id: msgId || (Date.now() * -1),
       type: "message",
       title: `《${bookData.value?.BookName}》获取章节出错：${err?.name || ""}`,
-      subTitle: `章节-${curChapter.value.getTitle()}`,
+      subTitle: `章节-${target?.Title || ''}`,
       content: err?.message || "未知错误",
       time: new Date().toLocaleString(),
       status: 1,
@@ -154,11 +156,11 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
 
   // 单一章节更新成功
   socketOn(WebBookStatus.Success + `.${bookId}`, (chaptOne: OneChapterStatus) => {
-    const curChapter = chapterRefMap.get(chaptOne.chapterId);
-    if (!curChapter) return;
-    let thisCpt = chapterList.value.filter(c => c.IndexId == chaptOne.chapterId);
-    if (thisCpt.length > 0) thisCpt[0].IsHasContent = true;
-    curChapter.value.handleChangeStatus("success");
+    const target = chapterList.value.find(c => c.IndexId === chaptOne.chapterId);
+    if (target) {
+      target.IsHasContent = true;
+      (target as any).status = 'success';
+    }
   });
 
   // 全部任务完成 - 保留页面特定的处理逻辑

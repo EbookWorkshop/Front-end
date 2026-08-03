@@ -13,7 +13,7 @@
           marginRight: '40px',
         }">
           <a-scrollbar style="height: 64vh; overflow: auto">
-            <div ref="ContentDiv" style="min-height: 64vh; width: 100%">
+            <div style="min-height: 64vh; width: 100%">
               <!-- 预览正文的地方 -->
               <a-typography>
                 <a-typography-paragraph style="white-space: pre-wrap">
@@ -31,7 +31,6 @@
         </a-space>
         <a-list :size="chapterList.length > 30 ? 'small' : 'large'" scrollbar :virtualListProps="{ height: 858 }"
           :data="chapterList">
-          <!-- TODO: 动态跟ContentDiv保持相同的高度 -->
           <template #item="{ item, index }">
             <a-list-item :key="index" @click="CurChapter = item.Content ?? ''">
               <a-list-item-meta>
@@ -141,12 +140,11 @@
 </template>
 
 <script setup lang="ts">
-import { Chapter } from '@/types/book';
-import { reactive, ref, computed } from 'vue';
-import { IStepResult, cleanContent, cutContent } from "./utils"
+import type { Chapter } from '@/types/book';
+import { reactive, ref, computed, watch } from 'vue';
+import { type IStepResult, cleanContent, cutContent } from "./utils"
 import { numberToChinese } from "@/utils/units";
 import { standardDeviation } from '@/utils/math';
-import type { FormInstance } from '@arco-design/web-vue';
 
 // 标题设置模态框控制
 const setTitleVisible = ref(false);
@@ -309,14 +307,18 @@ const calculateChapterStats = () => {
   }
 };
 
-
+//定义组件参数
+const props = defineProps<{
+  inputData?: IStepResult;   // 父组件传入数据
+}>();
+// 监听 inputData 变化，自动初始化
+watch(() => props.inputData, (newData) => {
+  if (newData) { initData(newData); }
+}, { immediate: true });
 
 // 暴露给父组件的方法
 defineExpose({
-  initData,
-  getData: () => {
-    return [...chapterList];
-  },
+  getData: () => { return [...chapterList]; },
 });
 
 // 显示章节统计

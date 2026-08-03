@@ -23,8 +23,8 @@
           <div class="book-list-wrap">
             <a-row class="list-row" :gutter="24">
               <!-- 一行 -->
-              <a-col v-for="item in renderData" :key="item.BookId" class="list-col" :xs="24" :sm="12" :md="12" :lg="6"
-                :xl="6" :xxl="4" @click="goto(item.BookId)">
+              <a-col v-for="item in renderData" :key="item.BookId" class="list-col" @click="goto(item.BookId)"
+                v-memo="[item.BookId, item.BookName, item.CoverImg]" :xs="24" :sm="12" :md="12" :lg="6" :xl="6" :xxl="4">
                 <a-dropdown trigger="contextMenu" alignPoint :style="{ display: 'block' }" :popup-max-height="false"
                   class="book-context-menu">
                   <BookCover :loading="loading" :book-name="item.BookName" :cover-img="item.CoverImg"

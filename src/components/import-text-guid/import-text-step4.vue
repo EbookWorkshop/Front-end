@@ -24,15 +24,21 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, reactive, toRaw, watch } from 'vue';
 import { FileItem } from '@arco-design/web-vue';
-import { reactive, toRaw } from 'vue';
 
-const prop = defineProps({
-  bookName: String,
-});
+const props = defineProps<{
+  bookName?: string,
+  firstChapter?: string;   // 父组件传入数据
+}>();
+
+// 监听 firstChapter 变化，自动初始化
+watch(() => props.firstChapter, (newData) => {
+  if (newData) { init(newData); }
+}, { immediate: true });
+
 const form = reactive({
-  bookName: prop.bookName,
+  bookName: props.bookName,
   author: '',
   bookCover: undefined as File | undefined,
 });
@@ -56,5 +62,5 @@ const init = (firstChapter: string) => {
   form.bookName = form.bookName?.replace(/[《》]/g, "");
 }
 
-defineExpose({ submit: handleSubmit, init });
+defineExpose({ submit: handleSubmit });
 </script>
