@@ -12,6 +12,15 @@ const Reader: AppRouteRecordRaw = {
     },
     children: [
         {
+            path: '/reader/:path(.*)',
+            name: 'EpubReader',
+            component: () => import('@/views/reader/epub.vue'),
+            meta: {
+                requiresAuth: false,
+                hideInMenu: true,
+            },
+        },
+        {
             path: 'txt', // 子路由默认路径为空字符串
             name: 'TxtReader',
             component: () => import('@/views/reader/txt.vue'),

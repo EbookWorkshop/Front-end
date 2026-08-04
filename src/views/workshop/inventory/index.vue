@@ -23,8 +23,10 @@
                                     <a-doption value="type">类型</a-doption>
                                 </template>
                             </a-dropdown>
+                            <a-button size="large" @click="SortToGroup">分组</a-button>
                             <a-dropdown @select="(value) => SortTheList(false, value as string)">
-                                <a-button size="large"> <template #icon><icon-sort-descending /></template> 降序</a-button>
+                                <a-button size="large"> <template #icon><icon-sort-descending /></template>
+                                    降序</a-button>
                                 <template #content>
                                     <a-doption value="name">名字</a-doption>
                                     <a-doption value="size">大小</a-doption>
@@ -36,9 +38,10 @@
                     </div>
                 </div>
                 <a-empty v-if="data.length === 0" />
-                <a-card :bordered="false" :style="{ width: '100%' }">
-                    <a-card-grid v-for="(item, index) in data" :key="index" :hoverable="true"
-                        :style="{ margin: '10px 10px', width: '340px' }">
+                <a-card :bordered="false" :style="{ width: '100%' }" v-for="ext of GroupExt" :key="ext">
+                    <a-divider v-if="ext !== ``" orientation="left">{{ ext.toUpperCase() }}</a-divider>
+                    <a-card-grid v-for="(item, index) in data.filter(i => i.ext === ext || ext === ``)" :key="index"
+                        :hoverable="true" :style="{ margin: '10px 10px', width: '340px' }">
                         <a-card :class="['card-book', item.ext]" :title="item.name" :bordered="false">
                             <template #extra>
                                 <a-dropdown>
@@ -81,6 +84,9 @@ import { Modal, Input, Button } from '@arco-design/web-vue';
 const ASSETS_HOST = getApiBaseUrl();
 const router = useRouter();
 const { response: data, loading } = useRequest<FileInfo[]>(getArchiveBookList);
+const GroupExt = ref<Set<string>>(new Set([""]));
+
+
 
 function SortTheList(ascending: boolean, sortBy: string) {
     loading.value = true;
@@ -164,13 +170,16 @@ function Delete(fileName: string) {
         }
     });
 }
+function SortToGroup() {
+    GroupExt.value = new Set(GroupExt.value.size === 1 ? data.value.map(({ ext }) => ext) : [""]);
+}
 
 </script>
 
 <style scoped>
 .card-book {
     width: 100%;
-    border: 1px solid transparent;
+    border: 2px solid transparent;
 
     &.pdf {
         border-color: rgba(231, 76, 60, 0.3);
