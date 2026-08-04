@@ -14,13 +14,6 @@
                     <a-form-item field="author" label="作者">
                         <a-input v-model="form.author" />
                     </a-form-item>
-                    <a-form-item field="defFont" label="默认字体">
-                        <a-select v-model="form.font as string">
-                            <a-option v-for="font in fontData" :key="font.name" :value="font.name">
-                                {{ font.name }}
-                            </a-option>
-                        </a-select>
-                    </a-form-item>
                     <a-form-item field="introduction" label="简介">
                         <a-textarea v-model="form.introduction" :auto-size="{ minRows: 4, maxRows: 13 }"></a-textarea>
                     </a-form-item>
@@ -58,17 +51,13 @@
 </template>
 <script lang="ts" setup>
 import { reactive, ref } from 'vue';
-import { queryFontList, } from '@/api/font';
 import { queryBookInfo, patchBookInfo } from '@/api/book';
 import { Message } from '@arco-design/web-vue';
 
 import BookCover from "@/components/book-cover/index.vue";
-import { fromPairs } from 'lodash';
 
 const SHOW_BOOKNAME = "#showname";
 
-// let fontDataMap = new Map();
-let fontData: Array<any> = [];      //系统已安装字体
 const prop = defineProps<{
     visible: boolean,
     bookId: number,
@@ -83,7 +72,6 @@ const form = reactive<any>({
     id: prop.bookId,
     name: '',
     author: '',
-    font: '',
     introduction: '',
     bookCover: '',
     coverType: "线装本",
@@ -100,7 +88,6 @@ async function LoadData() {
         form.id = bookInfo.id;
         form.name = bookInfo.BookName;
         form.author = bookInfo.Author ?? '佚名';
-        form.font = bookInfo.FontFamily;
         form.introduction = bookInfo.Introduction;
         form.bookCover = bookInfo.CoverImg;
         if(!bookInfo.CoverImg || bookInfo.CoverImg==="") form.coverType = "默认";
@@ -109,9 +96,6 @@ async function LoadData() {
 
         oldBookMeta = { ...form };
         form.embelBookName = bookInfo.CoverImg?.includes("#showname");
-    }
-    if (fontData.length == 0) {
-        await InitFont();
     }
 };
 
@@ -152,11 +136,6 @@ async function handleBeforeOk(callback: any) {
     }).finally(() => {
         emit('cancel');
     });
-}
-
-async function InitFont() {
-    fontData = await queryFontList();
-    // fontDataMap = new Map(fontData.map(t => [t.name, t]));
 }
 
 /**

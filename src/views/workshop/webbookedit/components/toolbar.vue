@@ -26,6 +26,12 @@
                 </a-button-group>
             </a-space>
             <a-space>
+                <a-button shape="round" :type="AutoSyncEnabled ? 'primary' : 'secondary'">
+                    <a-switch :model-value="AutoSyncEnabled" @change="onAutoSyncChange as any" :loading="loading">
+                        <template #checked> 闲时自动更新 </template>
+                        <template #unchecked> 关闭自动更新 </template>
+                    </a-switch>
+                </a-button>
                 <a-button-group type="primary">
                     <a-button shape="round" title="查看目录页面" @click="openDefaultIndex"> <icon-eye /> </a-button>
                     <a-button :loading="isMerging" @click="mergeIndex"> 更新目录 </a-button>
@@ -97,9 +103,8 @@ const data = reactive<{
 });
 
 const props = defineProps({
-    bookid: {
-        type: Number
-    },
+    bookid: { type: Number },
+    loading: { type: Boolean },
     Chapters: {
         type: Array as () => Chapter[],
         default: []
@@ -112,8 +117,9 @@ const props = defineProps({
         type: Map,
         default: new Map()
     },
+    AutoSyncEnabled: { type: Boolean }
 });
-const emit = defineEmits(["ToggleCheck", "StartUpdateChapter"]);
+const emit = defineEmits(["ToggleCheck", "StartUpdateChapter", "update:AutoSyncEnabled"]);
 const { showHiddenChapters } = useChapterHiddenHelper();
 
 /**
@@ -284,4 +290,7 @@ function openDefaultIndex() {
     });
 }
 
+function onAutoSyncChange(value: boolean, ev: Event) {
+    emit('update:AutoSyncEnabled', value);
+}
 </script>

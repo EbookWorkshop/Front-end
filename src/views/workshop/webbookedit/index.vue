@@ -8,8 +8,10 @@
           :Author="bookData.Author" :Introduction="bookData.Introduction">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Volumes="bookData.Volumes"
-              :Chapters="bookData.Index" @toggle-check="onToggleToolbar"
-              @start-update-chapter="(rsl: any) => curDoingProcent = rsl" />
+              :loading="loadingChapter || autoSyncSetting" :Chapters="bookData.Index"
+              v-model:AutoSyncEnabled="autoSyncEnabled" @toggle-check="onToggleToolbar"
+              @start-update-chapter="(rsl: any) => curDoingProcent = rsl"
+              @update:AutoSyncEnabled="handleAutoSyncChange" />
           </template>
         </BookInfo>
         <a-divider />
@@ -38,7 +40,7 @@ import type { OneChapterStatus } from './data'
 import { messageService } from '@/services/messageService';
 import type { MessageRecord } from '@/types/Message';
 
-import { ref, reactive, nextTick } from 'vue';
+import { ref, nextTick } from 'vue';
 import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
 import { useSocket } from '@/hooks/socket';
@@ -51,7 +53,7 @@ import ChapterOpt from './components/chapter-opt.vue';
 import ProcessBar from './components/processbar.vue';
 import { Notification } from '@arco-design/web-vue';
 
-import { queryWebBookById, queryBookById } from '@/api/book';
+import { queryWebBookById, queryBookById, setAutoSyncEnabled } from '@/api/book';
 
 
 //变量定义
@@ -59,6 +61,8 @@ const curDoingProcent = ref(-1);        //进度条状态
 const hasCheckChapter = ref(new Map<number, boolean>()); // 仅存储选中状态
 const chapterList = ref<WebChapter[]>([]);//展示用的章节数据
 const loadingChapter = ref<boolean>(true);
+const autoSyncEnabled = ref<boolean>(false);//自动更新相关
+const autoSyncSetting = ref<boolean>(true);//自动更新相关
 
 //数据请求
 const queryBook = () => {
@@ -73,18 +77,22 @@ const queryBook = () => {
 const { bookId, gotoChapter } = useBookHelper();
 const { loading, response: bookData } = useRequest<Book>(queryBook);
 const { io: socket, on: socketOn } = useSocket();
+const webBookId = ref<number>(-1);  //网文书ID，注意与bookId不同
 
 function LoadWebBookData() {
   queryWebBookById(bookId).then((result) => {
-    // 直接替换 chapterList，Vue 会响应式更新
+    let { data: webbook } = result;
+    webBookId.value = webbook.WebBookId;
+    autoSyncEnabled.value = webbook.AutoSyncEnabled;
     // 每个章节对象扩展一个 status 字段（也可以单独维护，但直接添加属性更简单）
-    const indexedChapters = result.data.Index.map((c: any) => {
+    const indexedChapters = webbook.Index.map((c: any) => {
       // 如果已有状态则保留，否则根据 IsHasContent 设置默认
       (c as any).status = (c as any).status || (c.IsHasContent ? 'normal' : 'warning');
       return c;
     });
     chapterList.value = indexedChapters;
     loadingChapter.value = false;
+    autoSyncSetting.value = false;
   });
 }
 
@@ -116,6 +124,11 @@ function onHideChapter(chapterId: number) {
  */
 function onToggleToolbar(chapterId: number, isChecked: boolean) {
   hasCheckChapter.value.set(chapterId, isChecked);
+}
+
+function handleAutoSyncChange(newValue: boolean) {
+  autoSyncSetting.value = true;
+  setAutoSyncEnabled(bookId, newValue).finally(() => autoSyncSetting.value = false);
 }
 
 

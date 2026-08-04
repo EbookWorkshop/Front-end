@@ -301,6 +301,19 @@ export function updateChapter(
   });
 }
 
+/**
+ * 设置是否允许自动更新
+ * @param bookid 【注意】对应的书的WebBookId
+ * @param autosync 是/否 启用
+ * @returns 
+ */
+export function setAutoSyncEnabled(bookid: number, autosync: boolean = false) {
+  return axios.post<HttpResponse<string>>(`/library/webbook/autosync`, {
+    bookid,
+    autoSyncEnabled: autosync,
+  });
+}
+
 export interface ICreateBookAPI {
   (bookid: number,
     volumeIds: number[],
