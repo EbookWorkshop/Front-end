@@ -70,6 +70,7 @@
 
 <script lang="ts" setup>
 import { h, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { getArchiveBookList, deleteArchiveBook, editArchiveBook } from '@/api/book';
 import { sendAEMail } from '@/api/system'
 import type { FileInfo } from '@/types/book';
@@ -78,7 +79,7 @@ import { getApiBaseUrl } from '@/utils/config';
 import { Modal, Input, Button } from '@arco-design/web-vue';
 
 const ASSETS_HOST = getApiBaseUrl();
-
+const router = useRouter();
 const { response: data, loading } = useRequest<FileInfo[]>(getArchiveBookList);
 
 function SortTheList(ascending: boolean, sortBy: string) {
@@ -104,6 +105,12 @@ function DownLoad(filePath: string) {
 
 function OpenReader(filePath: string, fileType: string) {
     if (fileType === 'epub') window.open(`/reader/${ASSETS_HOST}/assets/download/${encodeURIComponent(encodeURIComponent(filePath))}`);
+    else if (fileType === "txt") {
+        router.push({
+            path: '/reader/txt',
+            query: { name: filePath.split('/').pop()?.split(".").shift(), path: filePath }
+        });
+    }
     else window.open(`${ASSETS_HOST}/assets/view/${encodeURIComponent(filePath)}`);
 }
 

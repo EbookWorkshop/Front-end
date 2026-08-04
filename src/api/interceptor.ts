@@ -38,6 +38,9 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response: AxiosResponse<HttpResponse | any, any>) => {
     const res = response.data;
+
+    if ((response.config as any)?.rawResponse) return res;//直接返回数据
+
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== ApiResultCode.Success) {
       const message: MessageRecord = {

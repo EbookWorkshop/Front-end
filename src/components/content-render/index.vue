@@ -1,6 +1,6 @@
 <template>
   <div class="content-renderer">
-    <a-typography-paragraph v-for="(item, index) in content" :key="index" class="paragraph" :style="item.style"
+    <a-typography-paragraph v-for="(item, index) in content" :key="index" class="paragraph" :style="item?.style"
       v-html="item.text" />
   </div>
 </template>
@@ -18,17 +18,14 @@ defineProps<{ content: ContentItem[] }>()
 
 </script>
 
-<style scoped>
+<style lang="less">
 .content-renderer {
   line-height: 1.8;
   letter-spacing: 0.05em;
+
+  .paragraph {
+    text-indent: 2em;
+  }
 }
 
-.paragraph {
-  text-indent: 2em;
-}
-/* 
-.paragraph::before {
-  content: '　　';
-} */
 </style>

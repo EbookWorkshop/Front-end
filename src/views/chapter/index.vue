@@ -23,7 +23,7 @@
           <a-typography :style="{ marginTop: '-40px', color: ftColor }">
             <a-typography-title class="title" :style="{ fontFamily: 'MyCustomFont' }">{{ renderData.Title }}
             </a-typography-title>
-            <ContentRenderer :content="processedContent" />
+            <ContentRender :content="processedContent" />
           </a-typography>
         </a-col>
         <a-col v-else :span="24" style="text-align: center">
@@ -60,7 +60,7 @@ import { useRoute } from 'vue-router';
 import useBookHelper from '@/hooks/book-helper';
 
 import ToolMenu from './components/toolmenu.vue'
-import ContentRenderer, { type ContentItem } from './components/ContentRenderer.vue'
+import ContentRender, { type ContentItem } from '@/components/content-render/index.vue'
 
 import { getApiBaseUrl } from '@/utils/config';
 const ASSETS_HOST = getApiBaseUrl();
@@ -130,7 +130,7 @@ function togglePDF() { pdfModel.value = !pdfModel.value; }
 
 </script>
 
-<style>
+<style scoped>
 .title {
   color: var(--color-neutral-10);
   text-align: center;
