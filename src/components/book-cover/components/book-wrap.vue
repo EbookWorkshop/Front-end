@@ -46,7 +46,7 @@ const props = defineProps({
     default: true,
   },
 });
-const emiter = defineEmits(["error"]);
+const emiter = defineEmits(["error", "update:showEmbedBookName"]);
 const isShowBookName = ref(props.showEmbedBookName);
 const isLoaded = ref(false);
 const showImageUrl = computed<string>(() => {
@@ -62,7 +62,9 @@ const showImageUrl = computed<string>(() => {
 watch(() => props.showEmbedBookName, (value, old) => {
   isShowBookName.value = props.showEmbedBookName;
 })
-
+watch(() => props.coverImg, (value, old) => {
+  emiter("update:showEmbedBookName", props.coverImg.includes("#showname"));
+}, { immediate: true })
 function imgError(event: Event) {
   emiter("error", event);
 }

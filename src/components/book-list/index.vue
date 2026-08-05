@@ -153,7 +153,7 @@ const props = defineProps({
 const CARD_WIDTH = 284;
 const GAP = 24;
 const ROW_HEIGHT = 380;//行高360 间距20
-const DEFAULT_HEIGHT = 'calc(100vh - 350px)';
+const DEFAULT_HEIGHT = 'calc(100vh - 280px)'; //滚动区可视口高度
 
 const defaultValue: Book[] = [];
 const curEditBookId = ref(0);

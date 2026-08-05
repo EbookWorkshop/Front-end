@@ -35,7 +35,10 @@ getArchiveBook(filePath.value as string).then(data => {
   const EmptyRowReg = new RegExp("^(\\s?)+$")
   processedContent.value = data.split('\n').filter((f: string) => !EmptyRowReg.test(f)).map((p: String) => ({
     text: p.trim(),
-    style: { fontSize: "20px" }
+    style: {
+      color: "var(--color-neutral-8)",
+      fontSize: "24px",
+    }
   }));
   if (processedContent.value[0].text.trim() === fileName.value) processedContent.value.shift();
   loading.value = false;

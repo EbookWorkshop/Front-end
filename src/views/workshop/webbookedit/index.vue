@@ -148,7 +148,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
     Notification.error({
       title: `获取章节出错：${err?.name || ""}`,
       content: `章节-${target?.Title || chapterId}：${err?.message || "未知错误"}`,
-      showIcon: true,
+      showIcon: true, duration: 18_000
     });
 
     // 使用消息服务添加错误消息
@@ -197,7 +197,7 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       content: `成功率：${Math.round(doneNum / chapterIndexArray.length * 10000) / 100}%`,
       time: new Date().toLocaleString(),
       status: 1,
-      avatar: "info",
+      avatar: "success",
     });
   });
 }

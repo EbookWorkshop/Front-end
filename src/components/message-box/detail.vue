@@ -1,5 +1,5 @@
 <template>
-    <a-modal v-model:visible="detailState.state.visible" :title="modalTitle" :width="680" :footer="false" draggable
+    <a-modal v-model:visible="detailState.state.visible" :title="modalTitle" width="auto" :footer="false" draggable
         unmount-on-close :maskClosable="false" @cancel="handleCancel">
         <!-- 使用 state.currentMessage 直接访问 -->
         <div v-if="detailState.state.currentMessage" class="message-detail">
@@ -89,6 +89,8 @@ const handleCancel = () => { detailState.close(); };
 <style scoped lang="less">
 .message-detail {
     padding: 0 8px;
+    width:60vw;
+    min-height:60vh;
 
     .message-header {
         margin-bottom: 16px;

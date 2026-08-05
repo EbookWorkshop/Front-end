@@ -97,13 +97,15 @@ watch(
   () => messageService.messages.length,
   (newLength, oldLength) => {
     if (newLength > oldLength) {
-      const lastMsg = messageService.messages[0];
+      const lastMsg = messageService.messages[messageService.messages.length - 1];
       if (lastMsg?.type === 'notice') {
-        Notification.info({
+        const notificationType = (["success", "error", "warning", "info"] as const).find((type) => type === lastMsg.avatar);
+        const notification = notificationType ? Notification[notificationType] : Notification.info;
+        notification({
           id: lastMsg.id?.toString() || Date.now().toString(),
           title: lastMsg.title,
           content: lastMsg.vnodeContent ? () => lastMsg.vnodeContent : lastMsg.content,
-          duration: 0,
+          duration: 18_000,
           showIcon: true,
           closable: true,
         });

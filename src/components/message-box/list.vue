@@ -16,9 +16,11 @@
           <a-list-item-meta>
             <template v-if="item.avatar" #avatar>
               <a-avatar shape="circle">
-                <span v-if="item.avatar == 'index'">{{ index + 1 }}</span>
+                <span v-if="item.avatar === 'index'">{{ index + 1 }}</span>
                 <icon-close-circle-fill v-else-if="item.avatar === 'error'" style="color: red;" />
                 <icon-info-circle-fill v-else-if="item.avatar === 'info'" style="color: blue" />
+                <icon-check-circle-fill v-else-if="item.avatar === 'success'" style="color: green" />
+                <icon-exclamation-circle-fill v-else-if="item.avatar === 'warning'" style="color: orange"/>
                 <img v-else-if="item.avatar" :src="item.avatar" />
                 <icon-desktop v-else />
               </a-avatar>
