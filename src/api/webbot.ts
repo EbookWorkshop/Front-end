@@ -72,3 +72,23 @@ export function exportSecheme(host: string) {
   // return axios.get(`/services/botrule/export?host=${host}`);
   return `${axios.defaults.baseURL}/services/botrule/export?host=${host}`;
 }
+
+/**
+ * 获取指定站点的对照字典
+ * @param host 指定站点
+ * @returns 
+ */
+export function queryHostDictionaries(host: string) {
+  return axios.get(`/services/botrule/dictionaries?host=${host}`);
+}
+/**
+ * 存储指定站点的对照字典
+ * @param host 指定站点
+ * @param data 
+ * @returns 
+ */
+export function saveHostDictionaries(host: string, data: any[]) {
+  return axios.post(`/services/botrule/dictionaries`, {
+    host, data
+  });
+}

@@ -38,4 +38,6 @@ export interface OneChapterStatus {
      * 出错消息
      */
     err?: Error,
+
+    msgId?: number,
 }

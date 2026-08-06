@@ -3,7 +3,7 @@ import type { VNode } from 'vue';
 export interface MessageRecord {
     /**
      * ## 消息ID
-     * * ### 前端生成的错误消息记得设置id为-1，因为后端无法获取详情
+     * * ### 前端消息ID<0，后端消息ID>0
      */
     id: number;
     /**
@@ -14,7 +14,7 @@ export interface MessageRecord {
      */
     type: "notice" | "message" | "history";
     title: string;
-    subTitle: string;
+    subTitle?: string;
     /**
      * ## 消息图标
      * * ### string 自定义图片作图标，提供图片地址
@@ -31,6 +31,15 @@ export interface MessageRecord {
      * 0未读、1已读
      */
     status: 0 | 1;
+
+    /**
+     * 错误信息
+     */
+    error?: ErrorEvent | any;
+    /**
+     * 消息附加数据
+     */
+    data?: any;
 }
 export type MessageListType = MessageRecord[];
 
@@ -38,7 +47,7 @@ export type MessageListType = MessageRecord[];
  * 后台缓存的消息
  */
 export interface MessageDetail {
-    type: string;
+    // type: string;       //
     message: MessageRecord;
     err: ErrorEvent | undefined;
     data: any | undefined;

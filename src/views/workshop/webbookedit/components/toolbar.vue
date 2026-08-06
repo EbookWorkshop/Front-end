@@ -26,6 +26,12 @@
                 </a-button-group>
             </a-space>
             <a-space>
+                <a-button shape="round" :type="AutoSyncEnabled ? 'primary' : 'secondary'">
+                    <a-switch :model-value="AutoSyncEnabled" @change="onAutoSyncChange as any" :loading="loading">
+                        <template #checked> 闲时自动更新 </template>
+                        <template #unchecked> 关闭自动更新 </template>
+                    </a-switch>
+                </a-button>
                 <a-button-group type="primary">
                     <a-button shape="round" title="查看目录页面" @click="openDefaultIndex"> <icon-eye /> </a-button>
                     <a-button :loading="isMerging" @click="mergeIndex"> 更新目录 </a-button>
@@ -67,7 +73,7 @@
     <Descriptions :bookId="bookid ?? 0" :show="checkDescriptions" @close="checkDescriptions = false" />
 </template>
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import type { Volume, Chapter } from '@/types/book';
 import { ApiResultCode } from '@/types/global';
 import { HeatABook } from '@/api/library';
@@ -80,7 +86,6 @@ import EditBookInfo from '@/components/book-info/edit.vue';
 import Descriptions from '@/components/book-tool/duplicates.vue';
 import SelectChapter from '@/components/chapter/select.vue';
 
-const chapterHasCheckedNum = ref(0);    // 已选中的章节数
 const isMerging = ref(false);       //合并章节状态
 const isShow = ref(false);
 const isMustUpdate = ref(false);    //强制更新-覆盖更新
@@ -88,6 +93,7 @@ const isEditBookInfo = ref(false);
 const btStatusGettingData = ref(false);
 const checkDescriptions = ref(false);
 const router = useRouter();
+const chapterHasCheckedNum = computed(() => [...props.ChapterStatus.values()].filter(v => v === true).length);    // 已选中的章节数
 
 const data = reactive<{
     cBegin: any,
@@ -97,9 +103,8 @@ const data = reactive<{
 });
 
 const props = defineProps({
-    bookid: {
-        type: Number
-    },
+    bookid: { type: Number },
+    loading: { type: Boolean },
     Chapters: {
         type: Array as () => Chapter[],
         default: []
@@ -112,21 +117,10 @@ const props = defineProps({
         type: Map,
         default: new Map()
     },
-    ChapterOptMap: {
-        type: Map,
-        default: new Map()
-    }
+    AutoSyncEnabled: { type: Boolean }
 });
-const emit = defineEmits(["ToggleCheck", "StartUpdateChapter"]);
+const emit = defineEmits(["ToggleCheck", "StartUpdateChapter", "update:AutoSyncEnabled"]);
 const { showHiddenChapters } = useChapterHiddenHelper();
-
-//定义回调函数
-defineExpose({
-    updateChecked: () => {
-        chapterHasCheckedNum.value = 0;
-        props.ChapterStatus?.forEach((value, key) => { if (value) chapterHasCheckedNum.value++; });
-    },
-});
 
 /**
  * 设置选中的区段
@@ -139,14 +133,14 @@ function onSetChapter() {
         if ((!hasBegin && curIndex === data.cBegin) || hasBegin) {
             hasBegin = true;
 
-            let ctrl = props.ChapterOptMap.get(curIndex) as any;
-            if (!ctrl) break;
+            // let ctrl = props.ChapterOptMap.get(curIndex) as any;
+            // if (!ctrl) break;
             result.push(curIndex);
             emit("ToggleCheck", curIndex, true);
             if (curIndex === data.cEnd) break;
         }
     }
-    chapterHasCheckedNum.value = result.length;
+    // chapterHasCheckedNum.value = result.length;
 }
 
 /**
@@ -223,10 +217,8 @@ function UpdateChapter() {
  * 全选
  */
 function onCheckAll(isCheck: boolean) {
-    chapterHasCheckedNum.value = 0;
     props.Chapters.forEach(c => {
         props.ChapterStatus.set(c.IndexId, isCheck);
-        if (isCheck) chapterHasCheckedNum.value++;
         emit("ToggleCheck", c.IndexId, isCheck);
     });
 }
@@ -235,14 +227,12 @@ function onCheckAll(isCheck: boolean) {
  * 选非空章节
  */
 function onCheckNotEmpty() {
-    chapterHasCheckedNum.value = 0;
     props.Chapters.forEach(c => {
         if (!c.IsHasContent) {
             emit("ToggleCheck", c.IndexId, false);
             return;
         }
         props.ChapterStatus.set(c.IndexId, true);
-        chapterHasCheckedNum.value++;
 
         emit("ToggleCheck", c.IndexId, true);
     });
@@ -253,14 +243,12 @@ function onCheckNotEmpty() {
  * 选空章节
  */
 function onCheckEmpty() {
-    chapterHasCheckedNum.value = 0;
     props.Chapters.forEach(c => {
         if (c.IsHasContent) {
             emit("ToggleCheck", c.IndexId, false);
             return;
         }
         props.ChapterStatus.set(c.IndexId, true);
-        chapterHasCheckedNum.value++;
 
         emit("ToggleCheck", c.IndexId, true);
     });
@@ -270,11 +258,9 @@ function onCheckEmpty() {
  * 反选
  */
 function onCheckNot() {
-    chapterHasCheckedNum.value = 0;
     props.Chapters.forEach(c => {
         let isChecked = props.ChapterStatus.get(c.IndexId) ?? false;
         props.ChapterStatus.set(c.IndexId, !isChecked);
-        if (!isChecked) chapterHasCheckedNum.value++;
         emit("ToggleCheck", c.IndexId, !isChecked);
     })
 }
@@ -282,12 +268,12 @@ function onCheckNot() {
 /**
  * 选择整卷
  */
-function onCheckVolume(volumeId: number) {
-    // chapterHasCheckedNum.value = 0;
+function onCheckVolume(value: string | number | Record<string, any> | undefined, ev: Event) {
+    const volumeId = Number(value);
+    if (Number.isNaN(volumeId)) return;
     props.Chapters.forEach(c => {
         if (c.VolumeId === volumeId) {
             props.ChapterStatus.set(c.IndexId, true);
-            chapterHasCheckedNum.value++;
             emit("ToggleCheck", c.IndexId, true);
         }
     })
@@ -304,4 +290,7 @@ function openDefaultIndex() {
     });
 }
 
+function onAutoSyncChange(value: boolean, ev: Event) {
+    emit('update:AutoSyncEnabled', value);
+}
 </script>

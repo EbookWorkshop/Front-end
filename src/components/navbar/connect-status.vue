@@ -13,7 +13,7 @@ watchEffect(() => {
     const connectedNotice = "CONNECT_NOTICE"
     if (!props.connected) {
         Notification.error({
-            id: connectedNotice,
+            id: connectedNotice,position:"bottomRight",
             duration: -1, closable: true
             , content: "服务器链接已断开"
         });

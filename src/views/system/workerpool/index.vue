@@ -1,12 +1,12 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['menu.system', 'menu.system.workerpool']" />
-    <div class="wrapper">
+    <div class="wrapper workerboard">
       <div>
         <a-button @click="Refresh"> 刷新 </a-button>
         <a-descriptions :data="workerData" />
       </div>
-      <a-layout style="min-height: 600px;">
+      <a-layout style="min-height: 66dvh;">
         <a-layout-content>
           <a-typography-title :heading="6" :style="{ textAlign: 'center' }">线程池</a-typography-title>
           <a-card :bordered="false" :style="{ width: '98%', marginLeft: '1%' }">
@@ -47,22 +47,9 @@
             </a-card-grid>
           </a-card>
         </a-layout-content>
-        <a-layout-sider :resize-directions="['left']" :width="400">
-          <a-typography-title :heading="6" :style="{ textAlign: 'center' }">等待线程</a-typography-title>
-          <a-collapse v-if="WaitingTask.length > 0" :style="{ marginLeft: '5%' }" :default-active-key="['1']">
-            <a-collapse-item v-for="task of WaitingTask" :header="`${task.type} &nbsp; (${task.list.length})`" key="1">
-              <div style="max-height: 100vh;overflow-y: auto;">
-                <div v-for="(t, index) of task.list" :key="index">
-                  <div style="overflow-x: hidden; width: 140%;margin-bottom: 4px;">
-                    任务：{{ t.taskParam?.taskfile }}
-                    <br />
-                    参数：{{ t.taskParam?.param?.url || t.taskParam?.param }}
-                  </div>
-                </div>
-              </div>
-            </a-collapse-item>
-          </a-collapse>
-        </a-layout-sider>
+        <a-layout-footer resize-directions="bottom">
+          <TaskBoard :data="WaitingTask" />
+        </a-layout-footer>
       </a-layout>
 
 
@@ -72,7 +59,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-
+import TaskBoard from './components/taskboard.vue';
 import { useSocket } from '@/hooks/socket';
 const { io: socket } = useSocket();
 
@@ -102,7 +89,11 @@ function Refresh() {
 }
 
 function setWorkerPool(data: any) {
-  WaitingTask.value = data.WaitingTask;
+  const wattingTask: any[] = [];
+  for (const t of data.WaitingTask) {
+    wattingTask.push(...t.list.map((item: any) => item.taskParam));
+  }
+  WaitingTask.value = wattingTask;
   WorkerPool.value = data.WorkerPool;
   workerData.value = [{
     label: '最大线程数',
@@ -115,8 +106,11 @@ function setWorkerPool(data: any) {
     value: data.FreeWorker.length
   }];
 
-  // if(data.WaitingTask[0].list.length) console.log(data.WaitingTask);
 }
 </script>
 
-<style></style>
+<style lang="less" scoped>
+.workerboard {
+  padding-bottom: 0px;
+}
+</style>

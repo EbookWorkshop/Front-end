@@ -16,9 +16,9 @@
           <keep-alive>
             <Step1 v-if="step == 1" :status="fileStatus" @set-file="onSetFile" />
             <Step2 v-else-if="step == 2" ref="Step2Ref" :files="fileList" />
-            <Step3 v-else-if="step == 3" ref="Step3Ref" />
-            <Step4 v-else-if="step == 4 && bookId == -1" ref="Step4Ref"
-              :book-name="fileList[0]?.name?.replace(/\.\w+$/, '')" />
+            <Step3 v-else-if="step == 3" ref="Step3Ref" :input-data="step3Data" />
+            <Step4 v-else-if="step == 4 && bookId == -1" ref="Step4Ref" :book-name="bookName"
+              :first-chapter="firstChapter" />
             <div v-else-if="step == 4 && bookId !== -1">
               <a-result class="result" status="success"
                 :title="`即将导入到《${bookName}》${volumeId ? `，卷“${volumeTitle}”之内` : ''}。`"
@@ -69,7 +69,7 @@ import Step1 from './import-text-step1.vue';
 import Step2 from './import-text-step2.vue';
 import Step3 from './import-text-step3.vue';
 import Step4 from './import-text-step4.vue';
-import { IStepResult } from './utils';
+import type { IStepResult } from './utils';
 
 const { loading, setLoading } = useLoading(false);
 
@@ -103,6 +103,11 @@ const fileList = reactive<FileItem[]>([]);
 const Step2Ref = ref<InstanceType<typeof Step2> | null>(null);
 const Step3Ref = ref<InstanceType<typeof Step3> | null>(null);
 const Step4Ref = ref(null) as any;
+
+const step3Data = ref<IStepResult>();
+const firstChapter = ref<string>();
+const bookName = ref<string>();
+
 
 // 章节信息
 let chapterList = [] as any[];
@@ -151,12 +156,15 @@ const changeStep = (direction: number) => {
           step.value -= 1;
           return;
         }
-        setTimeout(() => { Step3Ref.value?.initData(data as IStepResult); }, 100);
+        setTimeout(() => { step3Data.value = data; }, 100);
       }
       break;
     case 4:
       chapterList = Step3Ref.value?.getData() as any[];
-      setTimeout(() => { Step4Ref.value?.init(fileData); }, 100);
+      setTimeout(() => {
+        bookName.value = fileList[0]?.name?.replace(/\.\w+$/, '');
+        firstChapter.value = fileData;
+      }, 100);
       break;
     default:
       break;

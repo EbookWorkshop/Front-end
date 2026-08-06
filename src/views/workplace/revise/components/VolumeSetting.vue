@@ -76,8 +76,8 @@
                             </div>
                             <div class="chapter-list">
                                 <div v-for="chapter in filteredVolumeChapters" :key="chapter.IndexId"
-                                    class="chapter-item"
-                                    :class="{ selected: selectedChapters.includes(chapter.IndexId) }"
+                                    class="chapter-item" :class="{ selected: selectedChapters.has(chapter.IndexId) }"
+                                    v-memo="[chapter.IndexId, chapter.Title, chapter.OrderNum]"
                                     @click.stop="toggleChapterSelection(chapter.IndexId, $event)">
                                     <div class="chapter-info">
                                         <span class="chapter-order">{{ chapter.OrderNum }}.</span>
@@ -108,8 +108,7 @@
                             </div>
                             <div class="chapter-list">
                                 <div v-for="chapter in filteredAvailableChapters" :key="chapter.IndexId"
-                                    class="chapter-item"
-                                    :class="{ selected: selectedChapters.includes(chapter.IndexId) }"
+                                    class="chapter-item" :class="{ selected: selectedChapters.has(chapter.IndexId) }"
                                     @click.stop="toggleChapterSelection(chapter.IndexId, $event)">
                                     <div class="chapter-info">
                                         <span class="chapter-order">{{ chapter.OrderNum }}.</span>
@@ -128,7 +127,7 @@
         </div>
 
         <!-- 批量操作 -->
-        <div v-if="selectedChapters.length > 0" class="batch-operations">
+        <div v-if="selectedChapters.size > 0" class="batch-operations">
             <a-button size="small" @click="addSelectedChapters">
                 批量移入选中章节
             </a-button>
@@ -139,7 +138,7 @@
                 取消选择
             </a-button>
             <span style="margin-left: 16px; color: var(--color-text-2);">
-                已选择 {{ selectedChapters.length }} 个章节
+                已选择 {{ selectedChapters.size }} 个章节
             </span>
         </div>
 
@@ -210,7 +209,7 @@ const emit = defineEmits(['update:visible', 'update']);
 
 // 状态管理
 const selectedVolume = ref<Volume | null>(null);
-const selectedChapters = ref<number[]>([]);
+const selectedChapters = ref<Set<number>>(new Set());
 const showAddVolumeModal = ref(false);
 const showEditVolumeModal = ref(false);
 const showHelpModal = ref(false);
@@ -266,7 +265,7 @@ function close() {
 
 function selectVolume(volume: Volume) {
     selectedVolume.value = volume;
-    selectedChapters.value = [];
+    selectedChapters.value.clear();
     lastSelectedChapterId.value = null;
     // 重置搜索和范围选择
     chapterSearch.value = '';
@@ -370,7 +369,7 @@ function deleteVolume(volume: Volume) {
             // 如果删除的是当前选中的卷，清除选中状态
             if (selectedVolume.value?.VolumeId === volume.VolumeId) {
                 selectedVolume.value = null;
-                selectedChapters.value = [];
+                selectedChapters.value.clear();
             }
 
             // 触发更新事件，通知父组件
@@ -416,36 +415,49 @@ function moveVolume(volume: Volume, direction: 'up' | 'down') {
  * @param event 
  */
 function toggleChapterSelection(chapterId: number, event: MouseEvent) {
-    const index = selectedChapters.value.indexOf(chapterId);
-    let isBatchSelect = event.shiftKey;
-    let lastSelectedId = selectedChapters.value.length > 0 ? selectedChapters.value[selectedChapters.value.length - 1] : null;
-    if (lastSelectedId === null) isBatchSelect = false;
+    const set = selectedChapters.value;
+    const hasShift = event.shiftKey;
 
-    if (index > -1) {//移出
-        selectedChapters.value.splice(index, 1);
-    } else {
-        if (!isBatchSelect) selectedChapters.value.push(chapterId);
-        else {//批量选中
-            const allChapters = props.chapters;
-            const lastIndex = allChapters.findIndex(chapter => chapter.IndexId === lastSelectedId);
-            const currentIndex = allChapters.findIndex(chapter => chapter.IndexId === chapterId);
-            if (lastIndex === -1 || currentIndex === -1) {
-                selectedChapters.value.push(chapterId);
-                return;
-            }
-            const [start, end] = lastIndex < currentIndex ? [lastIndex, currentIndex] : [currentIndex, lastIndex];
-            for (let i = start; i <= end; i++) {
-                const id = allChapters[i].IndexId;
-                if (!selectedChapters.value.includes(id)) {
-                    selectedChapters.value.push(id);
-                }
-            }
+    // 获取最后一个选中的章节 ID（Set 没有索引，需要取最后一个值）
+    let lastSelectedId: number | null = null;
+    if (set.size > 0) {
+        // Set 的迭代顺序是插入顺序，取最后一个
+        for (const id of set) {
+            lastSelectedId = id;
         }
+    }
+
+    // 如果当前点击的是 Shift + 点击，且之前有选中的章节，执行范围选择
+    if (hasShift && lastSelectedId !== null) {
+        // 批量选中：在两个章节之间的所有章节
+        const allChapters = props.chapters;
+        const lastIndex = allChapters.findIndex(ch => ch.IndexId === lastSelectedId);
+        const currentIndex = allChapters.findIndex(ch => ch.IndexId === chapterId);
+
+        if (lastIndex === -1 || currentIndex === -1) {
+            // 如果找不到，退化为普通添加
+            set.add(chapterId);
+            return;
+        }
+
+        const [start, end] = lastIndex < currentIndex ? [lastIndex, currentIndex] : [currentIndex, lastIndex];
+        for (let i = start; i <= end; i++) {
+            const id = allChapters[i].IndexId;
+            set.add(id);
+        }
+        return;
+    }
+
+    // 普通点击：切换选中状态
+    if (set.has(chapterId)) {
+        set.delete(chapterId);
+    } else {
+        set.add(chapterId);
     }
 }
 
 function clearSelection() {
-    selectedChapters.value = [];
+    selectedChapters.value.clear();
 }
 
 function addChapter(chapterId: number) {
@@ -541,13 +553,10 @@ function removeAllChapters() {
 }
 
 function addSelectedChapters() {
-    if (!selectedVolume.value || selectedChapters.value.length === 0) return;
+    if (!selectedVolume.value || selectedChapters.value.size === 0) return;
 
     // 只添加可用章节中的选中项
-    const chaptersToAdd = selectedChapters.value.filter(chapterId =>
-        availableChapters.value.some(chapter => chapter.IndexId === chapterId)
-    );
-
+    const chaptersToAdd: number[] = getSelectedIdsInList(availableChapters.value);
     if (chaptersToAdd.length === 0) {
         Message.warning('请选择要移入的章节');
         return;
@@ -563,7 +572,7 @@ function addSelectedChapters() {
                 data: { chapterIds: chaptersToAdd, volumeId: selectedVolume.value?.VolumeId }
             });
 
-            selectedChapters.value = [];    // 清除选中状态
+            selectedChapters.value.clear();    // 清除选中状态
         } else {
             Message.error('移入章节失败: ' + response.msg);
         }
@@ -573,13 +582,10 @@ function addSelectedChapters() {
 }
 
 function removeSelectedChapters() {
-    if (!selectedVolume.value || selectedChapters.value.length === 0) return;
+    if (!selectedVolume.value || selectedChapters.value.size === 0) return;
 
     // 只移除卷中章节的选中项
-    const chaptersToRemove = selectedChapters.value.filter(chapterId =>
-        volumeChapters.value.some(chapter => chapter.IndexId === chapterId)
-    );
-
+    const chaptersToRemove = getSelectedIdsInList(volumeChapters.value);
     if (chaptersToRemove.length === 0) {
         Message.warning('请选择要移出的章节');
         return;
@@ -595,13 +601,26 @@ function removeSelectedChapters() {
                 data: { chapterIds: chaptersToRemove, volumeId: selectedVolume.value?.VolumeId }
             });
 
-            selectedChapters.value = [];            // 清除选中状态
+            selectedChapters.value.clear();            // 清除选中状态
         } else {
             Message.error('移出章节失败: ' + response.msg);
         }
     }).catch((err) => {
         Message.error('移出章节时发生错误: ' + err.message);
     });
+}
+
+/**
+ * 找到传入列表中，已被选中的章节信息
+ */
+function getSelectedIdsInList(list: Chapter[]): number[] {
+    const chaptersToSelect: number[] = [];
+    for (const chapterId of selectedChapters.value) {
+        if (list.some(chapter => chapter.IndexId === chapterId)) {
+            chaptersToSelect.push(chapterId);
+        }
+    }
+    return chaptersToSelect;
 }
 </script>
 

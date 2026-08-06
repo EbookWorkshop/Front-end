@@ -16,9 +16,8 @@
         <a-divider />
         <ChapterList :loading="loading" :Chapters="renderData.Index" :Volumes="renderData.Volumes">
           <template #chapter="{ chapter }">
-            <a-button long @click="gotoChapter(chapter.IndexId)" :type="chapter.IsHasContent ? 'secondary' : 'secondary'"
-              :disabled="!chapter.IsHasContent" :size="renderData.Index.length < 50 ? 'large' : 'medium'"
-              class="chapterBar">
+            <a-button long @click="gotoChapter(chapter.IndexId)" type="secondary" :disabled="!chapter.IsHasContent"
+              :size="btSize" class="chapterBar">
               {{ chapter.Title }}
             </a-button>
           </template>
@@ -29,8 +28,8 @@
 </template>
 
 <script lang="ts" setup>
-import { Book } from '@/types/book';
-
+import { ref, watch } from "vue";
+import type { Book } from '@/types/book';
 import BookInfo from "@/components/book-info/index.vue";
 import ChapterList from '@/components/chapter-list/index.vue';
 import TagToolbar from '@/components/tag-toolbar/index.vue';
@@ -42,6 +41,13 @@ import { queryBookById } from '@/api/book';
 
 const { bookId, gotoChapter } = useBookHelper();
 const { loading, response: renderData } = useRequest<Book>(queryBookById.bind(null, bookId));
+const btSize = ref<"medium" | "small" | "mini" | "large" | undefined>("medium");
+
+watch(loading, (value) => {
+  if (value) return;
+  btSize.value = renderData.value.Index?.length < 50 ? 'large' : 'medium';
+})
+
 
 </script>
 <style lang="less">

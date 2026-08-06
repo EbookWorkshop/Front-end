@@ -11,28 +11,37 @@
                         <template #columns>
                             <a-table-column title="站点" data-index="Host" :width="250">
                                 <template #cell="{ record }">
-                                    <a :href="`https://${record.Host}`" target="_blank">{{ record.Host }}</a>
+                                    <a-link :loading="statuses[record.Host] && statuses[record.Host].loading"
+                                        :href="`https://${record.Host}`" target="_blank">
+                                        {{ record.Host }}
+                                    </a-link>
                                 </template>
                             </a-table-column>
-
-                            <a-table-column title="关联书数量" data-index="BookCount" :width="120"></a-table-column>
-
-                            <a-table-column title="最后一次使用" data-index="LastAddedTime" :width="180">
-                                <template #cell="{ record }">{{ formatTime(record.LastAddedTime) }}</template>
-                            </a-table-column>
-
-                            <a-table-column title="是否可以访问" :width="150">
+                            <a-table-column title="重定向站点" :width="210">
                                 <template #cell="{ record }">
-                                    <div v-if="statuses[record.Host] && statuses[record.Host].loading" class="meta">
-                                        检测中...</div>
-                                    <div v-else-if="statuses[record.Host] && statuses[record.Host].result">{{
-                                        statuses[record.Host].result }}：{{ statuses[record.Host].status }}</div>
-                                    <div v-else>-</div>
+                                    <a v-if="statuses[record.Host].result" target="_blank"
+                                        :href="`${statuses[record.Host]?.data?.location}`">
+                                        {{ statuses[record.Host]?.data?.location }}
+                                    </a>
+                                </template>
+                            </a-table-column>
+                            <a-table-column title="响应码" :width="80">
+                                <template #cell="{ record }">
+                                    {{ statuses[record.Host]?.status }}
+                                </template>
+                            </a-table-column>
+                            <a-table-column title="站点名称" :width="150">
+                                <template #cell="{ record }">
+                                    {{ statuses[record.Host]?.title }}
+                                    <br />
                                     <a-button type="text" class="link-btn"
                                         @click="checkHost(record.Host, true)">重试</a-button>
                                 </template>
                             </a-table-column>
-
+                            <a-table-column title="关联书数量" data-index="BookCount" :width="120"></a-table-column>
+                            <a-table-column title="最后一次使用" data-index="LastAddedTime" :width="180">
+                                <template #cell="{ record }">{{ formatTime(record.LastAddedTime) }}</template>
+                            </a-table-column>
                             <a-table-column title="关联书本">
                                 <template #cell="{ record }">
                                     <div>
@@ -74,7 +83,7 @@ function formatTime(t?: string) {
 }
 
 // 行级检测状态管理
-const statuses = reactive<Record<string, { loading: boolean; result?: string; status?: string, style?: string }>>({});
+const statuses = reactive<Record<string, { loading: boolean; result?: string; status?: string, style?: string, title?: string, data: any }>>({});
 
 async function checkHost(host: string, force = false) {
     if (!host) return;
@@ -84,17 +93,12 @@ async function checkHost(host: string, force = false) {
     statuses[host] = { loading: true } as any;
     try {
         const res: any = await checkSiteAccessibility(host);
-        let text = '';
-        if (res && res.data != null) {
-            text = res.data === true ? '可访问' : '不可访问';
-            statuses[host].style = res.data === true ? 'row-success' : 'row-failure';
-        } else if (res && res.status === 200) {
-            text = '可访问';
-        } else {
-            text = '无返回信息';
-        }
-        statuses[host].result = text;
+        const newHost = res.data?.location?.startsWith("http") ? new URL(res.data?.location).host : res.data?.location;
+        statuses[host].data = res.data;
+        statuses[host].title = res.data.title;
         statuses[host].status = res?.status;
+        statuses[host].style = (res?.status === 200 || newHost == host) ? "row-success" : "row-failure";
+        if (newHost != host) statuses[host].result = newHost;
     } catch (err: any) {
         statuses[host].result = err?.message || '检测失败';
     } finally {
@@ -153,11 +157,13 @@ h3 {
     font-size: 12px
 }
 
-:global(.row-success), :global(.row-success td) {
+:global(.row-success),
+:global(.row-success td) {
     background-color: rgb(var(--green-1));
 }
 
-:global(.row-failure), :global(.row-failure td) {
+:global(.row-failure),
+:global(.row-failure td) {
     background-color: rgb(var(--orange-1));
 }
 </style>

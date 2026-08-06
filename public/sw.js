@@ -1,4 +1,4 @@
-const CACHE_NAME = `ebookworkshop-cache-v3.9.0-α`; // 替换为版本号
+const CACHE_NAME = `ebookworkshop-cache-v3.12.0`; // 替换为版本号
 const ASSETS = [
   '/',
   '/index.html',

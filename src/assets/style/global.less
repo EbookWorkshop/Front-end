@@ -9,6 +9,7 @@ body {
   margin: 0;
   padding: 0;
   font-size: 14px;
+  overflow: hidden;
   background-color: var(--color-bg-1);
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -18,12 +19,24 @@ body {
 .container {
   padding: 0 20px 20px 20px;
 }
+
 .wrapper {
   padding: 24px 150px;
 
-  @media (max-width: 576px) {
-    padding: 0; /* 适配手机 */
+  @media (max-width: 576px) {    /* 适配手机 */
+    padding: 0;
+    .container {
+      padding: 0px 0px;
+    }
   }
+
+  @media(max-width:1920px) {
+    padding: 24px 35px;
+    .container {
+      padding: 0px 0px;
+    }
+  }
+
   background-color: var(--color-bg-2);
   border-radius: 4px;
   overflow: hidden;
@@ -32,12 +45,14 @@ body {
 .general-card {
   border-radius: 4px;
   border: none;
-  & > .arco-card-header {
+
+  &>.arco-card-header {
     height: auto;
     padding: 20px;
     border: none;
   }
-  & > .arco-card-body {
+
+  &>.arco-card-body {
     padding: 0 20px 20px 20px;
   }
 }
@@ -54,6 +69,7 @@ body {
     height: 6px;
     border-radius: 50%;
     background-color: rgb(var(--blue-6));
+
     &.pass {
       background-color: rgb(var(--green-6));
     }
@@ -65,34 +81,44 @@ div::-webkit-scrollbar {
   width: 5px;
   height: 9px;
 }
+
 .webkit-scrollbar::-webkit-scrollbar:hover,
 div::-webkit-scrollbar:hover {
   width: 15px;
 }
+
 .webkit-scrollbar::-webkit-scrollbar-track,
 div::-webkit-scrollbar-track {
   border-radius: 8px;
 }
+
 .webkit-scrollbar::-webkit-scrollbar-track:hover,
 div::-webkit-scrollbar-track:hover {
   background-color: rgba(180, 10, 10, 0.1);
-} /*槽 悬停*/
+}
+
+/*槽 悬停*/
 .webkit-scrollbar::-webkit-scrollbar-track:active,
 div::-webkit-scrollbar-track:active {
   background-color: rgba(180, 0, 0, 0.3);
-} /*槽 点击*/
+}
+
+/*槽 点击*/
 .webkit-scrollbar::-webkit-scrollbar-thumb,
 div::-webkit-scrollbar-thumb {
   border-radius: 8px;
-  background-color: rgba(10, 10, 10, 0.5); /* 表面 */
+  background-color: rgba(10, 10, 10, 0.5);
+  /* 表面 */
   box-shadow: -2px 0 0 rgba(155, 200, 200, 0.2) inset, 1px 0 0 gray inset,
     0 -1px 0 rgba(155, 200, 200, 0.9) inset,
     0 1px 0 rgba(155, 200, 200, 0.9) inset;
 }
+
 .webkit-scrollbar::-webkit-scrollbar-thumb:hover,
 div::-webkit-scrollbar-thumb:hover {
   background-color: rgba(200, 0, 0, 0.4);
 }
+
 .webkit-scrollbar::-webkit-scrollbar-thumb:active,
 div::-webkit-scrollbar-thumb:active {
   background: rgba(200, 0, 0, 0.6);

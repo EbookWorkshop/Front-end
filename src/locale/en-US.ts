@@ -61,6 +61,7 @@ export default {
   'menu.workshop': 'Workshop',
   'menu.workplace': 'Workplace',
   'menu.system': 'System Setting',
+  'menu.system.setting': 'Setting',
 
   ...localeCommon,
   ...localeSettings,

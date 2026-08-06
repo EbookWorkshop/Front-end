@@ -97,6 +97,9 @@ let fontDataMap = new Map();
 async function InitFont() {
     fontData = await queryFontList();
     fontDataMap = new Map(fontData.map(t => [t.name, t]));
+
+    selectedFont.value = props.defaultFont;
+    onChangeFont();
 }
 InitFont();
 function onChangeFont() {
@@ -117,17 +120,21 @@ watch(() => props.defaultFont, (newVal, oldVal) => {
 
 
 //阅读进度条逻辑相关
+const scrollElement = document.getElementsByClassName("main-content")[0] as any;
 const handleScroll = () => {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = document.documentElement.clientHeight;
-    scrollProgress.value = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100) / 100;
+    // const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    // const scrollHeight = document.documentElement.scrollHeight;
+    // const clientHeight = document.documentElement.clientHeight;
+    // scrollProgress.value = Math.floor((scrollTop / (scrollHeight - clientHeight)) * 100) / 100;
+    const top = scrollElement.scrollTop;
+    const maxTop = scrollElement.scrollTopMax || (scrollElement.scrollHeight - scrollElement.clientHeight);//scrollTopMax 是firefox的属性
+    scrollProgress.value = Math.floor((top / maxTop) * 100) / 100;
 };
 onMounted(() => {
-    window.addEventListener('scroll', handleScroll);
+    scrollElement.addEventListener('scroll', handleScroll);
 });
 onBeforeUnmount(() => {
-    window.removeEventListener('scroll', handleScroll);
+    scrollElement.removeEventListener('scroll', handleScroll);
 });
 
 //书签相关功能

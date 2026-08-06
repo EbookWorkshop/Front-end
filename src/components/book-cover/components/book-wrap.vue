@@ -5,13 +5,13 @@
     </a-card>
     <a-card v-else :bordered="false" hoverable>
       <template #cover>
-        <div :style="{
-          overflow: 'hidden',
-        }">
-          <img :style="{ width: '100%' }" :alt="title" :src=showImageUrl @error="imgError" />
+        <div class="coverDiv">
+          <!-- 骨架屏（图片未加载时显示） -->
+          <div v-if="!isLoaded" class="skeleton-placeholder" />
+          <img v-show="isLoaded" :style="{ width: '100%' }" :alt="title" :src=showImageUrl @error="imgError" @load="isLoaded = true" />
         </div>
       </template>
-      <a-space align="start">
+      <a-space align="start" v-if="isShowBookName">
         <a-card-meta>
           <template #title>
             <a-typography-text>
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { getApiBaseUrl } from '@/utils/config';
 const ASSETS_HOST = getApiBaseUrl();
 const props = defineProps({
@@ -41,16 +41,27 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  showEmbedBookName: {
+    type: Boolean,
+    default: true,
+  },
 });
 const emiter = defineEmits(["error"]);
-
+const isShowBookName = ref(props.showEmbedBookName);
+const isLoaded = ref(false);
 const showImageUrl = computed<string>(() => {
+  if (props.coverImg.includes("#showname")) isShowBookName.value = true;
   if (props.coverImg.startsWith('blob:')) {
     return props.coverImg;
   } else {
+    if (!props.coverImg.startsWith("/")) return ASSETS_HOST + "/" + props.coverImg;
     return ASSETS_HOST + props.coverImg;
   }
 });
+
+watch(() => props.showEmbedBookName, (value, old) => {
+  isShowBookName.value = props.showEmbedBookName;
+})
 
 function imgError(event: Event) {
   emiter("error", event);
@@ -72,12 +83,22 @@ function imgError(event: Event) {
     // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
   }
 
+  .coverDiv {
+    width: 264px;
+    height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.22);
+  }
+
   :deep(.arco-card) {
     height: 100%;
     overflow: hidden;
     border-radius: 4px;
 
-    .arco-card-body {
+    .arco-card-body:has(div) {
       /* 标题部分 */
       position: absolute;
       width: 100%;
@@ -120,6 +141,35 @@ function imgError(event: Event) {
       justify-content: flex-end;
       margin-top: 20px;
     }
+  }
+
+  .skeleton-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #f2f3f5;
+    border-radius: 4px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.4;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 }
 </style>

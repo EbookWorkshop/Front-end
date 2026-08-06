@@ -37,7 +37,7 @@
                   rows: 1,
                 }">{{ item.content }}</a-typography-paragraph>
                 <component :is="item.vnodeContent" v-if="item.vnodeContent" />
-                <br/>
+                <br />
                 <a-typography-text class="time-text">
                   {{ item.time }}
                 </a-typography-text>
@@ -74,20 +74,9 @@ const props = defineProps({
     default: 0,
   },
 });
-const emit = defineEmits(['itemClick', "allRead", "itemDetail"]);
-
-const allRead = () => {
-  emit('allRead');
-};
-
-const onItemClick = (item: MessageRecord) => {
-  if (!item.status) {
-    // 如果是未读消息，触发标记为已读
-    emit('itemClick', [item]);
-  }
-  // 触发显示消息详情
-  emit('itemDetail', item);
-};
+const emit = defineEmits(['click', "allRead"]);
+const onItemClick = (item: MessageRecord) => { emit('click', item); };
+const allRead = () => { emit('allRead'); };
 
 const showMax = 3;
 </script>

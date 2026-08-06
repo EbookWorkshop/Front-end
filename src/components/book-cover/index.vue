@@ -1,6 +1,6 @@
 <template>
-  <BookWrap v-if="curCover && !curCover?.startsWith('#')" :loading="loading" :title="curBookName" :cover-img="curCover"
-    @error="CoverImgError">
+  <BookWrap v-if="curCover && !curCover?.startsWith('#')" :loading="loading" :title="curBookName" 
+    :cover-img="curCover" :show-embed-book-name="showEmbedBookName" @error="CoverImgError">
     <a-descriptions style="margin-top: 16px" layout="inline-horizontal" :column="2" />
   </BookWrap>
   <BookClassical v-else :loading="loading" :title="curBookName" :title-show="curBookName.replace(/[\(（)].*$/, '')"
@@ -33,6 +33,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  showEmbedBookName:{
+    type:Boolean,
+    default:false,
+  },
 });
 
 const emit = defineEmits(['complete']);
@@ -59,7 +63,7 @@ if (props.bookId > 0) LoadFromBookId(props.bookId);
 function CoverImgError(event: Event) {
   // 添加判断，仅当当前封面不是颜色值时才进行切换
   if (!curCover.value?.startsWith('#')) {
-    curCover.value = "#2e2e2e";
+    curCover.value = "#f0f0f0";
   }
 }
 

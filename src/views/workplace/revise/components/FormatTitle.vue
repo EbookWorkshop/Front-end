@@ -93,7 +93,6 @@ watch(() => props.chapters, (newChapters) => {
 }, { immediate: true });
 
 const submit = async () => {
-  let isDone = false;
   const changeChapters = chapterTitles.filter(item => item.OldTitle !== item.NewTitle);
   if (changeChapters.length === 0) {
     Message.error('没有修改的标题');

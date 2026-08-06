@@ -8,7 +8,7 @@ const TOOLS: AppRouteRecordRaw = {
   redirect: '/tools/other',
   meta: {
     locale: 'menu.tools',
-    icon: 'icon-tool',
+    icon: 'icon-apps',
     hideChildrenInMenu: true,
     requiresAuth: false,
     order: 8,

@@ -25,7 +25,7 @@
 
           <!-- 装订线 -->
           <template #description>
-            <div :class="'binding-line' + (converColor === '#f2e3a4' ? ' binding-line-red' : '')">
+            <div :class="'binding-line' + (converColor?.toLocaleLowerCase() === '#f2e3a4' ? ' binding-line-red' : '')">
               <div class="binding-line-cross"></div>
               <div class="binding-line-cross"></div>
             </div>
@@ -73,7 +73,7 @@ let fTitle = '';
 let sTitle = '';
 const isHasSubTitle = computed<boolean>(() => {
   if (props.titleShow.length < 11) return false;
-  const titleSplitReg = /[:—：、，]+/;   //书名分割符号
+  const titleSplitReg = /[:—：、，-]+/;   //书名分割符号
   if (props.titleShow.match(titleSplitReg) !== null) {
     const rsl = props.titleShow.split(titleSplitReg);
     [fTitle, sTitle] = rsl;

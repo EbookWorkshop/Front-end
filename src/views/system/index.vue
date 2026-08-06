@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.system', 'menu.system.smtp']" />
+    <Breadcrumb :items="['menu.system']" />
     <div class="wrapper">
       Success Export
     </div>

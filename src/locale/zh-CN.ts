@@ -62,6 +62,7 @@ export default {
   'menu.workshop': '图书工坊',
   'menu.workplace': '图书工场',
   'menu.system': '系统设置',
+  'menu.system.setting': '设置',
 
   ...localeCommon,
   ...localeSettings,

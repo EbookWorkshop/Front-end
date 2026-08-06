@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Chapter, ChapterOrderSetting } from '@/types/book';
+import type { Chapter, ChapterOrderSetting, FileInfo } from '@/types/book';
 import type { HttpResponse } from '@/types/global';
 
 /**
@@ -229,19 +229,47 @@ export function removeChapterFromVolume(chapterIds: number[]) {
  */
 export function reorderVolumes(volumeOrders: any[]) {
   return axios.post<HttpResponse<boolean>>(`/library/book/volume/reorder`, {
-    volumeOrders  
+    volumeOrders
   });
 }
 
+/**
+ * 获取归档书籍列表
+ * @returns 
+ */
+export function getArchiveBookList() {
+  return axios.get(`/assets/archive/book`);
+}
+/**
+ * 重命名文件名
+ * @param newFileName 新文件名，不含文件后缀
+ * @param filePath 
+ * @returns 
+ */
+export function editArchiveBook(name: string, file: string) {
+  return axios.post(`/assets/archive/book`, { file, name });
+}
+export function deleteArchiveBook(fileName: string) {
+  return axios.delete(`/assets/archive/book/${fileName}`);
+}
 
 /**
  * 创建一本网文，新书入库
  * @param url 书目录地址
  * @returns
  */
-export function addANewWebBook(url: string) {
-  return axios.post<HttpResponse<string>>(`/library/webbook`, url, {
-    headers: { 'Content-Type': 'text/plan' },
+export function addANewWebBook(url: string, isEmbedBookName: boolean) {
+  return axios.post<HttpResponse<string>>(`/library/webbook`, {
+    url, isEmbedBookName
+  });
+}
+/**
+ * 抓取单章
+ * @param url 章节地址
+ */
+export function scrapingSingleChapter(url: string, useless: boolean = false) {
+  return axios.post<HttpResponse<string>>(`/library/webbook/singlechapter`, {
+    url,
   });
 }
 
@@ -274,6 +302,33 @@ export function updateChapter(
 }
 
 /**
+ * 设置是否允许自动更新
+ * @param bookid 【注意】对应的书的WebBookId
+ * @param autosync 是/否 启用
+ * @returns 
+ */
+export function setAutoSyncEnabled(bookid: number, autosync: boolean = false) {
+  return axios.post<HttpResponse<string>>(`/library/webbook/autosync`, {
+    bookid,
+    autoSyncEnabled: autosync,
+  });
+}
+
+export interface ICreateBookAPI {
+  (bookid: number,
+    volumeIds: number[],
+    chapterIds: number[],
+    isSendEmail: boolean,
+    isExportToInventory: boolean,
+    fontFamily: string,
+    embedTitle: boolean,
+    embedBookName: boolean,
+    enableIndent: boolean,
+    isCompact: boolean,
+    coverImageData?: string): Promise<unknown>
+}
+
+/**
  * 制作pdf——可发到默认邮箱
  * @param bookid
  * @param volumeIds 要包含的卷ID列表
@@ -285,23 +340,28 @@ export function updateChapter(
  * @param coverImageData 封面图片base64数据
  * @returns
  */
-export function createPDF(
+export const createPDF: ICreateBookAPI = (
   bookid: number,
   volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
+  isExportToInventory: boolean,
   fontFamily: string,
   embedTitle: boolean,
+  embedBookName: boolean,
   enableIndent: boolean,
+  isCompact: boolean,
   coverImageData?: string,
-) {
+) => {
   return axios.post(`/export/pdf`, {
     bookId: bookid,
     volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
+    isExportToInventory,
     fontFamily,
     embedTitle,
+    embedBookName,
     enableIndent,
     coverImageData,
   });
@@ -313,27 +373,32 @@ export function createPDF(
  * @param volumeIds 要包含的卷ID列表
  * @param chapterIds 
  * @param isSendEmail 
+ * @param isExportToInventory 是否保存到存储
  * @param fontFamily 没用，对齐API用
  * @param embedTitle 是否嵌入章节标题
  * @param enableIndent 是否启用缩进
  * @param coverImageData 封面图片base64数据
  * @returns 
  */
-export function createTXT(
+export const createTXT: ICreateBookAPI = (
   bookid: number,
   volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
+  isExportToInventory: boolean,
   fontFamily: string,
   embedTitle: boolean,
+  embedBookName: boolean,
   enableIndent: boolean,
+  isCompact: boolean,
   coverImageData?: string,
-) {
+) => {
   return axios.post(`/export/txt`, {
     bookId: bookid,
     volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
+    isExportToInventory,
     embedTitle,
     enableIndent,
     coverImageData,
@@ -346,30 +411,38 @@ export function createTXT(
  * @param volumeIds 要包含的卷ID列表
  * @param chapterIds 
  * @param isSendEmail 
+ * @param isExportToInventory 是否保存到存储
  * @param fontFamily 没用，对齐API用
  * @param embedTitle 是否嵌入章节标题
+ * @param embedBookName 封面是否嵌入书名
  * @param enableIndent 是否启用缩进
  * @param coverImageData 封面图片base64数据
  * @returns 
  */
-export function createEPUB(
+export const createEPUB: ICreateBookAPI = (
   bookid: number,
   volumeIds: number[],
   chapterIds: number[],
   isSendEmail: boolean,
+  isExportToInventory: boolean,
   fontFamily: string,
   embedTitle: boolean,
+  embedBookName: boolean,
   enableIndent: boolean,
+  isCompact: boolean,
   coverImageData?: string,
-) {
+) => {
   return axios.post(`/export/epub`, {
     bookId: bookid,
     volumeIds,
     chapterIds,
     sendByEmail: isSendEmail,
+    isExportToInventory,
     fontFamily,
     embedTitle,
+    embedBookName,
     enableIndent,
     coverImageData,
+    isCompact,
   });
 }

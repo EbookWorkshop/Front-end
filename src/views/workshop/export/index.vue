@@ -16,11 +16,21 @@
             <keep-alive>
               <a-form :model="form" ref="formRef" auto-label-width>
                 <div v-if="current == 1" class="main-content">
-                  <a-form-item label="选择书籍" field="bookId" :rules="[{ required: true, message: '需要先选择书籍' }]">
-                    <SelectBook v-model="form.bookId" />
-                  </a-form-item>
-                  <BookCover v-show="form.bookId ?? 0 > 0" :book-id="form.bookId" ref="captureCover"
-                    @complete="onChangeBook" />
+                  <a-row>
+                    <a-col :span="12">
+                      <a-form-item label="选择书籍" field="bookId" :rules="[{ required: true, message: '需要先选择书籍' }]">
+                        <SelectBook v-model="form.bookId" />
+                      </a-form-item>
+                      <a-form-item label="嵌入书名" v-if="isImgCover">
+                        <a-switch v-model="form.isEmbedBookName" />
+                      </a-form-item>
+                    </a-col>
+                    <a-col :span="12">
+                      <BookCover v-show="form.bookId ?? 0 > 0" :book-id="form.bookId" ref="captureCover"
+                        style="margin:0 auto;" :show-embed-book-name="form.isEmbedBookName" @complete="onCaptureCover"
+                        @click="onCaptureCover" />
+                    </a-col>
+                  </a-row>
                 </div>
                 <div v-if="current == 2" class="main-content">
                   <a-form-item label="导出范围" field="chapterScope" required>
@@ -49,29 +59,45 @@
                   </div>
                 </div>
                 <div v-if="current == 3" class="main-content">
-                  <a-form-item label="文件类型" required field="fileType">
-                    <a-radio-group v-model="form.fileType">
-                      <a-radio value="epub">EPUB</a-radio>
-                      <a-radio value="pdf">PDF</a-radio>
-                      <a-radio value="txt">TXT</a-radio>
-                    </a-radio-group>
-                  </a-form-item>
-                  <a-form-item v-if="form.fileType == 'pdf'" label="选择字体">
-                    <a-select v-model="form.fontFamily">
-                      <a-option v-for="font in fontData" :key="font.name" :value="font.name">
-                        {{ font.name }}
-                      </a-option>
-                    </a-select>
-                  </a-form-item>
-                  <a-form-item label="嵌入章节标题">
-                    <a-switch v-model="form.isEmbedTitle" />
-                  </a-form-item>
-                  <a-form-item label="段首强制缩进">
-                    <a-switch v-model="form.isEnableIndent" />
-                  </a-form-item>
-                  <a-form-item label="发送到默认邮箱">
-                    <a-switch v-model="form.isSendEmail" />
-                  </a-form-item>
+                  <a-row>
+                    <a-col :span="7" :offset="5">
+                      <a-form-item label="文件类型" required field="fileType">
+                        <a-radio-group v-model="form.fileType">
+                          <a-radio value="epub">EPUB</a-radio>
+                          <a-radio value="pdf">PDF</a-radio>
+                          <a-radio value="txt">TXT</a-radio>
+                        </a-radio-group>
+                      </a-form-item>
+                      <a-form-item v-if="form.fileType == 'pdf'" label="选择字体">
+                        <a-select v-model="form.fontFamily">
+                          <a-option v-for="font in fontData" :key="font.name" :value="font.name">
+                            {{ font.name }}
+                          </a-option>
+                        </a-select>
+                      </a-form-item>
+                      <a-form-item v-if="form.fileType == 'epub'" label="紧凑排版">
+                        <a-switch v-model="form.isCompact" />
+                      </a-form-item>
+                      <a-form-item label="嵌入章节标题">
+                        <a-switch v-model="form.isEmbedTitle" />
+                      </a-form-item>
+                      <a-form-item label="段首强制缩进">
+                        <a-switch v-model="form.isEnableIndent" />
+                      </a-form-item>
+                      <a-form-item label="发送到默认邮箱">
+                        <a-switch v-model="form.isSendEmail" />
+                      </a-form-item>
+                      <a-form-item label="导出到库存">
+                        <a-switch v-model="form.isExportToInventory" />
+                      </a-form-item>
+
+                    </a-col>
+                    <a-col :span="6" :offset="2" style="max-height:400px;">
+                      <img v-if="form.fileType !== 'txt'" :src="coverData"
+                        style="scale:0.25;transform-origin: top left;margin:0 auto;" />
+                    </a-col>
+                  </a-row>
+
                   <a-table>
                     <a-tr><a-th>导出文件类型</a-th><a-th>优点</a-th><a-th>缺点</a-th></a-tr>
                     <a-tr>
@@ -128,8 +154,14 @@
                   </a-table>
                 </div>
                 <div v-if="current == 4" class="main-content">
-                  <a-result :status="resultData.result" :title="resultData.result == 'success' ? '导出成功' : '导出失败'"
-                    :subtitle="resultData.msg" />
+                  <a-result :status="resultData.result" :title="resultData.result == 'success' ? '导出成功' : '导出失败'">
+                    <template #subtitle>
+                      <div>{{ resultData.msg }}</div>
+                    </template>
+                    <template #extra v-if="resultData.url">
+                      <a-button :href="resultData.url">下载文件</a-button>
+                    </template>
+                  </a-result>
                 </div>
               </a-form>
             </keep-alive>
@@ -164,12 +196,13 @@ import BookCover from '@/components/book-cover/index.vue';
 import SelectChapter from '@/components/chapter/select.vue';
 
 import { HeatABook } from '@/api/library'
-import { queryBookById, createTXT, createPDF, createEPUB } from '@/api/book';
+import { queryBookById, createTXT, createPDF, createEPUB, type ICreateBookAPI } from '@/api/book';
 import { queryFontList, } from '@/api/font';
 import { getKindleInbox } from '@/api/system';
 import { ApiResultCode } from '@/types/global'
 import { getApiBaseUrl } from '@/utils/config';
 import { captureElement } from '@/utils/screenshot';
+import { messageService } from '@/services/messageService'
 
 const ASSETS_HOST = getApiBaseUrl();
 const route = useRoute();
@@ -188,7 +221,10 @@ const form = ref({
   cEnd: undefined as number | undefined,
   fileType: "epub",
   isSendEmail: false,
+  isCompact: false,
   isEmbedTitle: true,
+  isEmbedBookName: false,
+  isExportToInventory: false,
 });
 const current = ref(1);
 const Chapters = ref<Array<any>>([]);
@@ -198,6 +234,7 @@ let fontData: Array<any> = [];
 const resultData = ref({} as any);
 const captureCover = ref<InstanceType<typeof BookCover> | null>(null); // 截图的封面
 const coverData = ref("");
+const isImgCover = ref(false);
 
 function getBookIndex() {
   if (!form.value.bookId || form.value.chapterScope == 'all' || chapterBookId == form.value.bookId) return;
@@ -210,13 +247,26 @@ function getBookIndex() {
   })
 }
 
-function onChangeBook() {
+/**
+ * 生成封面图片
+ */
+function onCaptureCover() {
   nextTick(() => {
     if (captureCover.value?.$el) {  // 使用$el访问组件根元素
+      isImgCover.value = captureCover.value?.$el.querySelector("img") != null;//通过检查封面组件是否含img标签来判断是否为图片封面
       captureElement(captureCover.value.$el, { scale: 4 }).then(result => {
         coverData.value = result;
       }).catch(error => {
-        console.error('截图失败:', error);
+        messageService.addMessage({
+          id: Date.now() * -1,
+          type: "message",
+          title: "生成封面失败，请点击封面图片重试",
+          content: error?.message,
+          time: new Date().toLocaleString(),
+          avatar: "error",
+          status: 0,
+          error
+        });
         coverData.value = "";
       });
     }
@@ -278,7 +328,7 @@ const onSubmit = () => {
     }
   };
 
-  let CreateBookAPI = null as any;
+  let CreateBookAPI: ICreateBookAPI | null = null;
   switch (form.value.fileType) {
     case "pdf":
       CreateBookAPI = createPDF;
@@ -294,16 +344,18 @@ const onSubmit = () => {
 
   let imageData = coverData.value?.startsWith("data:image/png;base64,") ? coverData.value.replace("data:image/png;base64,", "") : "";
 
-  CreateBookAPI(form.value?.bookId ?? 0, form.value.volumes, chapterIds, form.value.isSendEmail, form.value.fontFamily, form.value.isEmbedTitle, form.value.isEnableIndent, imageData).then((res: any) => {
+  CreateBookAPI?.(form.value?.bookId ?? 0, form.value.volumes, chapterIds, form.value.isSendEmail, form.value.isExportToInventory, form.value.fontFamily, form.value.isEmbedTitle, form.value.isEmbedBookName, form.value.isEnableIndent, form.value.isCompact, imageData).then((res: any) => {
     saving.value = false;
     current.value = 4;
     if (res.code === ApiResultCode.Success) {
       resultData.value.result = 'success';
+      resultData.value.url = `${ASSETS_HOST}/assets/download/${encodeURIComponent(res.data.download)}`
+
       if (form.value.isSendEmail) {
         resultData.value.msg = '已发送到您的邮箱';
       } else {
         resultData.value.msg = "正在准备下载..."
-        window.open(`${ASSETS_HOST}/assets/download/${encodeURIComponent(res.data.download)}`);
+        window.open(resultData.value.url);
       }
     } else {
       resultData.value.result = 'error';
@@ -340,7 +392,8 @@ const onSubmit = () => {
 
 .frame-main {
   width: 100%;
-  padding: 24px 200px;
+  padding: 24px 24px;
+  margin: 0px auto;
 }
 
 .main-content {

@@ -6,16 +6,17 @@
         <a-spin :loading="processing" tip="正在处理中，这需要稍等...">
           <a-row align="center" justify="center">
             <a-col :span="8" flex="auto" class="col-align-center">
-              <BookClassical :title-show="'网文导入'" @click="toImport"></BookClassical>
+              <BookClassical :title-show="'网页抓取'" @click="toImport"></BookClassical>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
               <BookClassical :title-show="'ＴＸＴ 导入'" conver-color="#f2e3a4" @click="handleImportText">
               </BookClassical>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
-              <a-upload action="/upload/importBook/pdf">
+              <a-upload :action="`${ASSETS_HOST}/import/add`" :show-file-list="false"
+                @success="() => { Message.success('导入成功。'); }">
                 <template #upload-button>
-                  <BookClassical :title-show="'不可编辑格式导入：PDF\'-EPUB等'" conver-color="#cb1f2f" />
+                  <BookClassical :title-show="'不可编辑格式导入：PDF‘EPUB’ZIP等'" conver-color="#cb1f2f" />
                 </template>
               </a-upload>
             </a-col>
@@ -25,8 +26,7 @@
           </a-row>
         </a-spin>
       </a-row>
-      <ImportWeb :visible="isShow" @cancel="toImportClose" @ok="toImportClose" @check="handleBeforeOk">
-      </ImportWeb>
+      <ImportWeb :visible="isShow" @cancel="toImportClose" @ok="toImportClose" @check="handleBeforeOk" />
       <ImportText ref="textImportModal" @ok="handleImportSubmit"></ImportText>
       <AddDirect :visible="showAdd" @close="showAdd = false"></AddDirect>
     </div>
@@ -34,38 +34,40 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 import { Message } from '@arco-design/web-vue';
 // import { useRouter, useRoute } from 'vue-router';
 import BookClassical from '@/components/book-cover/components/book-classical.vue';
-import { addANewWebBook } from '@/api/book';
-import ImportWeb from './components/import-web.vue';
+import { addANewWebBook, scrapingSingleChapter } from '@/api/book';
+import ImportWeb, { type ImportWebForm } from './components/import-web.vue';
 import ImportText from '@/components/import-text-guid/index.vue';
 import AddDirect from './components/add-direct.vue';
+import { getApiBaseUrl } from '@/utils/config';
+const ASSETS_HOST = getApiBaseUrl();
 
 const isShow = ref(false);
 const showAdd = ref(false);
 const textImportModal = ref() as any; // 模窗的引用
-const toImport = () => {
-  isShow.value = true;
-};
-const toImportClose = () => {
-  isShow.value = false;
-};
+const toImport = () => { isShow.value = true; };
+const toImportClose = () => { isShow.value = false; };
 
 const processing = ref(false); // 处理中窗口
 
 // 提交按钮后，向后台发送请求
-const handleBeforeOk = (url: string) => {
+const handleBeforeOk = (result: ImportWebForm) => {
   processing.value = true;
   isShow.value = false;
 
-  addANewWebBook(url)
-    .then((result) => {
-      Message.success(`${result.data}`);
+  const request = result.isOneChapter
+    ? scrapingSingleChapter(result.indexUrl, false)
+    : addANewWebBook(result.indexUrl, result.isEmbedBookName);
+
+  request
+    .then((response) => {
+      Message.success(`${response.data}`);
     })
     .catch((err) => {
-      Message.error(`添加书失败：${err.message}`);
+      Message.error(`抓取失败：${err.message}`);
     })
     .finally(() => {
       processing.value = false;
@@ -100,7 +102,8 @@ const handleImportSubmit = () => {
   justify-content: center;
 
   :deep(.arco-upload-wrapper) {
-    width: inherit;/* 修复PDF导入封面不居中的问题 */
+    width: inherit;
+    /* 修复PDF导入封面不居中的问题 */
   }
 }
 </style>

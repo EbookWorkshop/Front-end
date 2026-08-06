@@ -1,12 +1,5 @@
 <template>
-  <a-drawer
-    :width="340"
-    :height="340"
-    :visible="visible"
-    placement="right"
-    unmount-on-close
-    @cancel="hide"
-  >
+  <a-drawer :width="340" :height="340" :visible="visible" placement="right" unmount-on-close @cancel="emit(`hide`)">
     <template #title> 已存方案 </template>
     <div v-if="loading">
       <a-skeleton :animation="true">
@@ -26,34 +19,22 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
-  import { queryHostList, queryHostSetting } from '@/api/webbot';
-  import useRequest from '@/hooks/request';
+import { queryHostList, queryHostSetting } from '@/api/webbot';
+import useRequest from '@/hooks/request';
 
-  const visible = ref(false);
+const props = defineProps<{ visible: boolean }>();
 
-  const show = () => {
-    visible.value = true;
-  };
-  const hide = () => {
-    visible.value = false;
-  };
-  defineExpose({
-    show,
+const emit = defineEmits(['setForm', "hide"]);
+
+const loadThisHost = (ev: MouseEvent | any) => {
+  const myHost = ev?.target?.value;
+  if (!myHost) return;
+  queryHostSetting(myHost).then((result) => {
+    emit('setForm', result.data);
   });
-  const emit = defineEmits(['setForm']);
+};
 
-  const loadThisHost = (ev: MouseEvent | any) => {
-    const myHost = ev?.target?.value;
-    if (!myHost) return;
-    queryHostSetting(myHost).then((result) => {
-      // console.log(result.data);
-      emit('setForm', result.data);
-      hide();
-    });
-  };
-
-  const { loading, response: renderData } = useRequest<string[]>(queryHostList);
+const { loading, response: renderData } = useRequest<string[]>(queryHostList);
 </script>
 
 <style></style>

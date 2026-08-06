@@ -1,8 +1,8 @@
 <template>
     <a-popover position="tl" title="填写说明">
         <a-input-group :style="{ width: '100%' }">
-            <a-select v-model="type" :options="['attr', 'fun', 'reg']" :style="{ width: '160px' }" title="获取方式" />
-            <a-input v-model="action" :style="{ width: '80%' }" placeholder="action" />
+            <a-select v-model="type" :options="['attr', 'fun', 'reg']" :style="{ width: '160px' }" />
+            <a-auto-complete v-model="action" :style="{ width: '80%' }" :data="actionData" placeholder="action" />
             <a-input v-if="type === 'fun'" v-model="param" :style="{ width: '50%' }" placeholder="param" />
         </a-input-group>
         <template #content>
@@ -12,13 +12,12 @@
                     <a-typography-text code>innerText</a-typography-text>
                     <a-typography-text code>href</a-typography-text>
                 </p>
-                <p>实际将执行：document.querySelector("className").{{ valueParts[1] }}</p>
+                <p>实际将执行：document.querySelector("{{ selector || `selector` }}").{{ valueParts[1] }}</p>
             </div>
             <div v-else-if="valueParts[0] === `fun`">
                 <p>当前规则为：函数模式——在命中元素上直接执行指定函数，可以传入参数。</p>
                 <p>action常见值：<a-typography-text code>getAttribute</a-typography-text></p>
-                <p>实际将执行：document.querySelector("className").{{ valueParts[1] }}({{
-                    valueParts[2] ? `"${valueParts[2]}"` : '' }})</p>
+                <p>实际将执行：document.querySelector("{{ selector || `selector` }}").{{ valueParts[1] }}({{ valueParts[2] ? `"${valueParts[2]}"` : '' }})</p>
             </div>
             <div v-else>
                 <p>当前规则为：。。。。——还没想好，目前上面两种模式已经够用了</p>
@@ -36,6 +35,9 @@ const props = defineProps({
     modelValue: {
         type: String,
         default: 'attr/innerText'
+    },
+    selector: {
+        type: String,
     }
 });
 
@@ -76,4 +78,12 @@ const param = computed({
     get: () => valueParts.value[2],
     set: (val) => { valueParts.value = [valueParts.value[0], valueParts.value[1], val] }
 });
+
+
+const actionData = computed(() => {
+    if (type.value == "attr") return ["innerText", "href"]
+    else if (type.value == "fun") return ["getAttribute"];
+    return [];
+})
+
 </script>

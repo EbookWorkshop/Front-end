@@ -150,8 +150,8 @@ function testCleanRule() {
     });
     return;
   }
-  formRef.value?.validate((formOk: FormInstance) => {
-    if (formOk?.encoderType?.isRequiredError) return;
+  formRef.value?.validate((errors: Record<string, any> | undefined) => {
+    if (errors && errors.encoderType) return;
     let runRsl = cleanContent(contents, form.removeRule);
     let showResult: Array<{
       key: string;
@@ -199,8 +199,8 @@ function testCutRule() {
     });
     return;
   }
-  formRef.value?.validate((formOk: FormInstance) => {
-    if (formOk?.encoderType?.isRequiredError) return;
+  formRef.value?.validate((errors: Record<string, any> | undefined) => {
+    if (errors && errors.encoderType) return;
     let cutRsl = cutContent(contents, form.titleRule);
     let showTitle = cutRsl.map((c) => c.Title);
     Modal.info({

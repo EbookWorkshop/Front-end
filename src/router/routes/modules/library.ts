@@ -9,7 +9,7 @@ const LIBRARY: AppRouteRecordRaw = {
     locale: 'menu.library',
     requiresAuth: true,
     // hideChildrenInMenu: true,
-    icon: 'icon-home',
+    icon: 'icon-desktop',
     order: 2,
   },
   children: [
@@ -61,6 +61,17 @@ const LIBRARY: AppRouteRecordRaw = {
       path: '/book/:id(\\d+)',
       name: 'Reading',
       component: () => import('@/views/book/reading.vue'),
+      meta: {
+        requiresAuth: true,
+        activeMenu:"BookList",
+        hideInMenu: true,
+        roles: ['*'],
+      },
+    },
+    {
+      path: '/reader/:path(.*)',
+      name: 'ReadEpub',
+      component: () => import('@/views/book/epubreader.vue'),
       meta: {
         requiresAuth: true,
         activeMenu:"BookList",

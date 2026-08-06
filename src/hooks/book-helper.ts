@@ -1,8 +1,8 @@
 import { useRouter, useRoute } from 'vue-router';
 
 /**
- *
- * @returns
+ * 解释地址，取出其中的参数书籍ID和章节ID，判断是否为编辑模式
+ * @returns 书籍ID、章节ID、是否为编辑模式、跳转到本书目录、跳转到某章（阅读模式）
  */
 export default function useBookHelper() {
   const route = useRoute();

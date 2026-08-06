@@ -21,14 +21,14 @@
       </li>
       <li>
         <a-tooltip :content="$t('settings.language')">
-          <a-button class="nav-btn" type="outline" :shape="'circle'" @click="setDropDownVisible">
+          <a-button class="nav-btn" type="outline" :shape="'circle'" @click="toggleDropDownVisible">
             <template #icon>
               <icon-language />
             </template>
           </a-button>
         </a-tooltip>
-        <a-dropdown trigger="click" @select="changeLocale as any">
-          <div ref="triggerBtn" class="trigger-btn"></div>
+        <a-dropdown v-model:popup-visible="dropdownVisible" trigger="click" @select="changeLocale as any">
+          <div class="trigger-btn"></div>
           <template #content>
             <a-doption v-for="item in locales" :key="item.value" :value="item.value">
               <template #icon>
@@ -52,29 +52,28 @@
           </a-button>
         </a-tooltip>
       </li>
+      <!-- 消息通知待办 -->
       <li>
-        <!-- 消息通知待办 -->
         <a-tooltip :content="$t('settings.navbar.alerts')">
           <div class="message-box-trigger">
-            <a-badge :count="unreadCount">
-              <a-button class="nav-btn" type="outline" :shape="'circle'" @click="setPopoverVisible">
+            <a-badge :count="messageService.unreadCount">
+              <a-button class="nav-btn" type="outline" :shape="'circle'" @click="togglePopover">
                 <icon-notification />
               </a-button>
             </a-badge>
           </div>
         </a-tooltip>
-        <a-popover trigger="click" :arrow-style="{ display: 'none' }"
-          :content-style="{ padding: 0, minWidth: '400px', maxWidth: '640px' }" content-class="message-popover">
-          <div ref="refBtn" class="ref-btn"></div>
+        <a-trigger v-model:popup-visible="popoverVisible" trigger="click" auto-fit-position>
+          <!-- 默认插槽放一个空元素 不然绑定不了点击 -->
+          <span style=""></span>
           <template #content>
-            <message-box :message-list="messageService.messages" @empty-list="handleEmptyList" @all-read="handleAllRead"
-              @read-one="handleReadOne" />
+            <MessageBox />
           </template>
-        </a-popover>
+        </a-trigger>
         <!-- 消息详情模态框 -->
-        <MessageDetail ref="messageDetailRef" />
-        <!-- 消息通知待办-结束 -->
+        <MessageDetail />
       </li>
+      <!-- 消息通知待办-结束 -->
       <li>
         <a-tooltip :content="isFullscreen
           ? $t('settings.navbar.screen.toExit')
@@ -102,14 +101,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, inject, watch } from 'vue';
-import { Notification } from '@arco-design/web-vue';
+import { computed, ref, inject } from 'vue';
 import { useDark, useToggle, useFullscreen } from '@vueuse/core';
 import { useAppStore } from '@/store';
 import { LOCALE_OPTIONS } from '@/locale';
 import useLocale from '@/hooks/locale';
 import Menu from '@/components/menu/index.vue';
-import { useMessageService } from '@/services/messageService';
+import { messageService } from '@/services/messageService';
 import { useSocket } from '@/hooks/socket';
 import MessageBox from '@/components/message-box/index.vue';
 import MessageDetail from '@/components/message-box/detail.vue';
@@ -124,14 +122,7 @@ const { changeLocale, currentLocale } = useLocale();
 const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
 const locales = [...LOCALE_OPTIONS];
 
-// 消息详情组件引用
-const messageDetailRef = ref();
-// 使用消息服务
-const messageService = useMessageService();
-
-const theme = computed(() => {
-  return appStore.theme;
-});
+const theme = computed(() => { return appStore.theme; });
 const topMenu = computed(() => appStore.topMenu && appStore.menu);
 const isDark = useDark({
   selector: 'body',
@@ -145,71 +136,15 @@ const isDark = useDark({
   },
 });
 const toggleTheme = useToggle(isDark);
-const handleToggleTheme = () => {
-  toggleTheme();
-};
-const setVisible = () => {
-  appStore.updateSettings({ globalSettings: true });
-};
-const refBtn = ref();
-const triggerBtn = ref();
-const setPopoverVisible = () => {
-  const event = new MouseEvent('click', {
-    view: window,
-    bubbles: true,
-    cancelable: true,
-  });
-  refBtn.value.dispatchEvent(event);
-};
-
-const setDropDownVisible = () => {
-  const event = new MouseEvent('click', {
-    view: window,
-    bubbles: true,
-    cancelable: true,
-  });
-  triggerBtn.value.dispatchEvent(event);
-};
+const handleToggleTheme = () => { toggleTheme(); };
+const setVisible = () => { appStore.updateSettings({ globalSettings: true }); };
+const popoverVisible = ref(false);
+const togglePopover = () => { popoverVisible.value = !popoverVisible.value; };
+const dropdownVisible = ref(false);
+const toggleDropDownVisible = () => { dropdownVisible.value = !dropdownVisible.value };
 
 const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
 
-// 处理消息详情显示
-const handleReadOne = (messageId: number) => {
-  messageDetailRef.value?.open(messageId);
-};
-// 计算未读消息数量
-const unreadCount = computed(() => {
-  return messageService.messages.filter(item => !item.status).length;
-});
-
-// 处理清空消息
-const handleEmptyList = () => {
-  messageService.clearAll();
-};
-
-// 处理全部已读
-const handleAllRead = () => {
-  messageService.messages.forEach(message => {
-    messageService.markAsRead(message.id);
-  });
-};
-
-// 监听新消息并显示通知
-watch(() => messageService.messages.length, (newLength, oldLength) => {
-  if (newLength > oldLength) {
-    const lastMsg = messageService.messages[newLength - 1];
-    if (lastMsg.type === "notice") {
-      Notification.info({
-        id: lastMsg.id.toString(),
-        title: lastMsg.title,
-        content: lastMsg.vnodeContent ? () => lastMsg.vnodeContent : lastMsg.content,
-        duration: 0,
-        showIcon: true,
-        closable: true,
-      });
-    }
-  }
-}, { deep: true });
 </script>
 <style scoped lang="less">
 .navbar {
@@ -269,12 +204,6 @@ watch(() => messageService.messages.length, (newLength, oldLength) => {
 </style>
 
 <style lang="less">
-.message-popover {
-  .arco-popover-content {
-    margin-top: 0;
-  }
-}
-
 .logo-image {
   transition: transform 0.3s ease;
 

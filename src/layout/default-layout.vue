@@ -5,36 +5,20 @@
     </div>
     <a-layout>
       <a-layout>
-        <a-layout-sider
-          v-if="renderMenu"
-          v-show="!hideMenu"
-          class="layout-sider"
-          breakpoint="xl"
-          :collapsed="collapsed"
-          :collapsible="true"
-          :width="menuWidth"
-          :style="{ paddingTop: navbar ? '60px' : '' }"
-          :hide-trigger="true"
-          @collapse="setCollapsed"
-        >
+        <a-layout-sider v-if="renderMenu" v-show="!hideMenu" class="layout-sider" breakpoint="xl" :collapsed="collapsed"
+          :collapsible="true" :width="menuWidth" :style="{ paddingTop: navbar ? '60px' : '' }" :hide-trigger="true"
+          @collapse="setCollapsed">
           <div class="menu-wrapper">
             <Menu />
           </div>
         </a-layout-sider>
-        <a-drawer
-          v-if="hideMenu"
-          :visible="drawerVisible"
-          placement="left"
-          :footer="false"
-          mask-closable
-          :closable="false"
-          @cancel="drawerCancel"
-        >
+        <a-drawer v-if="hideMenu" :visible="drawerVisible" placement="left" :footer="false" mask-closable
+          :closable="false" @cancel="drawerCancel">
           <Menu />
         </a-drawer>
         <a-layout class="layout-content" :style="paddingStyle">
           <TabBar v-if="appStore.tabBar" /><!--可以切换、关闭页签的页签栏目-->
-          <a-layout-content>
+          <a-layout-content class="main-content">
             <PageLayout /><!--实际内容页主框-面包屑路径在这模块里面-->
           </a-layout-content>
           <Footer v-if="footer" />
@@ -45,21 +29,19 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch, provide, onMounted,defineAsyncComponent  } from 'vue';
+import { ref, computed, watch, provide, onMounted, defineAsyncComponent } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAppStore, useUserStore } from '@/store';
+import { Notification } from '@arco-design/web-vue';
 import NavBar from '@/components/navbar/index.vue';
 import Menu from '@/components/menu/index.vue';
 import Footer from '@/components/footer/index.vue';
 import TabBar from '@/components/tab-bar/index.vue';
 import usePermission from '@/hooks/permission';
 import useResponsive from '@/hooks/responsive';
-import { provideMessageService } from '@/services/messageService';
+import { messageService } from '@/services/messageService';
 import { useUserUIFont } from '@/hooks/font';
-const PageLayout = defineAsyncComponent (() => import('./page-layout.vue'));
-
-// 在应用顶层提供消息服务
-provideMessageService();
+const PageLayout = defineAsyncComponent(() => import('./page-layout.vue'));
 
 useUserUIFont();
 const isInit = ref(false);
@@ -109,76 +91,103 @@ provide('toggleDrawerMenu', () => {
 onMounted(() => {
   isInit.value = true;
 });
+
+//监听消息，发现未读消息则出一个通知
+watch(
+  () => messageService.messages.length,
+  (newLength, oldLength) => {
+    if (newLength > oldLength) {
+      const lastMsg = messageService.messages[0];
+      if (lastMsg?.type === 'notice') {
+        Notification.info({
+          id: lastMsg.id?.toString() || Date.now().toString(),
+          title: lastMsg.title,
+          content: lastMsg.vnodeContent ? () => lastMsg.vnodeContent : lastMsg.content,
+          duration: 0,
+          showIcon: true,
+          closable: true,
+        });
+      }
+    }
+  }, { deep: true }
+);
 </script>
 
 <style scoped lang="less">
-  @nav-size-height: 60px;
-  @layout-max-width: 1100px;
+@nav-size-height: 60px;
+@layout-max-width: 1100px;
 
-  .layout {
-    width: 100%;
-    height: 100%;
-  }
+.layout {
+  width: 100%;
+  height: 100%;
+}
 
-  .layout-navbar {
-    position: fixed;
+.layout-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 100%;
+  height: @nav-size-height;
+}
+
+.layout-sider {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99;
+  height: 100%;
+  transition: all 0.2s cubic-bezier(0.34, 0.69, 0.1, 1);
+
+  &::after {
+    position: absolute;
     top: 0;
-    left: 0;
-    z-index: 100;
-    width: 100%;
-    height: @nav-size-height;
-  }
-
-  .layout-sider {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 99;
+    right: -1px;
+    display: block;
+    width: 1px;
     height: 100%;
-    transition: all 0.2s cubic-bezier(0.34, 0.69, 0.1, 1);
-    &::after {
-      position: absolute;
-      top: 0;
-      right: -1px;
-      display: block;
-      width: 1px;
-      height: 100%;
-      background-color: var(--color-border);
-      content: '';
-    }
-
-    > :deep(.arco-layout-sider-children) {
-      overflow-y: hidden;
-    }
+    background-color: var(--color-border);
+    content: '';
   }
 
-  .menu-wrapper {
-    height: 100%;
-    overflow: auto;
-    overflow-x: hidden;
-    :deep(.arco-menu) {
-      ::-webkit-scrollbar {
-        width: 12px;
-        height: 4px;
-      }
-
-      ::-webkit-scrollbar-thumb {
-        border: 4px solid transparent;
-        background-clip: padding-box;
-        border-radius: 7px;
-        background-color: var(--color-text-4);
-      }
-
-      ::-webkit-scrollbar-thumb:hover {
-        background-color: var(--color-text-3);
-      }
-    }
-  }
-
-  .layout-content {
-    min-height: 100vh;
+  > :deep(.arco-layout-sider-children) {
     overflow-y: hidden;
-    background-color: var(--color-fill-2);
-    transition: padding 0.2s cubic-bezier(0.34, 0.69, 0.1, 1);
   }
+}
+
+.menu-wrapper {
+  height: 100%;
+  overflow: auto;
+  overflow-x: hidden;
+
+  :deep(.arco-menu) {
+    ::-webkit-scrollbar {
+      width: 12px;
+      height: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border: 4px solid transparent;
+      background-clip: padding-box;
+      border-radius: 7px;
+      background-color: var(--color-text-4);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--color-text-3);
+    }
+  }
+}
+
+.layout-content {
+  height: 100vh;
+  overflow-y: hidden;
+  background-color: var(--color-fill-2);
+  transition: padding 0.2s cubic-bezier(0.34, 0.69, 0.1, 1);
+
+  .main-content {
+    height: calc(100vh - @nav-size-height);
+    overflow-y: auto;
+  }
+}
 </style>

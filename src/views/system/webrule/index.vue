@@ -2,14 +2,14 @@
   <div class="container">
     <Breadcrumb :items="['menu.system', 'menu.system.webrule']" />
     <div class="wrapper">
-      <a-spin dot :loading="dataLoading">
-        <a-form :model="form" @submit="Submit">
+      <a-spin dot :loading="dataLoading" style="width:100%">
+        <a-form ref="formRef" :model="form" @submit="Submit">
           <a-row :gutter="16">
             <a-col :span="20" :offset="2">
               <a-space>
                 <a-button-group>
                   <a-button type="primary" @click="resetForm">新增新方案</a-button>
-                  <a-button type="primary" @click="showWebList">编辑现有方案</a-button>
+                  <a-button type="primary" @click="() => { showWebList = true }">编辑现有方案</a-button>
                 </a-button-group>
                 <a-button @click="GoToRegisteredWebsites">已登记网站</a-button>
                 <a-button-group>
@@ -20,8 +20,7 @@
                   </a-popconfirm>
                 </a-button-group>
                 <a-button-group>
-                  <a-button type="primary" @click="exportScheme"
-                    :disabled="form.hostname.length == 0">导出当前方案</a-button>
+                  <a-button type="primary" @click="exportScheme" :disabled="form.hostname.length == 0">导出当前方案</a-button>
                   <a-upload :action="ASSETS_HOST + '/services/botrule/import'" :show-file-list="false" :accept="'.json'"
                     name="data" @success="importScheme">
                     <template #upload-button>
@@ -30,7 +29,7 @@
                   </a-upload>
                 </a-button-group>
                 <a-button :status="isUseVisStatus" @click="toggleFormUrl4Vis">
-                  <template #icon><icon-eye style="color:rgb(var(--orange-6))"/></template>
+                  <template #icon><icon-eye style="color:rgb(var(--orange-6))" /></template>
                   <template #default>启用预览辅助配置模式</template>
                 </a-button>
                 <a-button @click="ChangeWebHostname">网站域名变更</a-button>
@@ -38,27 +37,48 @@
             </a-col>
           </a-row>
           <a-row style="margin-top: 50px;">
-            <a-col :span="24">
+            <a-col :span="20">
               <!--方案表单 -->
               <a-space direction="vertical" size="large" :style="{ width: '100%' }">
                 <a-form-item field="hostname" label="网站域名" :rules="[{ required: true, message: '网站名为必填' }]"
                   :validate-trigger="['change', 'input']">
-                  <a-input-search v-model="form.hostname" placeholder="网站域名（域名，如：book.xiaoshuo.com）" search-button
-                    @blur="FormatHost">
-                    <template #button-icon>
-                      <a-tooltip content="打开当前网站">
-                        <icon-launch @click="CheckThisWeb" />
-                      </a-tooltip>
-                    </template>
-                  </a-input-search>
+                  <a-input-group :style="{ width: '100%' }">
+                    <a-input-search v-model="form.hostname" placeholder="网站域名（域名，如：book.xiaoshuo.com）" search-button
+                      @blur="FormatHost">
+                      <template #button-icon>
+                        <a-tooltip content="打开当前网站">
+                          <icon-launch @click="CheckThisWeb" />
+                        </a-tooltip>
+                      </template>
+                    </a-input-search>
+                    <a-button @click="isAdvanced = !isAdvanced" status="warning"
+                      :type="isAdvanced ? 'primary' : 'secondary'">高级设置</a-button>
+                  </a-input-group>
                 </a-form-item>
-                <a-form-item label="超时设置" field="timeout">
-                  <a-input-number v-model="form.timeout" placeholder="不填默认就是30_000ms" allow-clear>
-                    <template #append>
-                      ms
-                    </template>
-                  </a-input-number>
-                </a-form-item>
+                <div v-if="isAdvanced" style="background-color:rgb(var(--orange-1))"><!-- 高级配置 -->
+                  <a-form-item label="超时设置" field="timeout">
+                    <a-input-number v-model="form.timeout" placeholder="不填默认就是40_000ms" allow-clear>
+                      <template #append> ms </template>
+                    </a-input-number>
+                  </a-form-item>
+                  <a-form-item label="采集方式" field="scraping">
+                    <a-radio-group type="button" v-model="form.scraping">
+                      <a-radio value="puppeteer">Puppeteer</a-radio>
+                      <a-radio value="http">Http</a-radio>
+                    </a-radio-group>
+                  </a-form-item>
+                  <a-form-item label="浏览器代理" field="userAgent">
+                    <a-auto-complete v-model="form.userAgent" placeholder="设置浏览器UA字符串" allow-clear
+                      :data="UAChoose"></a-auto-complete>
+                  </a-form-item>
+                  <a-form-item label="字典校阅">
+                    <a-button status="warning" type="primary" @click="OpenDictionaryModal">设置转码字典</a-button>
+                    <Dictionary v-model:visible="showDictionary"
+                      @success="(newData) => { dictionaryData = newData; showDictionary = false; }"
+                      :data="dictionaryData" :host="form.hostname" />
+                  </a-form-item>
+                </div>
+                <!-- 常规配置 -->
                 <a-form-item field="rulename" label="添加规则" :rules="[{ required: true, message: '至少得有一个规则' }]"
                   :validate-trigger="['change', 'input']">
                   <a-select v-model="form.rulename" placeholder="选择需要启用的规则" multiple :options="rulesOptions"
@@ -80,17 +100,18 @@
                         ]" :validate-trigger="['change', 'input']">
                           <a-input v-model="rule.selector" placeholder="CSS选择器" />
                         </a-form-item>
-                        <a-form-item label="删除的元素" :field="`rules.${index}.removeSelector`" tooltip="删除元素会优先抓取规则执行；同一页面删除过的元素，后续规则抓取时不会存在，请注意先后顺序及互相影响。">
+                        <a-form-item label="删除的元素" :field="`rules.${index}.removeSelector`"
+                          tooltip="删除元素会优先抓取规则执行；同一页面删除过的元素，后续规则抓取时不会存在，请注意先后顺序及互相影响。">
                           <a-select v-model="rule.removeSelector" placeholder="通过CSS选择器匹配，命中的元素会从DOM中删除。用于去广告/按钮。"
                             multiple allow-create>
                           </a-select>
                         </a-form-item>
                         <a-form-item label="获取内容" :field="`rules.${index}.getContentAction`">
-                          <SelectAction v-model="rule.getContentAction" />
+                          <SelectAction v-model="rule.getContentAction" :selector="`${rule.selector}`" />
                         </a-form-item>
                         <a-form-item v-if="[`ChapterList`, `IndexNextPage`, `ContentNextPage`].includes(rule.ruleName)"
                           label="获取链接" :field="`rules.${index}.getUrlAction`">
-                          <SelectAction v-model="rule.getUrlAction" />
+                          <SelectAction v-model="rule.getUrlAction" :selector="`${rule.selector}`" />
                         </a-form-item>
                         <a-form-item label="内容类型" :field="`rules.${index}.type`"
                           tooltip="部分规则即使配置了多个目标也不生效的，如‘书名’、‘标题’、‘正文’等">
@@ -132,8 +153,8 @@
         </a-modal>
       </a-spin>
     </div>
-    <WebList ref="myWebList" @set-form="setFormWithSetting"></WebList>
-    <ChangeHostname ref="changeHostname" v-model:visible="showChangeHostname" @success="showChangeHostname = false" />
+    <WebList :visible="showWebList" @set-form="setFormWithSetting" @hide="showWebList = false" />
+    <ChangeHostname v-model:visible="showChangeHostname" @success="showChangeHostname = false" />
   </div>
 </template>
 
@@ -149,24 +170,29 @@ import {
 } from '@/api/webbot';
 import { FileItem, Message, Modal } from '@arco-design/web-vue';
 import WebList from './components/web-list.vue';
-import { rulesOptions } from './data';  // 规则类型选项
+import { rulesOptions, UAChoose } from './data';  // 规则类型选项
 
 import SelectAction from './components/SelectAction.vue';
 import ChangeHostname from './components/ChangeHostname.vue';
+import Dictionary from './components/Dictionary.vue';
 
+const formRef = ref<any>(null);
 const formUrlForVisVisible = ref(false); // 配置弹窗是否显示
 const formUrlForVis = reactive({ indexUrl: '', contentUrl: '' }); // 弹窗表单——辅助预览的网址采集表单
 const isUseVisModel = ref(false);
-const isUseVisStatus = computed(() =>
-  isUseVisModel.value ? 'warning' : 'normal'
-);
+const isUseVisStatus = computed(() => isUseVisModel.value ? 'warning' : 'normal');
 const dataLoading = ref(false);
 const showChangeHostname = ref(false);
+const isAdvanced = ref(false);
+const showDictionary = ref(false);
+const showWebList = ref(false);   //站点选择列表是否显示
 
 // 绑定数据的规则配置表单
 const form = reactive({
   hostname: '',
   timeout: 40_000,
+  userAgent: '',
+  scraping: 'puppeteer',
   rulename: ['BookName'], // ,"ChapterList","Content"],
   rules: [
     {
@@ -181,14 +207,7 @@ const form = reactive({
     },
   ],
 });
-
-// 展开右边网站列表
-const myWebList = ref(WebList);
-const showWebList = () => {
-  myWebList.value.show();
-};
-
-// const siteAccessibilityData = ref<any[]>([]);      // 站点存活情况数据
+const dictionaryData = ref<any[]>([])
 
 /**
  * 根据规则值-找到对应的规则显示名称
@@ -207,6 +226,7 @@ function findOptionName(type: string) {
 // 按选好的内容设置表单——加载已知网站配置
 const setFormWithSetting = (setting: any) => {
   if (setting.length === 0) return;
+  showWebList.value = false;
 
   form.hostname = setting[0].host;
   form.rulename = [];
@@ -215,7 +235,17 @@ const setFormWithSetting = (setting: any) => {
     if (item.ruleName === 'Timeout') {
       form.timeout = item.selector;
       return 0;
+    } else if (item.ruleName === 'UserAgent') {
+      form.userAgent = item.selector;
+      return 0;
+    } else if (item.ruleName === 'Scraping') {
+      form.scraping = item.selector;
+      return 0;
+    } else if (item.ruleName === "Dictionary") {
+      dictionaryData.value = item.data;
+      return 0;
     }
+
     form.rulename.push(item.ruleName);
     temform.push({
       ruleShowName: findOptionName(item.ruleName),
@@ -273,6 +303,9 @@ function resetForm() {
   form.hostname = '';
   form.rulename = ['BookName', 'ChapterList', 'Content'];
   form.rules = [];
+  form.userAgent = '';
+  form.timeout = 40_000;
+  form.scraping = "puppeteer";
   changeRuleNamelist(form.rulename);
 }
 //初始化表单
@@ -306,7 +339,20 @@ function Submit({ values, errors }: any) {
     host: values.hostname,
     ruleName: 'Timeout',
     selector: form.timeout,
-  })
+  });
+  //加入浏览器代理
+  if (form.userAgent.length > 0) {
+    myRule.push({
+      host: values.hostname,
+      ruleName: 'UserAgent',
+      selector: form.userAgent,
+    });
+  }
+  myRule.push({
+    host: values.hostname,
+    ruleName: 'Scraping',
+    selector: form.scraping,
+  });
 
   dataLoading.value = true;
   saveHostSetting(myRule)
@@ -418,6 +464,9 @@ function importScheme(fileItem: FileItem) {
 
 }
 function FormatHost() {
+  if (!/^https?:\/\//i.test(form.hostname)) {
+    form.hostname = 'http://' + form.hostname;
+  }
   let host = new URL(form.hostname);
   if (host != null && host.hostname != form.hostname) form.hostname = host.hostname;
 }
@@ -425,9 +474,19 @@ function FormatHost() {
 function ChangeWebHostname() {
   showChangeHostname.value = true;
 }
+
+async function OpenDictionaryModal() {
+  try {
+    let ckRsl = await formRef.value.validateField('hostname')
+    if (!ckRsl) showDictionary.value = true;
+  } catch (errors) {
+    // 由表单规则自身展示校验提示
+  } finally {
+  }
+}
 </script>
 
-<style>
+<style scoped>
 .container {
   height: 90vh;
   overflow: auto;
