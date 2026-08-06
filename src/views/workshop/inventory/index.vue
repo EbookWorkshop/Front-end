@@ -14,6 +14,7 @@
                     </div>
                     <div>
                         <a-button-group>
+                            <a-button size="large" @click="refresh">刷新</a-button>
                             <a-dropdown @select="(value) => SortTheList(true, value as string)">
                                 <a-button size="large"> <template #icon><icon-sort-ascending /></template> 升序</a-button>
                                 <template #content>
@@ -83,10 +84,8 @@ import { Modal, Input, Button } from '@arco-design/web-vue';
 
 const ASSETS_HOST = getApiBaseUrl();
 const router = useRouter();
-const { response: data, loading } = useRequest<FileInfo[]>(getArchiveBookList);
 const GroupExt = ref<Set<string>>(new Set([""]));
-
-
+const { response: data, loading, reload:refresh } = useRequest<FileInfo[]>(getArchiveBookList);
 
 function SortTheList(ascending: boolean, sortBy: string) {
     loading.value = true;

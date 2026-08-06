@@ -22,5 +22,5 @@ export default function useRequest<T>(
     .finally(() => {
       setLoading(false);
     });
-  return { loading, response };
+  return { loading, response ,reload:()=>api()};
 }
