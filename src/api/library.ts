@@ -15,10 +15,11 @@ export type ListQueryApi = (
  * @returns 图书列表响应
  */
 export function queryBookList(tagId?: number, notTag?: number[]) {
-  let param = {};
-  if (tagId) param = { params: { tagid: tagId } };
-  if (notTag) param = { params: { nottag: notTag.join(',') } }
-  return axios.get('/library/booklist', param);
+  let params = {
+    ...(tagId ? { tagid: tagId } : {}),
+    ...(notTag?.length ? { nottag: notTag.join(',') } : {})
+  };
+  return axios.get('/library/booklist', { params });
 }
 
 /**
@@ -31,7 +32,7 @@ export function queryWebBookList(tagId?: number, notTag?: number[]) {
   let param = {};
   if (tagId) param = { params: { tagid: tagId } };
   if (notTag) param = { params: { nottag: notTag.join(',') } }
-  return axios.get('/library/webbook/list',param);
+  return axios.get('/library/webbook/list', param);
 }
 
 /**
@@ -41,15 +42,6 @@ export function queryWebBookList(tagId?: number, notTag?: number[]) {
  */
 export function addABook(book: any) {
   return axios.post(`/library/book`, book);
-}
-
-/**
- * 追加章节到已有书中
- * @param book 
- * @returns 
- */
-export function addToBook(book:any){
-  return axios.patch(`/library/book`, book);
 }
 
 /**

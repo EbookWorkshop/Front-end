@@ -8,7 +8,7 @@
           :Author="bookData.Author" :Introduction="bookData.Introduction">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Volumes="bookData.Volumes"
-              :loading="loadingChapter || autoSyncSetting" :Chapters="bookData.Index"
+              :loading="loading || autoSyncSetting" :Chapters="bookData.Index"
               v-model:AutoSyncEnabled="autoSyncEnabled" @toggle-check="onToggleToolbar"
               @start-update-chapter="(rsl: any) => curDoingProcent = rsl"
               @update:AutoSyncEnabled="handleAutoSyncChange" />
@@ -17,12 +17,7 @@
         <a-divider />
         <ChapterList :loading="loading" :Chapters="chapterList" :Volumes="bookData.Volumes">
           <template #chapter="{ chapter }">
-            <a-button v-if="loadingChapter" type="dashed" size="small" style="justify-content:left;overflow:hidden;"
-              :status="chapter.IsHasContent ? 'normal' : 'warning'" long @click="gotoChapter(chapter.IndexId, true)">
-              <template #icon> <icon-loading /> </template>
-              <template #default>{{ chapter.Title }}</template>
-            </a-button>
-            <ChapterOpt v-else :chapter="chapter as WebChapter" :checked="hasCheckChapter.get(chapter.IndexId) || false"
+            <ChapterOpt :chapter="chapter as WebChapter" :checked="hasCheckChapter.get(chapter.IndexId) || false"
               :status="(chapter as any).status || (chapter.IsHasContent ? 'normal' : 'warning')"
               @toggle="OnToggleChapter" @hide="onHideChapter" />
           </template>
@@ -60,27 +55,14 @@ import { queryWebBookById, queryBookById, setAutoSyncEnabled } from '@/api/book'
 const curDoingProcent = ref(-1);        //进度条状态
 const hasCheckChapter = ref(new Map<number, boolean>()); // 仅存储选中状态
 const chapterList = ref<WebChapter[]>([]);//展示用的章节数据
-const loadingChapter = ref<boolean>(true);
 const autoSyncEnabled = ref<boolean>(false);//自动更新相关
 const autoSyncSetting = ref<boolean>(true);//自动更新相关
 
 //数据请求
 const queryBook = () => {
   curDoingProcent.value = -1;
-  return queryBookById(bookId).then((result) => {
+  return queryWebBookById(bookId).then((result) => {
     chapterList.value = result.data.Index;
-    nextTick(LoadWebBookData);
-    return result;
-  });
-};
-
-const { bookId, gotoChapter } = useBookHelper();
-const { loading, response: bookData } = useRequest<Book>(queryBook);
-const { io: socket, on: socketOn } = useSocket();
-const webBookId = ref<number>(-1);  //网文书ID，注意与bookId不同
-
-function LoadWebBookData() {
-  queryWebBookById(bookId).then((result) => {
     let { data: webbook } = result;
     webBookId.value = webbook.WebBookId;
     autoSyncEnabled.value = webbook.AutoSyncEnabled;
@@ -91,10 +73,18 @@ function LoadWebBookData() {
       return c;
     });
     chapterList.value = indexedChapters;
-    loadingChapter.value = false;
     autoSyncSetting.value = false;
+
+    return result;
   });
-}
+};
+
+const { bookId, gotoChapter } = useBookHelper();
+const { loading, response: bookData } = useRequest<Book>(queryBook);
+const { io: socket, on: socketOn } = useSocket();
+const webBookId = ref<number>(-1);  //网文书ID，注意与bookId不同
+
+
 
 //操作定义
 /**

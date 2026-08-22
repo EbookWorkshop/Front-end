@@ -51,7 +51,7 @@
             <a-col :span="3">
               <a-button v-if="step < 4" type="primary" long @click="changeStep(1)">下一步</a-button>
               <a-button v-if="step == 4" type="primary" status="success" long @click="handleSubmit">{{ $t('common.save')
-              }}</a-button>
+                }}</a-button>
             </a-col>
           </a-row>
         </template>
@@ -64,7 +64,8 @@
 import { ref, reactive, PropType } from 'vue';
 import { FileItem, Message } from '@arco-design/web-vue';
 import useLoading from '@/hooks/loading';
-import { addABook, addToBook } from '@/api/library';
+import { addABook } from '@/api/library';
+import { addToBook } from "@/api/book"
 import Step1 from './import-text-step1.vue';
 import Step2 from './import-text-step2.vue';
 import Step3 from './import-text-step3.vue';

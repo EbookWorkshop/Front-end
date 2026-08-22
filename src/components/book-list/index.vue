@@ -9,7 +9,7 @@
         </a-button>
       </a-col>
       <a-col flex="auto" v-if="renderData.length > 0">
-        <TagList :tagid="props.tagid" :Api="props.Api" @change="handleTagChange" />
+        <TagList :tagid="tagid" :Api="Api" @change="handleTagChange" />
       </a-col>
     </a-row>
 
@@ -153,7 +153,7 @@ const props = defineProps({
 const CARD_WIDTH = 284;
 const GAP = 24;
 const ROW_HEIGHT = 380;//行高360 间距20
-const DEFAULT_HEIGHT = 'calc(100vh - 350px)';
+const DEFAULT_HEIGHT = 'calc(100vh - 310px)';
 
 const defaultValue: Book[] = [];
 const curEditBookId = ref(0);
