@@ -109,14 +109,14 @@ function DownLoad(filePath: string) {
 }
 
 function OpenReader(filePath: string, fileType: string) {
-    if (fileType === 'epub') window.open(`/reader/${ASSETS_HOST}/assets/download/${encodeURIComponent(encodeURIComponent(filePath))}`);
+    if (fileType === 'epub') window.open(`/reader/${ASSETS_HOST}/${encodeURIComponent(encodeURIComponent(filePath))}`);
     else if (fileType === "txt") {
         router.push({
             path: '/reader/txt',
             query: { name: filePath.split('/').pop()?.split(".").shift(), path: filePath }
         });
     }
-    else window.open(`${ASSETS_HOST}/assets/view/${encodeURIComponent(filePath)}`);
+    else window.open(`${ASSETS_HOST}/${encodeURIComponent(filePath)}`);
 }
 
 function SendByMail(filePath: string) {

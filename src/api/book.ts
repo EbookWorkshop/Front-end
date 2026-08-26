@@ -261,7 +261,7 @@ export function editArchiveBook(name: string, file: string) {
 export function deleteArchiveBook(fileName: string) {
   return axios.delete(`/assets/archive/book/${fileName}`);
 }
-export function getArchiveBook(filePath: string) { return axios.get(`/assets/view/${encodeURIComponent(filePath)}`, { rawResponse: true } as any); }
+export function getArchiveBook(filePath: string) { return axios.get(`${encodeURIComponent(filePath)}`, { rawResponse: true } as any); }
 
 /**
  * 创建一本网文，新书入库

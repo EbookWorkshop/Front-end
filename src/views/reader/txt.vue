@@ -20,7 +20,6 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import useRequest from '@/hooks/request';
 import { useRoute } from 'vue-router';
 import ContentRender, { type ContentItem } from '@/components/content-render/index.vue'
 import { getArchiveBook } from '@/api/book'
@@ -47,6 +46,10 @@ getArchiveBook(filePath.value as string).then(data => {
 </script>
 
 <style scoped>
+.wrapper {
+  overflow-y: hidden !important;
+}
+
 .title {
   color: var(--color-neutral-10);
   text-align: center;
