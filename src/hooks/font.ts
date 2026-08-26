@@ -11,8 +11,12 @@ export function useUserUIFont() {
 }
 
 function setUIFont(fontName: string, fontURL: string) {
-    const font = new FontFace(fontName, `url('${fontURL}')`);
+    if (!fontURL && fontName) {
+        document.body.style.fontFamily = fontName;
+        return;
+    }
 
+    const font = new FontFace(fontName, `url('${fontURL}')`);
     font.load().then((loadedFont) => {
         (document.fonts as any).add(loadedFont);
         document.body.style.fontFamily = fontName;

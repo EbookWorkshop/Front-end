@@ -89,6 +89,15 @@ export function deleteChapter(chapterid: number) {
 }
 
 /**
+ * 追加章节到已有书中
+ * @param book 
+ * @returns 
+ */
+export function addToBook(book:any){
+  return axios.patch(`/library/book/chapter`, book);
+}
+
+/**
  * 修改章节信息
  * @param chapter 章节
  * @returns

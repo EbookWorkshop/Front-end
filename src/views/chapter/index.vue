@@ -80,7 +80,7 @@ const { loading, response: renderData } = useRequest<Chapter>(() => new Promise(
   queryChapterById(chapterId).then((res) => {
     let data = res.data;
 
-    HeatABook(data.Book.id ?? 0);
+    HeatABook(data.BookId ?? 0);
     if (keyword.value && keyword.value?.length > 0) data.Content = data.Content?.replaceAll(keyword.value, `<span class='keyword'>${keyword.value}</span>`);
 
     processedContent.value = data.Content?.split('\n').map((p: String) => ({
@@ -92,8 +92,8 @@ const { loading, response: renderData } = useRequest<Chapter>(() => new Promise(
       }
     }));
 
-    ftFamily.value = data.Book.FontFamily;
-    ftFontFile.value = data.Book.FontFamily;
+    ftFamily.value = data.Book?.FontFamily;
+    ftFontFile.value = data.Book?.FontFamily;
     resolve({ data: data } as any);
   }).catch((err) => {
     reject(err);

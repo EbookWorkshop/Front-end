@@ -31,7 +31,7 @@
             <a-divider />
             <div class="message-content">
                 <a-typography-paragraph v-for="(item, index) in showContent" :key="index">{{ item
-                }}</a-typography-paragraph>
+                    }}</a-typography-paragraph>
 
                 <div v-if="detailState.state.currentMessage.error">
                     <a-divider />
@@ -44,8 +44,8 @@
                 </div>
             </div>
         </div>
-
         <a-empty v-else description="暂无消息内容" />
+
     </a-modal>
 </template>
 <script lang="ts" setup>

@@ -154,7 +154,7 @@
                   </a-table>
                 </div>
                 <div v-if="current == 4" class="main-content">
-                  <a-result :status="resultData.result" :title="resultData.result == 'success' ? '导出成功' : '导出失败'">
+                  <a-result :status="resultData.result" :title="resultData.result == 'success' ? '正在导出中，请稍候…' : '导出失败'">
                     <template #subtitle>
                       <div>{{ resultData.msg }}</div>
                     </template>
@@ -349,11 +349,11 @@ const onSubmit = () => {
     current.value = 4;
     if (res.code === ApiResultCode.Success) {
       resultData.value.result = 'success';
-      resultData.value.url = `${ASSETS_HOST}/assets/download/${encodeURIComponent(res.data.download)}`
 
       if (form.value.isSendEmail) {
         resultData.value.msg = '已发送到您的邮箱';
-      } else {
+      } else if (res.data.download) {
+        resultData.value.url = `${ASSETS_HOST}/assets/download/${encodeURIComponent(res.data.download)}`
         resultData.value.msg = "正在准备下载..."
         window.open(resultData.value.url);
       }

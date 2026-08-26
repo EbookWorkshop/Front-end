@@ -7,7 +7,7 @@ import type { HttpResponse } from '@/types/global';
  * @returns
  */
 export function queryBookmark(id?: number | undefined) {
-  return axios.get(`/library/bookmark?bookid=${id}`);
+  return axios.get(`/library/bookmark${id ? `?bookid=${id}` : ""}`);
 }
 
 /**

@@ -9,7 +9,7 @@
         </a-button>
       </a-col>
       <a-col flex="auto" v-if="renderData.length > 0">
-        <TagList :tagid="props.tagid" :Api="props.Api" @change="handleTagChange" />
+        <TagList :tagid="tagid" :Api="Api" @change="handleTagChange" />
       </a-col>
     </a-row>
 

@@ -1,7 +1,9 @@
 import { DEFAULT_LAYOUT } from '../base';
 import { AppRouteRecordRaw } from '../types';
+import { getApiBaseUrl } from '@/utils/config';
+export const API_BASE_URL = getApiBaseUrl();
 
-const IFRAME = import('@/layout/iframe-layout.vue'); // 组件需要异步导入 不然会有警告
+const IFRAME = import('@/views/docs/docs-frame.vue'); // 组件需要异步导入 不然会有警告
 
 const SYSTEM: AppRouteRecordRaw = {
   path: '/docs',
@@ -19,7 +21,7 @@ const SYSTEM: AppRouteRecordRaw = {
       name: 'swagger-ui',
       component: () => IFRAME,
       props: () => ({
-        src: 'http://localhost:8777/swagger',
+        src: `${API_BASE_URL}/swagger`,
       }),
       meta: {
         icon: 'icon-file',
@@ -29,15 +31,16 @@ const SYSTEM: AppRouteRecordRaw = {
       },
     },
     {
-      path: 'swagger-ui-dist',
-      name: 'swagger-ui-dist',
+      path: 'openapi-ui-dist',
+      name: 'openapi-ui-dist',
       component: () => IFRAME,
       props: () => ({
-        src: 'http://localhost:8777/swagger-ui-dist',
+        src: `${API_BASE_URL}/swagger/openapi-ui-dist`,
+        useTheme: true,
       }),
       meta: {
         icon: 'icon-file',
-        locale: 'menu.api.swagger.dist',
+        locale: 'menu.api.openapi.dist',
         requiresAuth: false,
         roles: ['*'],
       },
@@ -47,7 +50,8 @@ const SYSTEM: AppRouteRecordRaw = {
       name: 'scalar',
       component: () => IFRAME,
       props: () => ({
-        src: 'http://localhost:8777/swagger/scalar',
+        src: `${API_BASE_URL}/swagger/scalar`,
+        useTheme: true,
       }),
       meta: {
         icon: 'icon-file',
@@ -61,11 +65,40 @@ const SYSTEM: AppRouteRecordRaw = {
       name: 'stoplight',
       component: () => IFRAME,
       props: () => ({
-        src: 'http://localhost:8777/swagger/stoplight',
+        src: `${API_BASE_URL}/swagger/stoplight`,
       }),
       meta: {
         icon: 'icon-file',
         locale: 'menu.api.stoplight',
+        requiresAuth: false,
+        roles: ['*'],
+      },
+    },
+    {
+      path: 'rapidoc',
+      name: 'rapidoc',
+      component: () => IFRAME,
+      props: () => ({
+        src: `${API_BASE_URL}/swagger/rapidoc`,
+        useTheme: true,
+      }),
+      meta: {
+        icon: 'icon-file',
+        locale: 'menu.api.rapidoc',
+        requiresAuth: false,
+        roles: ['*'],
+      },
+    },
+    {
+      path: 'redoc',
+      name: 'redoc',
+      component: () => IFRAME,
+      props: () => ({
+        src: `${API_BASE_URL}/swagger/redoc`,
+      }),
+      meta: {
+        icon: 'icon-file',
+        locale: 'menu.api.redoc',
         requiresAuth: false,
         roles: ['*'],
       },

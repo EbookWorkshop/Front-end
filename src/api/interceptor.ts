@@ -42,35 +42,43 @@ axios.interceptors.response.use(
     if ((response.config as any)?.rawResponse) return res;//直接返回数据
 
     // if the custom code is not 20000, it is judged as an error.
+    const { request } = response;
+    const isRealError = ~~(response.status / 100) != 2;//判断http状态码不为2xx。
     if (res.code !== ApiResultCode.Success) {
       const message: MessageRecord = {
         id: Date.now() * -1,
         type: 'message',
         title: 'API执行错误',
-        subTitle: '响应错误',
+        subTitle: response.statusText || '响应错误',
         content: res.msg || '未知错误',
         avatar: 'error',
         time: new Date().toLocaleString(),
         status: 0,
         data: res,
       };
+      message.content += `\n响应地址：${request.responseURL}`;
       messageService.addMessage(message);
 
-      return Promise.reject(new Error(res.msg || 'Error'));
+      if (isRealError) return Promise.reject(new Error(res.msg || 'Error'));
     }
     return res;
   },
   (error: Error) => {    // axios 抛出的错误为Error类型
+    const param = error as any
+    const { request } = param;
+    let data = param?.config?.data;
+    try { if (data) data = JSON.parse(data); } catch (err) { }
     const message: MessageRecord = {
       id: Date.now() * -1,
       type: 'message',
-      title: '请求错误',
-      subTitle: '',
-      content: error?.stack || error.message || '请求错误',
+      title: '请求错误：' + param.code,
+      subTitle: request.status,
+      content: `${error.message}\n响应地址：${request.responseURL}` || '请求错误',
       avatar: 'error',
       time: new Date().toLocaleString(),
       status: 0,
-      error,
+      error: { name: error.name, code: param.code, message: error.message, stack: param.stack },
+      data
     };
     messageService.addMessage(message);
     return Promise.reject(error);
