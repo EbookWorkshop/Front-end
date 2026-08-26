@@ -14,6 +14,7 @@
                     </div>
                     <div>
                         <a-button-group>
+                            <a-button size="large" @click="refresh">刷新</a-button>
                             <a-dropdown @select="(value) => SortTheList(true, value as string)">
                                 <a-button size="large"> <template #icon><icon-sort-ascending /></template> 升序</a-button>
                                 <template #content>
@@ -23,8 +24,10 @@
                                     <a-doption value="type">类型</a-doption>
                                 </template>
                             </a-dropdown>
+                            <a-button size="large" @click="SortToGroup">分组</a-button>
                             <a-dropdown @select="(value) => SortTheList(false, value as string)">
-                                <a-button size="large"> <template #icon><icon-sort-descending /></template> 降序</a-button>
+                                <a-button size="large"> <template #icon><icon-sort-descending /></template>
+                                    降序</a-button>
                                 <template #content>
                                     <a-doption value="name">名字</a-doption>
                                     <a-doption value="size">大小</a-doption>
@@ -36,9 +39,10 @@
                     </div>
                 </div>
                 <a-empty v-if="data.length === 0" />
-                <a-card :bordered="false" :style="{ width: '100%' }">
-                    <a-card-grid v-for="(item, index) in data" :key="index" :hoverable="true"
-                        :style="{ margin: '10px 10px', width: '340px' }">
+                <a-card :bordered="false" :style="{ width: '100%' }" v-for="ext of GroupExt" :key="ext">
+                    <a-divider v-if="ext !== ``" orientation="left">{{ ext.toUpperCase() }}</a-divider>
+                    <a-card-grid v-for="(item, index) in data.filter(i => i.ext === ext || ext === ``)" :key="index"
+                        :hoverable="true" :style="{ margin: '10px 10px', width: '340px' }">
                         <a-card :class="['card-book', item.ext]" :title="item.name" :bordered="false">
                             <template #extra>
                                 <a-dropdown>
@@ -70,6 +74,7 @@
 
 <script lang="ts" setup>
 import { h, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { getArchiveBookList, deleteArchiveBook, editArchiveBook } from '@/api/book';
 import { sendAEMail } from '@/api/system'
 import type { FileInfo } from '@/types/book';
@@ -78,8 +83,9 @@ import { getApiBaseUrl } from '@/utils/config';
 import { Modal, Input, Button } from '@arco-design/web-vue';
 
 const ASSETS_HOST = getApiBaseUrl();
-
-const { response: data, loading } = useRequest<FileInfo[]>(getArchiveBookList);
+const router = useRouter();
+const GroupExt = ref<Set<string>>(new Set([""]));
+const { response: data, loading, reload:refresh } = useRequest<FileInfo[]>(getArchiveBookList);
 
 function SortTheList(ascending: boolean, sortBy: string) {
     loading.value = true;
@@ -104,6 +110,12 @@ function DownLoad(filePath: string) {
 
 function OpenReader(filePath: string, fileType: string) {
     if (fileType === 'epub') window.open(`/reader/${ASSETS_HOST}/assets/download/${encodeURIComponent(encodeURIComponent(filePath))}`);
+    else if (fileType === "txt") {
+        router.push({
+            path: '/reader/txt',
+            query: { name: filePath.split('/').pop()?.split(".").shift(), path: filePath }
+        });
+    }
     else window.open(`${ASSETS_HOST}/assets/view/${encodeURIComponent(filePath)}`);
 }
 
@@ -157,13 +169,16 @@ function Delete(fileName: string) {
         }
     });
 }
+function SortToGroup() {
+    GroupExt.value = new Set(GroupExt.value.size === 1 ? data.value.map(({ ext }) => ext) : [""]);
+}
 
 </script>
 
 <style scoped>
 .card-book {
     width: 100%;
-    border: 1px solid transparent;
+    border: 2px solid transparent;
 
     &.pdf {
         border-color: rgba(231, 76, 60, 0.3);

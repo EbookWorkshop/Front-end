@@ -27,7 +27,7 @@
                     </a-col>
                     <a-col :span="12">
                       <BookCover v-show="form.bookId ?? 0 > 0" :book-id="form.bookId" ref="captureCover"
-                        style="margin:0 auto;" :show-embed-book-name="form.isEmbedBookName" @complete="onCaptureCover"
+                        style="margin:0 auto;" v-model:show-embed-book-name="form.isEmbedBookName" @complete="onCaptureCover"
                         @click="onCaptureCover" />
                     </a-col>
                   </a-row>
@@ -94,7 +94,7 @@
                     </a-col>
                     <a-col :span="6" :offset="2" style="max-height:400px;">
                       <img v-if="form.fileType !== 'txt'" :src="coverData"
-                        style="scale:0.25;transform-origin: top left;margin:0 auto;" />
+                        style="scale:0.25;transform-origin: top left;margin:0 auto;" title="封面预览。如果显示不正常，可以返回第一步，点击封面重新生成。"/>
                     </a-col>
                   </a-row>
 

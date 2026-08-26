@@ -38,6 +38,9 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response: AxiosResponse<HttpResponse | any, any>) => {
     const res = response.data;
+
+    if ((response.config as any)?.rawResponse) return res;//直接返回数据
+
     // if the custom code is not 20000, it is judged as an error.
     const { request } = response;
     const isRealError = ~~(response.status / 100) != 2;//判断http状态码不为2xx。

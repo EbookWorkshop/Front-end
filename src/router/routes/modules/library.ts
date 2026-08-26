@@ -69,17 +69,6 @@ const LIBRARY: AppRouteRecordRaw = {
       },
     },
     {
-      path: '/reader/:path(.*)',
-      name: 'ReadEpub',
-      component: () => import('@/views/book/epubreader.vue'),
-      meta: {
-        requiresAuth: true,
-        activeMenu:"BookList",
-        hideInMenu: true,
-        roles: ['*'],
-      },
-    },
-    {
       path: '/book/:id(\\d+)/chapter/:cid(\\d+)',
       name: 'Book_Chapter',
       component: () => import('@/views/chapter/index.vue'),

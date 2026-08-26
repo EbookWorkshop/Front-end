@@ -8,13 +8,14 @@
         <div class="coverDiv">
           <!-- 骨架屏（图片未加载时显示） -->
           <div v-if="!isLoaded" class="skeleton-placeholder" />
-          <img v-show="isLoaded" :style="{ width: '100%' }" :alt="title" :src=showImageUrl @error="imgError" @load="isLoaded = true" />
+          <img v-show="isLoaded" :style="{ width: '100%' }" :alt="title" :src=showImageUrl @error="imgError"
+            @load="isLoaded = true" />
         </div>
       </template>
       <a-space align="start" v-if="isShowBookName">
         <a-card-meta>
           <template #title>
-            <a-typography-text>
+            <a-typography-text :class="title.length <= 9 ? 'book-title' : `book-title-${title.length}`">
               {{ title }}
             </a-typography-text>
           </template>
@@ -46,7 +47,7 @@ const props = defineProps({
     default: true,
   },
 });
-const emiter = defineEmits(["error"]);
+const emiter = defineEmits(["error", "update:showEmbedBookName"]);
 const isShowBookName = ref(props.showEmbedBookName);
 const isLoaded = ref(false);
 const showImageUrl = computed<string>(() => {
@@ -62,7 +63,9 @@ const showImageUrl = computed<string>(() => {
 watch(() => props.showEmbedBookName, (value, old) => {
   isShowBookName.value = props.showEmbedBookName;
 })
-
+watch(() => props.coverImg, (value, old) => {
+  emiter("update:showEmbedBookName", props.coverImg.includes("#showname"));
+}, { immediate: true })
 function imgError(event: Event) {
   emiter("error", event);
 }
@@ -106,6 +109,7 @@ function imgError(event: Event) {
       bottom: 0;
       opacity: 0.6;
       font-weight: bold;
+      padding:0px 0px;
 
       .arco-space {
         width: 100%;
@@ -124,6 +128,20 @@ function imgError(event: Event) {
       }
     }
   }
+
+  .book-title {
+    font-size: 28px;
+  }
+
+  .book-title-10 { font-size: 25px; }
+  .book-title-11 { font-size: 25px; }
+  .book-title-12 { font-size: 22px; }
+  .book-title-13 { font-size: 22px; }
+  .book-title-14 { font-size: 22px; }
+  .book-title-15 { font-size: 22px; }
+  .book-title-16 { font-size: 21px; }
+  .book-title-17 { font-size: 20px; }
+  .book-title-18 { font-size: 19px; }
 
   :deep(.arco-card-meta-title) {
     // To prevent the shaking

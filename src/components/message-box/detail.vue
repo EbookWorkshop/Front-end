@@ -89,7 +89,8 @@ const handleCancel = () => { detailState.close(); };
 <style scoped lang="less">
 .message-detail {
     padding: 0 8px;
-    width: 52vw;
+    width:60vw;
+    min-height:60vh;
 
     .message-header {
         margin-bottom: 16px;
