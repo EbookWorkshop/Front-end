@@ -1,5 +1,5 @@
 <template>
-    <a-modal v-model:visible="detailState.state.visible" :title="modalTitle" :width="680" :footer="false" draggable
+    <a-modal v-model:visible="detailState.state.visible" :title="modalTitle" width="auto" :footer="false" draggable
         unmount-on-close :maskClosable="false" @cancel="handleCancel">
         <!-- 使用 state.currentMessage 直接访问 -->
         <div v-if="detailState.state.currentMessage" class="message-detail">
@@ -31,7 +31,7 @@
             <a-divider />
             <div class="message-content">
                 <a-typography-paragraph v-for="(item, index) in showContent" :key="index">{{ item
-                }}</a-typography-paragraph>
+                    }}</a-typography-paragraph>
 
                 <div v-if="detailState.state.currentMessage.error">
                     <a-divider />
@@ -44,8 +44,8 @@
                 </div>
             </div>
         </div>
-
         <a-empty v-else description="暂无消息内容" />
+
     </a-modal>
 </template>
 <script lang="ts" setup>
@@ -89,6 +89,7 @@ const handleCancel = () => { detailState.close(); };
 <style scoped lang="less">
 .message-detail {
     padding: 0 8px;
+    width: 52vw;
 
     .message-header {
         margin-bottom: 16px;

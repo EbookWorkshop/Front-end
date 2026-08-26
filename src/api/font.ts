@@ -57,7 +57,7 @@ export function setDefaultReadingFont(fontName: string) {
 export function getUIFont() {
   return axios.get(`/services/font/UI`).then((data: AxiosResponse<any>) => {
     if (!data.data) return;
-    data.data.url = ASSETS_HOST + data.data?.url;
+    if (data.data.url) data.data.url = ASSETS_HOST + data.data?.url;
     return data;
   });
 }
