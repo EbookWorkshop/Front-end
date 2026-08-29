@@ -17,7 +17,7 @@ export function queryBookmark(id?: number | undefined) {
  */
 export function addBookmarkForChapter(chapterid: number) {
   return axios.post<HttpResponse<any>>(`/library/bookmark`, {
-    chapterid,
+    chapterId: chapterid,
   });
 }
 

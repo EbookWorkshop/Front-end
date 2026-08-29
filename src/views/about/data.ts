@@ -10,9 +10,14 @@ export const appInfo = [{
 }, {
     label: "程序版本",
     value: ""
-
 }, {
     label: "UI更新时间",
+    value: ""
+}, {
+    label: "运行占用内存",
+    value: ""
+}, {
+    label: "已运行时间",
     value: ""
 }, {
     label: "书库资料目录",

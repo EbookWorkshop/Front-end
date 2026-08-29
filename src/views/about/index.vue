@@ -37,6 +37,7 @@ const sysData = reactive(sysInfo) as DescData[];
 const dependData = reactive([]) as any;   //UI依赖信息
 const serverData = reactive([]) as any;
 
+const formatTime = (ms: number) => ms >= 43_200_000 ? (ms / 86_400_000).toFixed(1) + " 天" : (ms > 1_800_000 ? (ms / 3_600_000).toFixed(1) + " 小时" : (ms > 60_000 ? (ms / 60_000).toFixed(1) + " 分钟" : ((ms / 1000).toFixed(0) + " 秒")));
 const dataMap = new Map(appData.map(item => [item.label, item]));  // 创建一个映射表，用于快速查找
 sysData.forEach(item => { dataMap.set(item.label, item) });
 
@@ -73,6 +74,8 @@ getSystemVersion().then((result: any) => {
   updateValue("程序版本", data.version);
   updateValue("书库资料目录", data.dataPath);
   updateValue("数据库大小", h(Statistic, { start: true, value: dbSize.fileSize, animation: true, precision: 0.01 }, { suffix: () => dbSize.unit }));
+  updateValue("运行占用内存", data?.appMem);
+  updateValue("已运行时间", formatTime(data?.runTime));
 
   updateValue("系统内核", `${data.osType} ${data.osRelease}`);
   updateValue("Nodejs版本", data.nodeVersion);
