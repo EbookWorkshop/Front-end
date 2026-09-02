@@ -92,8 +92,10 @@ const { loading, response: renderData } = useRequest<Chapter>(() => new Promise(
       }
     }));
 
-    ftFamily.value = data.Book?.FontFamily;
-    ftFontFile.value = data.Book?.FontFamily;
+    if (data.Book?.FontFamily) {  //老接口兼容 -v3.12.3
+      ftFamily.value = data.Book?.FontFamily;
+      ftFontFile.value = data.Book?.FontFamily;
+    }
     resolve({ data: data } as any);
   }).catch((err) => {
     reject(err);

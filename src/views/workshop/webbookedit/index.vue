@@ -8,9 +8,8 @@
           :Author="bookData.Author" :Introduction="bookData.Introduction">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Volumes="bookData.Volumes"
-              :loading="loading || autoSyncSetting" :Chapters="bookData.Index"
-              v-model:AutoSyncEnabled="autoSyncEnabled" @toggle-check="onToggleToolbar"
-              @start-update-chapter="(rsl: any) => curDoingProcent = rsl"
+              :loading="loading || autoSyncSetting" :Chapters="bookData.Index" v-model:AutoSyncEnabled="autoSyncEnabled"
+              @toggle-check="onToggleToolbar" @start-update-chapter="(rsl: any) => curDoingProcent = rsl"
               @update:AutoSyncEnabled="handleAutoSyncChange" />
           </template>
         </BookInfo>

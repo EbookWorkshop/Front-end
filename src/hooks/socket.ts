@@ -7,6 +7,8 @@ interface SocketState {
   connected: boolean;
   reconnecting: boolean;
   error?: string;
+  runtime: number;//服务后台已运行时长MS
+  runtimeStr?: string;
   lastActivity?: Date;
 }
 
@@ -27,7 +29,7 @@ interface SocketEventMap {
 
 interface SocketEvent<T extends keyof SocketEventMap> {
   (data: SocketEventMap[T]): void;
-} 
+}
 
 // Socket服务类 - 单例模式
 class SocketService {
@@ -36,6 +38,7 @@ class SocketService {
   public state = reactive<SocketState>({
     connected: false,
     reconnecting: false,
+    runtime: 0,
   });
 
   private eventListeners: Map<string, SocketEvent<any>[]> = new Map();
@@ -67,16 +70,16 @@ class SocketService {
         randomizationFactor: 0.5,
         timeout: 20000, // 增加超时时间
       });
-  
+
       this.setupEventListeners();
     }
-    
+
     // 如果socket存在但未连接，强制重连
     if (this.socket && !this.socket.connected) {
       console.log('Socket未连接，尝试重新连接...');
       this.socket.connect();
     }
-    
+
     return this.socket;
   }
 
@@ -130,9 +133,9 @@ class SocketService {
    */
   on<T extends keyof SocketEventMap>(event: T, callback: (data: SocketEventMap[T]) => void): void {
     if (!this.socket) return;
-    
+
     this.socket.on(event as string, callback);
-    
+
     // 保存监听器引用用于清理
     if (!this.eventListeners.has(event as string)) {
       this.eventListeners.set(event as string, []);
@@ -145,7 +148,7 @@ class SocketService {
    */
   off<T extends keyof SocketEventMap>(event: T, callback?: (data: SocketEventMap[T]) => void): void {
     if (!this.socket) return;
-    
+
     if (callback) {
       this.socket.off(event as string, callback);
       const callbacks = this.eventListeners.get(event as string) || [];
@@ -165,7 +168,7 @@ class SocketService {
       console.warn('Socket未连接，无法发送消息');
       return;
     }
-    
+
     this.socket.emit(event as string, data);
     this.state.lastActivity = new Date();
   }
@@ -182,11 +185,12 @@ class SocketService {
         });
       });
       this.eventListeners.clear();
-      
+
       this.socket.disconnect();
       this.socket = null;
       this.state.connected = false;
       this.state.reconnecting = false;
+      this.state.runtime = 0;
       this.state.error = '手动断开连接';
     }
   }
@@ -196,6 +200,21 @@ class SocketService {
    */
   getSocketState() {
     return readonly(this.state);
+  }
+
+  getServiceRuntime(): void {
+    this.socket?.emit('Service:Runtime', (response: { data?: number } = {}) => {
+      let t = Number(response.data ?? 0);
+      this.state.runtime = t;
+      const _minute = 60_000;
+      const _hour = _minute * 60;
+      const _day = _hour * 24;
+      let timStr = "";
+      if (t > _day) { timStr = ` ${Math.floor(t / _day)}天`; t = t % _day; }
+      if (t > _hour) { timStr = `${timStr} ${Math.floor(t / _hour)}小时`; t = t % _hour; }
+      if (t > _minute) { timStr = `${timStr} ${(t / _minute).toFixed(1)}分钟`; t = t % _minute; }
+      this.state.runtimeStr = timStr;
+    });
   }
 }
 
@@ -208,7 +227,7 @@ const socketService = SocketService.getInstance();
  */
 export function useSocket() {
   const socket = socketService.getSocket();
-  
+
   return {
     io: socket,
     state: socketService.getSocketState(),
@@ -216,6 +235,7 @@ export function useSocket() {
     off: socketService.off.bind(socketService),
     emit: socketService.emit.bind(socketService),
     disconnect: socketService.disconnect.bind(socketService),
+    getRuntime: socketService.getServiceRuntime.bind(socketService),
   };
 }
 

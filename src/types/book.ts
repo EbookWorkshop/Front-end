@@ -26,7 +26,7 @@ export interface Chapter {
 }
 
 export interface WebChapter extends Chapter {
-    URL: Array<{ id: number; Path: string }>;
+    URL?: Array<{ id: number; Path: string }>;
     curHost: string;
     WebTitle: string;
 }

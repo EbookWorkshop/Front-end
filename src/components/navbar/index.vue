@@ -15,7 +15,8 @@
     </div>
     <ul class="right-side">
       <li>
-        <a-tooltip :content="'服务器' + (socketState.connected ? '已连接' : '未连接')">
+        <a-tooltip :content="'服务器' + (socketState.connected ? `已连接，已在线${socketState.runtimeStr}。` : '未连接')"
+          @popup-visible-change="() => { getRuntime?.call(null) }">
           <ConnectStatus :connected="socketState.connected" />
         </a-tooltip>
       </li>
@@ -116,7 +117,7 @@ import ConnectStatus from './connect-status.vue';
 const logoLight = "/logo.svg?t=navbar";
 const logoDark = "/logo-dark.svg?t=navbar";
 
-const { state: socketState } = useSocket();
+const { state: socketState, getRuntime } = useSocket();
 const appStore = useAppStore();
 const { changeLocale, currentLocale } = useLocale();
 const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();

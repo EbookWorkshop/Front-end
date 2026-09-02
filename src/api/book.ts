@@ -93,7 +93,7 @@ export function deleteChapter(chapterid: number) {
  * @param book 
  * @returns 
  */
-export function addToBook(book:any){
+export function addToBook(book: any) {
   return axios.patch(`/library/book/chapter`, book);
 }
 
@@ -323,6 +323,21 @@ export function setAutoSyncEnabled(bookid: number, autosync: boolean = false) {
     autoSyncEnabled: autosync,
   });
 }
+
+export function getChapterSource(chapterId: number) {
+  return axios.get<HttpResponse<Array<{ id: number, Path: string }>>>(`/library/webbook/chapter/sources?chapterid=${chapterId}`);
+}
+
+/**
+ * 获取章节的默认网址
+ * @param chapterId 
+ * @param bookid 
+ * @returns 
+ */
+export function getDefaultChapterSource(chapterId: number, bookid: number) {
+  return axios.get<HttpResponse<{ Path: string }>>(`/library/webbook/chapter/source/default?chapterid=${chapterId}&bookid=${bookid}`);
+}
+
 
 export interface ICreateBookAPI {
   (bookid: number,

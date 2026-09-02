@@ -22,7 +22,7 @@
         </a-button-group>
 
         <a-modal v-model:visible="isUrlDialogVisible" :title="`来源管理-【${chapter.Title}】`" @ok="handleUrlConfirm"
-            width="50%" draggable unmount-on-close>
+            width="50%" draggable unmount-on-close @before-open="loadUrlData">
             <a-table :data="urlList" :pagination="false">
                 <template #columns>
                     <a-table-column title="操作" :width="180">
@@ -57,7 +57,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { updateWebBookChapterSourcesById } from '@/api/book';
+import { updateWebBookChapterSourcesById, getDefaultChapterSource, getChapterSource } from '@/api/book';
 import { openWindow } from '@/utils';
 import ChapterEdit from "@/components/chapter/edit.vue";
 //类型
@@ -86,7 +86,7 @@ const props = defineProps<{
 // URL 管理相关状态
 const isUrlDialogVisible = ref(false);
 const editingIndex = ref(-1);
-const urlList = ref<Array<{ id: number; Path: string }>>((props.chapter?.URL || []));
+const urlList = ref<Array<{ id: number, Path: string }>>([]);
 
 //操作定义
 /**
@@ -103,11 +103,17 @@ function onToggleHideChapter() {
     });
 }
 
-function OpenWin() {
-    let thisUrl = props.chapter.URL.filter(i => i.Path.includes(props.chapter.curHost));
-    if (thisUrl.length > 0) openWindow(thisUrl[0].Path);
+async function OpenWin() {
+    const { IndexId, BookId } = props.chapter;
+    const defUrl = await getDefaultChapterSource(IndexId, BookId || 0)
+    const url = defUrl.data.Path;
+    if (url) openWindow(url)
 }
 
+async function loadUrlData() {
+    const urlData = await getChapterSource(props.chapter.IndexId);
+    urlList.value = urlData.data;
+}
 
 const startEdit = (index: number) => {
     editingIndex.value = index;
@@ -119,14 +125,11 @@ const cancelEdit = () => {
 
 const saveEdit = (index: number) => {
     editingIndex.value = -1;
-
-    let urlSetting = {
-        id: urlList.value[index].id,
-        url: urlList.value[index].Path
-    }
-    console.log(urlSetting);
+    const { id, Path } = urlList.value[index];
+    let urlSetting = { id: id, url: Path }
+    // console.log(urlSetting);
     updateWebBookChapterSourcesById(urlSetting).then((res) => {
-        console.log(res);
+        // console.log(res);
     })
     // 这里可以添加即时保存逻辑，或保持原确认按钮统一保存
 };

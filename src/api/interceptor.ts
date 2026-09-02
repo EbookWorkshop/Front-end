@@ -56,7 +56,7 @@ axios.interceptors.response.use(
         status: 0,
         data: res,
       };
-      message.content += `\n响应地址：${request.responseURL}`;
+      message.content += `\n地址：${response.config.method}  ${request.responseURL}`;
       messageService.addMessage(message);
 
       if (isRealError) return Promise.reject(new Error(res.msg || 'Error'));
@@ -73,7 +73,7 @@ axios.interceptors.response.use(
       type: 'message',
       title: '请求错误：' + param.code,
       subTitle: request.status,
-      content: `${error.message}\n响应地址：${request.responseURL}` || '请求错误',
+      content: `${error.message}\n\n地址：${param.config.method}  ${request.responseURL}` || '请求错误',
       avatar: 'error',
       time: new Date().toLocaleString(),
       status: 0,
