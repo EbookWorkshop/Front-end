@@ -61,7 +61,7 @@ class MessageService {
 
         const { on: socketOn } = useSocket();
 
-        socketOn('WebBook.UpdateChapter.Finish', ({ bookid, bookName, doneNum, failNum }) => {
+        socketOn('WebBook.UpdateChapter.Finish', ({ bookId, bookName, doneNum, failNum }) => {
             this._messages.push({
                 id: Date.now() * -1,
                 type: 'notice',
@@ -74,13 +74,13 @@ class MessageService {
             });
         });
 
-        socketOn('WebBook.Create.Finish', ({ bookid, bookName }) => {
+        socketOn('WebBook.Create.Finish', ({ bookId, bookName }) => {
             const buttonVNode = h(Button, {
                 type: 'primary',
                 status: 'success',
                 size: 'small',
                 onClick: () => {
-                    router.push({ path: `/workshop/webbook/edit/${bookid}` });
+                    router.push({ path: `/workshop/webbook/edit/${bookId}` });
                 },
             }, '前往查看') as VNode;
 

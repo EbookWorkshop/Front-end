@@ -1,5 +1,6 @@
 
 export enum WebBookStatus {
+    Start = 'WebBook.UpdateOneChapter.Start',
     /**
      * 单独一章失败
      * WebBook.UpdateOneChapter.Error
@@ -29,7 +30,7 @@ export interface OneChapterStatus {
     /**
      * 属于书的ID
      */
-    bookid: number,
+    bookId: number,
     /**
      * 属于书的章节ID
      */

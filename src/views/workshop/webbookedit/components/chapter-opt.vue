@@ -1,13 +1,13 @@
 <template>
     <div class="chapter-opt">
-        <a-button-group :status="status" style="width: 100%;">
-            <a-button long type="dashed" class="chapter-title" @click="onToggle">
+        <a-button-group style="width: 100%;">
+            <a-button long type="dashed" class="chapter-title" :class="statu_color" @click="onToggle">
                 <a-checkbox :model-value="checked">
                     {{ chapter.Title }}
                 </a-checkbox>
             </a-button>
             <a-dropdown :popup-max-height="false">
-                <a-button type="dashed">
+                <a-button type="dashed" :class="statu_color" >
                     <icon-settings />
                 </a-button>
                 <template #content>
@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { updateWebBookChapterSourcesById, getDefaultChapterSource, getChapterSource } from '@/api/book';
 import { openWindow } from '@/utils';
 import ChapterEdit from "@/components/chapter/edit.vue";
@@ -79,14 +79,18 @@ const emit = defineEmits(['toggle', 'hide']);
 const props = defineProps<{
     chapter: WebChapter;
     checked: boolean;          // 是否被选中
-    status?: "normal" | "success" | "warning" | "danger" | undefined;
+    status?: "normal" | "success" | "error" | "empty" | "processing";
 }>();
-
 
 // URL 管理相关状态
 const isUrlDialogVisible = ref(false);
 const editingIndex = ref(-1);
 const urlList = ref<Array<{ id: number, Path: string }>>([]);
+
+const statu_color = computed(() => {
+    let s = props.status ?? "normal";
+    return `statu-color-${s}`;
+});
 
 //操作定义
 /**
@@ -156,6 +160,26 @@ const handleUrlConfirm = () => {
     overflow: hidden;
     width: 100%;
     display: flex;
+}
+
+.statu-color-normal {
+    background-color: var(--color-secondary-disabled) !important;
+}
+
+.statu-color-processing {
+    background-color: var(--color-primary-light-2) !important;
+}
+
+.statu-color-error {
+    background-color: var(--color-danger-light-1) !important;
+}
+
+.statu-color-empty {
+    background-color: var(--color-warning-light-1) !important;
+}
+
+.statu-color-success {
+    background-color: var(--color-success-light-1) !important;
 }
 
 .chapter-opt .chapter-title {

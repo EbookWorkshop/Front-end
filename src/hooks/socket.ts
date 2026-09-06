@@ -14,13 +14,13 @@ interface SocketState {
 
 interface SocketEventMap {
   'WebBook.UpdateChapter.Finish': {
-    bookid: number;
+    bookId: number;
     bookName: string;
     doneNum: number;
     failNum: number;
   };
   'WebBook.Create.Finish': {
-    bookid: number;
+    bookId: number;
     bookName: string;
   };
   'Message.Box.Send': any;

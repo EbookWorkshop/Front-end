@@ -64,7 +64,7 @@ if (props.bookId > 0) LoadFromBookId(props.bookId);
 function CoverImgError(event: Event) {
   // 添加判断，仅当当前封面不是颜色值时才进行切换
   if (!curCover.value?.startsWith('#')) {
-    curCover.value = "#f0f0f0";
+    curCover.value = "#00b400";
   }
 }
 

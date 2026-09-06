@@ -9,16 +9,16 @@
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Volumes="bookData.Volumes"
               :loading="loading || autoSyncSetting" :Chapters="bookData.Index" v-model:AutoSyncEnabled="autoSyncEnabled"
-              @toggle-check="onToggleToolbar" @start-update-chapter="(rsl: any) => curDoingProcent = rsl"
-              @update:AutoSyncEnabled="handleAutoSyncChange" />
+              @toggle-check="onToggleToolbar" @update:AutoSyncEnabled="handleAutoSyncChange"
+              @start-update-chapter="(rsl: any) => { curDoingProcent = rsl; subscribeBook(bookId) }" />
           </template>
         </BookInfo>
         <a-divider />
         <ChapterList :loading="loading" :Chapters="chapterList" :Volumes="bookData.Volumes">
           <template #chapter="{ chapter }">
             <ChapterOpt :chapter="chapter as WebChapter" :checked="hasCheckChapter.get(chapter.IndexId) || false"
-              :status="(chapter as any).status || (chapter.IsHasContent ? 'normal' : 'warning')"
-              @toggle="OnToggleChapter" @hide="onHideChapter" />
+              :status="(chapter as any).status || (chapter.IsHasContent ? 'normal' : 'empty')" @toggle="OnToggleChapter"
+              @hide="onHideChapter" />
           </template>
         </ChapterList>
       </a-spin>
@@ -34,7 +34,7 @@ import type { OneChapterStatus } from './data'
 import { messageService } from '@/services/messageService';
 import type { MessageRecord } from '@/types/Message';
 
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, onMounted, onUnmounted } from 'vue';
 import useRequest from '@/hooks/request';
 import useBookHelper from '@/hooks/book-helper';
 import { useSocket } from '@/hooks/socket';
@@ -68,7 +68,7 @@ const queryBook = () => {
     // 每个章节对象扩展一个 status 字段（也可以单独维护，但直接添加属性更简单）
     const indexedChapters = webbook.Index.map((c: any) => {
       // 如果已有状态则保留，否则根据 IsHasContent 设置默认
-      (c as any).status = (c as any).status || (c.IsHasContent ? 'normal' : 'warning');
+      (c as any).status = (c as any).status || (c.IsHasContent ? 'normal' : 'empty');
       return c;
     });
     chapterList.value = indexedChapters;
@@ -80,10 +80,11 @@ const queryBook = () => {
 
 const { bookId, gotoChapter } = useBookHelper();
 const { loading, response: bookData } = useRequest<Book>(queryBook);
-const { io: socket, on: socketOn } = useSocket();
+const { io: socket, on: socketOn, off: socketOff } = useSocket();
 const webBookId = ref<number>(-1);  //网文书ID，注意与bookId不同
 
-
+function subscribeBook(bookId: number) { socket.emit('subscribe:book', bookId); }
+function unsubscribeBook(bookId: number) { socket.emit('unsubscribe:book', bookId); }
 
 //操作定义
 /**
@@ -122,16 +123,20 @@ function handleAutoSyncChange(newValue: boolean) {
 
 
 // 监听广播消息
-if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //防止重复监听
-  socketOn(WebBookStatus.Error + `.${bookId}`, ({   //章节更新错误
-    bookid: _bookid,    //出错的书ID
+const eventHandlers = {
+  [WebBookStatus.Start]: ({ bookId, chapterId }: { bookId: number, chapterId: number }) => {
+    const target = chapterList.value.find(c => c.IndexId === chapterId);
+    if (target) (target as any).status = 'processing';
+  },
+  [WebBookStatus.Error]: ({   //章节更新错误
+    bookId: _bookid,    //出错的书ID
     chapterId,          //出错的章节ID
     err,                //错误信息
     msgId
   }: OneChapterStatus) => {
     const target = chapterList.value.find(c => c.IndexId === chapterId);
     if (target) {
-      (target as any).status = 'danger';
+      (target as any).status = 'error';
     }
 
     Notification.error({
@@ -153,21 +158,21 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
       error: err,
     };
     messageService.addMessage(errInfo);
-  });
-
-  // 单一章节更新成功
-  socketOn(WebBookStatus.Success + `.${bookId}`, (chaptOne: OneChapterStatus) => {
+  },
+  [WebBookStatus.Success]: (chaptOne: OneChapterStatus) => {
     const target = chapterList.value.find(c => c.IndexId === chaptOne.chapterId);
     if (target) {
       target.IsHasContent = true;
       (target as any).status = 'success';
     }
-  });
-
-  // 全部任务完成 - 保留页面特定的处理逻辑
-  socketOn(WebBookStatus.AllSuccess + `.${bookId}`, ({ bookid: _bookid, chapterIndexArray, doneNum, failNum }): any => {
+  },
+  [WebBookStatus.AllSuccess]: ({ bookId: _bookid, doneNum, failNum }: {
+    bookId: number;
+    doneNum: number;
+    failNum: number;
+  }) => {
     Notification.success({
-      title: `已尝试任务${chapterIndexArray.length}个`,
+      title: `已尝试任务${doneNum + failNum}个`,
       content: `其中成功：${doneNum}，失败：${failNum}`,
       showIcon: true,
       duration: 0,
@@ -181,15 +186,31 @@ if (socket.listeners(WebBookStatus.Error + `.${bookId}`).length === 0) {    //�
     messageService.addMessage({
       id: Date.now() * -1,
       type: "message",
-      title: `《${bookData.value?.BookName}》已尝试任务${chapterIndexArray.length}个`,
+      title: `《${bookData.value?.BookName}》已尝试任务${doneNum + failNum}个`,
       subTitle: `成功：${doneNum}，失败：${failNum}`,
-      content: `成功率：${Math.round(doneNum / chapterIndexArray.length * 10000) / 100}%`,
+      content: `成功率：${Math.round(doneNum / (doneNum + failNum) * 10000) / 100}%`,
       time: new Date().toLocaleString(),
       status: 1,
       avatar: "success",
     });
+  }
+};
+
+onMounted(() => {
+  subscribeBook(bookId);
+  Object.entries(eventHandlers).forEach(([event, handler]) => {
+    socketOn(event, handler);
   });
-}
+});
+
+onUnmounted(() => {
+  unsubscribeBook(bookId);
+  Object.entries(eventHandlers).forEach(([event, handler]) => {
+    socketOff(event, handler);
+  });
+
+});
+
 </script>
 
 <style scoped lang="less"></style>
