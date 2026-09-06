@@ -97,6 +97,21 @@ class MessageService {
             });
         });
 
+        //更新合并目录
+        socketOn("WebBook.UpdateIndex.Finish", ({ bookId, bookName, addedCount, message }) => {
+            this._messages.push({
+                id: Date.now() * -1,
+                type: 'notice',
+                title: `《${bookName}》更新目录已完成。`,
+                content: message,
+                // vnodeContent: buttonVNode,
+                time: new Date().toLocaleString(),
+                avatar: 'info',
+                status: 0,
+                subTitle: `新增：${addedCount}`,
+            });
+        })
+
         socketOn('Message.Box.Send', (msg: MessageRecord) => {
             this.addMessage(msg);
         });

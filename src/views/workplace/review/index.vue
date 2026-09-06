@@ -65,7 +65,7 @@
                         <a-space direction="horizontal" wrap>
                             <a-button type="primary" @click="onTryIt"
                                 :loading="visBtLoading || isLoading">对比校阅</a-button>
-                            <a-button type="primary" status="success" @click="onSave"
+                            <a-button type="primary" status="success" @click="() => onSave(true)"
                                 :loading="isLoading">应用到所有章节</a-button>
                             <a-dropdown @select="" :popup-max-height="false" :loading="isLoading">
                                 <a-button>更多 <icon-down /></a-button>
@@ -141,7 +141,7 @@ import { HeatABook } from "@/api/library";
 import { queryBookById, queryChapterById } from '@/api/book';
 import useRequest from '@/hooks/request';
 import { useAppStore } from '@/store';
-import { FieldRule, Message ,type FormInstance} from '@arco-design/web-vue';
+import { FieldRule, Message, type FormInstance } from '@arco-design/web-vue';
 import { editChapter } from '@/api/book';
 
 const route = useRoute();
@@ -240,8 +240,8 @@ async function onTryIt() {
     }
     visBtLoading.value = true;
     let result = await tryARuleOnBook({
-        bookid: form.bookId,
-        chapterids: form.chapterId,
+        bookId: form.bookId,
+        chapterIds: form.chapterId,
         regex: form.curRegex,
         replace: form.curReplace,
     }).finally(() => {
@@ -256,7 +256,7 @@ async function onTryIt() {
 /**
  * 保存-应用到所有章节
  */
-async function onSave() {
+async function onSave(allChapt = true) {
     SetChapterRequire(false);
     await nextTick();
     await formRef.value?.validate();
@@ -268,8 +268,8 @@ async function onSave() {
     CleanView();
     isLoading.value = true;
     let result = await saveReviewOnBook({
-        bookid: form.bookId,
-        chapterids: form.chapterId,
+        bookId: form.bookId,
+        chapterIds: allChapt ? [] : form.chapterId,
         regex: form.curRegex,
         replace: form.curReplace,
     }).finally(() => {
@@ -283,7 +283,7 @@ async function onSave() {
 async function onSaveWithChapter() {
     await formRef.value?.validate();
     if (!form.chapterId || form.chapterId?.length == 0) return;
-    await onSave();
+    await onSave(false);
 }
 
 /**

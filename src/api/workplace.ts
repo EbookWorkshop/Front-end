@@ -78,7 +78,7 @@ export function saveReviewOnBook(setting: any) {
  * @returns 
  */
 export function querySuspiciousChars(bookid: number, chapterId: number[]) {
-  return axios.get<HttpResponse<any[]>>(`/review/book/suspiciouschars?bookid=${bookid}${chapterId.length > 0 ? `&chapterid=${chapterId.join(',')}` : ''}`);
+  return axios.get<HttpResponse<any[]>>(`/review/book/suspiciouschars?bookid=${bookid}${chapterId.length > 0 ? `&chapterids=${chapterId.join(',')}` : ''}`);
 }
 
 /**

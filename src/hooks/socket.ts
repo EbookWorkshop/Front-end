@@ -23,6 +23,7 @@ interface SocketEventMap {
     bookId: number;
     bookName: string;
   };
+  "WebBook.UpdateIndex.Finish": { bookId: number, bookName: string, addedCount: number, message: string };
   'Message.Box.Send': any;
   [key: string]: any;
 }
