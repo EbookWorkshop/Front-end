@@ -11,6 +11,7 @@ export interface Book {
     FontSize: number;
     Index: Chapter[];
     Volumes: Volume[];
+    Bookmark: any[] | undefined;
     // data?: DescData[];
 }
 

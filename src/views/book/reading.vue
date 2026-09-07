@@ -17,7 +17,8 @@
         <ChapterList :loading="loading" :Chapters="renderData.Index" :Volumes="renderData.Volumes">
           <template #chapter="{ chapter }">
             <a-button long @click="gotoChapter(chapter.IndexId)" type="secondary" :disabled="!chapter.IsHasContent"
-              :size="btSize" class="chapterBar">
+              :size="btSize" class="chapterBar"><icon-subscribe v-if="bookmark.includes(chapter.IndexId)"
+                :style="{ color: 'red' }" />
               {{ chapter.Title }}
             </a-button>
           </template>
@@ -28,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import type { Book } from '@/types/book';
 import BookInfo from "@/components/book-info/index.vue";
 import ChapterList from '@/components/chapter-list/index.vue';
@@ -48,6 +49,10 @@ watch(loading, (value) => {
   btSize.value = renderData.value.Index?.length < 50 ? 'large' : 'medium';
 })
 
+const bookmark = computed(() => {
+  if (!renderData.value.Bookmark) return [];
+  return renderData.value.Bookmark.map(b => b.ChapterId);
+})
 
 </script>
 <style lang="less">
