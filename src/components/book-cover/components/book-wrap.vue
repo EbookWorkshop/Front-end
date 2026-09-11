@@ -28,6 +28,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
 import { getApiBaseUrl } from '@/utils/config';
+const SHOW_BOOKNAME = "#showname";
 const ASSETS_HOST = getApiBaseUrl();
 const props = defineProps({
   loading: {
@@ -51,7 +52,7 @@ const emiter = defineEmits(["error", "update:showEmbedBookName"]);
 const isShowBookName = ref(props.showEmbedBookName);
 const isLoaded = ref(false);
 const showImageUrl = computed<string>(() => {
-  if (props.coverImg.includes("#showname")) isShowBookName.value = true;
+  if (props.coverImg.includes(SHOW_BOOKNAME)) isShowBookName.value = true;
   if (props.coverImg.startsWith('blob:')) {
     return props.coverImg;
   } else {
@@ -64,7 +65,7 @@ watch(() => props.showEmbedBookName, (value, old) => {
   isShowBookName.value = props.showEmbedBookName;
 })
 watch(() => props.coverImg, (value, old) => {
-  emiter("update:showEmbedBookName", props.coverImg.includes("#showname"));
+  emiter("update:showEmbedBookName", props.coverImg.includes(SHOW_BOOKNAME));
 }, { immediate: true })
 function imgError(event: Event) {
   emiter("error", event);

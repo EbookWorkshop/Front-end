@@ -95,7 +95,7 @@ async function LoadData() {
         else form.coverType = "图片";
 
         oldBookMeta = { ...form };
-        form.embelBookName = bookInfo.CoverImg?.includes("#showname");
+        form.embelBookName = bookInfo.CoverImg?.includes(SHOW_BOOKNAME);
     }
 };
 

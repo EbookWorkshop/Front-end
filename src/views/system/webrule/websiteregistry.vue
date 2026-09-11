@@ -96,8 +96,8 @@ async function checkHost(host: string, force = false) {
         const newHost = res.data?.location?.startsWith("http") ? new URL(res.data?.location).host : res.data?.location;
         statuses[host].data = res.data;
         statuses[host].title = res.data.title;
-        statuses[host].status = res?.status;
-        statuses[host].style = (res?.status === 200 || newHost == host) ? "row-success" : "row-failure";
+        statuses[host].status = res?.data.status;
+        statuses[host].style = (res?.data.status === 200 || newHost == host) ? "row-success" : "row-failure";
         if (newHost != host) statuses[host].result = newHost;
     } catch (err: any) {
         statuses[host].result = err?.message || '检测失败';

@@ -22,6 +22,7 @@ const SYSTEM: AppRouteRecordRaw = {
       component: () => IFRAME,
       props: () => ({
         src: `${API_BASE_URL}/swagger`,
+        useTheme: true,
       }),
       meta: {
         icon: 'icon-file',
@@ -66,6 +67,7 @@ const SYSTEM: AppRouteRecordRaw = {
       component: () => IFRAME,
       props: () => ({
         src: `${API_BASE_URL}/swagger/stoplight`,
+        useTheme: true,
       }),
       meta: {
         icon: 'icon-file',
@@ -95,6 +97,7 @@ const SYSTEM: AppRouteRecordRaw = {
       component: () => IFRAME,
       props: () => ({
         src: `${API_BASE_URL}/swagger/redoc`,
+        useTheme: true,
       }),
       meta: {
         icon: 'icon-file',

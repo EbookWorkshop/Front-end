@@ -1,53 +1,26 @@
 <template>
-  <a-affix :offset-top="80">
-    <a-progress
-      v-if="isShow || (beginPercent ?? -1) >= 0"
-      status="success"
-      :percent="percent"
-      size="large"
-      :animation="true"
-    />
+  <a-affix :offset-top="80" style="text-align: center;">
+    <a-progress :percent="status.percent" :style="{ width: '95%' }" :color="pbarStatu" size="large" :animation="true" />
   </a-affix>
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
-  import { useSocket } from '@/hooks/socket';
-  import { WebBookStatus } from "./../data"
+import { ref, computed } from 'vue';
+const props = defineProps<{
+  status: { total: number, done: number, success: number, fail: number, percent: number }
+}>();
 
-  // 入参
-  const props = defineProps({
-    bookid: {
-      type: Number,
-    },
-    beginPercent: {
-      type: Number,
-    },
-  });
+const pbarStatu = computed(() => {
+  if (props.status.done == props.status.success) return 'rgb(var(--success-6))';
+  if (props.status.done == props.status.fail) return 'rgb(var(--danger-6))';
 
-  const isShow = ref(false);
-  const percent = ref(0);
+  const successEnd = Math.floor(props.status.success / (props.status.done | 1) * 100);
+  return {
+    '0%': 'rgb(var(--success-6))',
+    [`${successEnd}%`]: 'rgb(var(--success-6))',
+    [`${successEnd + 0.1}%`]: 'rgb(var(--danger-6))',
+    '100%': 'rgb(var(--danger-6))',
+  }
+})
 
-  if ((props.beginPercent ?? -1) > 0) percent.value = props.beginPercent ?? 0;
-
-  const { io: socket } = useSocket();
-  if (socket.listeners(WebBookStatus.Update+`.${props.bookid}`).length === 0)
-  socket.on( WebBookStatus.Update+`.${props.bookid}`,({ bookid, rate, chapterId, ok, fail, all }: { bookid: number; rate: number; chapterId: number; ok: boolean; fail: boolean; all: any }) => {
-      if (bookid !== props.bookid) return;
-      isShow.value = true;
-      percent.value = Math.floor(rate * 1000) / 1000;
-
-      // console.log('更新进度：', rate, chapterId, ok, fail, all);
-
-      if (rate >= 1)
-        setTimeout(() => {
-          isShow.value = false;
-          setTimeout(() => {
-            percent.value = 0;
-          }, 300);
-        }, 280);
-
-      // console.log("rate", rate);
-    }
-  );
 </script>

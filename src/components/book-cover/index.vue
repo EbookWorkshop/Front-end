@@ -15,6 +15,8 @@ import BookWrap from './components/book-wrap.vue'; // 带封面图书
 import BookClassical from './components/book-classical.vue'; // 古典线装书风格封面
 
 import { queryBookInfo } from '@/api/book';
+const SHOW_BOOKNAME = "#showname";
+const DEFAULT_COLOR = "#00b400";
 
 // 定义组件入参
 const props = defineProps({
@@ -42,7 +44,7 @@ const props = defineProps({
 
 const emit = defineEmits(['complete', "update:showEmbedBookName"]);
 
-const curCover = ref(props.coverImg);
+const curCover = ref(img2cover(props.coverImg));
 const curBookName = ref(props.bookName);
 
 function LoadFromBookId(newId: number) {
@@ -64,13 +66,14 @@ if (props.bookId > 0) LoadFromBookId(props.bookId);
 function CoverImgError(event: Event) {
   // 添加判断，仅当当前封面不是颜色值时才进行切换
   if (!curCover.value?.startsWith('#')) {
-    curCover.value = "#00b400";
+    curCover.value = DEFAULT_COLOR;
   }
 }
+function img2cover(img: string) { return img === SHOW_BOOKNAME ? DEFAULT_COLOR : img; }
 
 // 新增监听coverImg变化的逻辑
 watch(() => props.coverImg, (newVal) => {
-  curCover.value = newVal;
+  curCover.value = img2cover(newVal)
 });
 watch(() => props.bookName, (newVal) => {
   curBookName.value = newVal;

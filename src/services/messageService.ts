@@ -61,16 +61,16 @@ class MessageService {
 
         const { on: socketOn } = useSocket();
 
-        socketOn('WebBook.UpdateChapter.Finish', ({ bookId, bookName, doneNum, failNum }) => {
+        socketOn('WebBook.UpdateChapter.Finish', ({ batchId, bookId, bookName, chapterIds, doneNum, failNum, total, status }: any) => {
             this._messages.push({
                 id: Date.now() * -1,
-                type: 'notice',
-                title: `《${bookName}》已完成任务。`,
-                subTitle: '',
-                content: `其中，成功：${doneNum}失败：${failNum}。`,
+                type: "notice",
+                title: `《${bookName}》已尝试任务${total}个`,
+                subTitle: `成功：${doneNum}，失败：${failNum}`,
+                content: `成功率：${Math.round(doneNum / (doneNum + failNum) * 10000) / 100}%`,
                 time: new Date().toLocaleString(),
-                status: 1,
-                avatar: '/logo.svg?t=msg',
+                status: 0,
+                avatar: doneNum > failNum ? "success" : "error",
             });
         });
 

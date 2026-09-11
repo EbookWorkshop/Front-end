@@ -2,15 +2,19 @@
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.workshop.webbook', bookData.BookName]" />
     <div class="wrapper">
-      <ProcessBar :bookid="bookId" :begin-percent="curDoingProcent" />
+      <a-affix :offset-top="80" v-if="isShowProcess">
+        <ProcessBar :status="processStatus"/>
+        <!-- <a-progress v-if="isShowProcess" status="success" :percent="barPercent" size="large" :animation="true" /> -->
+      </a-affix>
       <a-spin :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%">
         <BookInfo :loading="loading" :bookId="bookId" :BookName="bookData.BookName" :convertImg="bookData.CoverImg"
           :Author="bookData.Author" :Introduction="bookData.Introduction">
           <template #toolbar>
-            <Toolbar :bookid="bookData.BookId" :ChapterStatus="hasCheckChapter" :Volumes="bookData.Volumes"
-              :loading="loading || autoSyncSetting" :Chapters="bookData.Index" v-model:AutoSyncEnabled="autoSyncEnabled"
-              @toggle-check="onToggleToolbar" @update:AutoSyncEnabled="handleAutoSyncChange"
-              @start-update-chapter="(rsl: any) => { curDoingProcent = rsl; subscribeBook(bookId) }" />
+            <Toolbar :bookid="bookData.BookId" :book-name="bookData.BookName" :ChapterStatus="hasCheckChapter"
+              :Volumes="bookData.Volumes" :loading="loading || autoSyncSetting" :Chapters="bookData.Index"
+              v-model:AutoSyncEnabled="autoSyncEnabled" @toggle-check="onToggleToolbar"
+              @update:AutoSyncEnabled="handleAutoSyncChange"
+              @start-update-chapter="(rsl: any) => { isShowProcess = true; subscribeBook(bookId) }" />
           </template>
         </BookInfo>
         <a-divider />
@@ -44,14 +48,15 @@ import BookInfo from '@/components/book-info/index.vue';
 import Toolbar from './components/toolbar.vue';
 import ChapterList from '@/components/chapter-list/index.vue';
 import ChapterOpt from './components/chapter-opt.vue';
-import ProcessBar from './components/processbar.vue';
 import { Notification } from '@arco-design/web-vue';
+import ProcessBar from './components/processbar.vue';
 
-import { queryWebBookById, queryBookById, setAutoSyncEnabled } from '@/api/book';
+import { queryWebBookById, setAutoSyncEnabled } from '@/api/book';
 
 
 //变量定义
-const curDoingProcent = ref(-1);        //进度条状态
+const isShowProcess = ref(false);
+const processStatus = ref({ total: 0, done: 0, success: 0, fail: 0, percent: 0 })
 const hasCheckChapter = ref(new Map<number, boolean>()); // 仅存储选中状态
 const chapterList = ref<WebChapter[]>([]);//展示用的章节数据
 const autoSyncEnabled = ref<boolean>(false);//自动更新相关
@@ -59,7 +64,6 @@ const autoSyncSetting = ref<boolean>(true);//自动更新相关
 
 //数据请求
 const queryBook = () => {
-  curDoingProcent.value = -1;
   return queryWebBookById(bookId).then((result) => {
     chapterList.value = result.data.Index;
     let { data: webbook } = result;
@@ -125,6 +129,7 @@ function handleAutoSyncChange(newValue: boolean) {
 // 监听广播消息
 const eventHandlers = {
   [WebBookStatus.Start]: ({ bookId, chapterId }: { bookId: number, chapterId: number }) => {
+    // if (!isShowProcess.value) isShowProcess.value = true;
     const target = chapterList.value.find(c => c.IndexId === chapterId);
     if (target) (target as any).status = 'processing';
   },
@@ -139,12 +144,6 @@ const eventHandlers = {
       (target as any).status = 'error';
     }
 
-    Notification.error({
-      title: `获取章节出错：${err?.name || ""}`,
-      content: `章节-${target?.Title || chapterId}：${err?.message || "未知错误"}`,
-      showIcon: true, duration: 18_000
-    });
-
     // 使用消息服务添加错误消息
     const errInfo: MessageRecord = {
       id: msgId || (Date.now() * -1),
@@ -153,7 +152,7 @@ const eventHandlers = {
       subTitle: `章节-${target?.Title || ''}`,
       content: err?.message || "未知错误",
       time: new Date().toLocaleString(),
-      status: 1,
+      status: 0,
       avatar: "error",
       error: err,
     };
@@ -166,33 +165,16 @@ const eventHandlers = {
       (target as any).status = 'success';
     }
   },
-  [WebBookStatus.AllSuccess]: ({ bookId: _bookid, doneNum, failNum }: {
-    bookId: number;
-    doneNum: number;
-    failNum: number;
-  }) => {
-    Notification.success({
-      title: `已尝试任务${doneNum + failNum}个`,
-      content: `其中成功：${doneNum}，失败：${failNum}`,
-      showIcon: true,
-      duration: 0,
-      closable: true,
-    });
+  [WebBookStatus.AllSuccess]: ({ batchId, bookId, bookName, chapterIds, doneNum, failNum, total, status }: any) => {
     nextTick(() => {
-      curDoingProcent.value = -1;
+      isShowProcess.value = false;
     });
-
-    // 同时将完成消息添加到消息服务
-    messageService.addMessage({
-      id: Date.now() * -1,
-      type: "message",
-      title: `《${bookData.value?.BookName}》已尝试任务${doneNum + failNum}个`,
-      subTitle: `成功：${doneNum}，失败：${failNum}`,
-      content: `成功率：${Math.round(doneNum / (doneNum + failNum) * 10000) / 100}%`,
-      time: new Date().toLocaleString(),
-      status: 1,
-      avatar: "success",
-    });
+  },
+  [WebBookStatus.Update]: ({ batchId, bookId, bookName, total, done, success, fail, percent, status }: any) => {
+    if (!isShowProcess.value) isShowProcess.value = true;
+    // console.log(batchId, bookId, bookName, total, done, success, fail, percent, status)
+    // barPercent.value = percent / 100;
+    processStatus.value = { total, done, success, fail, percent: percent / 100 }
   }
 };
 

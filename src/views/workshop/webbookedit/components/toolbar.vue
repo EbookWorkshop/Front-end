@@ -102,6 +102,7 @@ const data = reactive<{
 
 const props = defineProps({
     bookid: { type: Number },
+    bookName: { type: String },
     loading: { type: Boolean },
     Chapters: {
         type: Array as () => Chapter[],
@@ -198,10 +199,11 @@ function UpdateChapter() {
         return;
     }
 
-    updateChapter(props.bookid as number, hasCheckChapter, isMustUpdate.value).then((res: any) => {
+    updateChapter(props.bookid as number, hasCheckChapter, isMustUpdate.value, { bookName: props.bookName ?? "" }).then((res: any) => {
         if (res?.code == ApiResultCode.Success) {
             HeatABook(props.bookid ?? 0);
-            Message.info("已启动下载。");
+            const batchId = res.data.batchId;
+            Message.info(res.data.message);
             emit("StartUpdateChapter", 0);
         } else Message.error("启动失败，原因：" + res.msg)
     }).finally(() => {

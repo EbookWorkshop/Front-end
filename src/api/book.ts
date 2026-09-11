@@ -302,12 +302,13 @@ export function mergeWebBookIndex(id: number | Number) {
 export function updateChapter(
   bookid: number,
   chapterIds: number[],
-  isUpdate = false
+  isUpdate = false, { bookName } = { bookName: "" }
 ) {
   return axios.patch(`/library/webbook/updatechapter`, {
     bookId: bookid,
     chapterIds,
     isUpdate,
+    bookName,
   });
 }
 

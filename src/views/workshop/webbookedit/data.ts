@@ -20,7 +20,7 @@ export enum WebBookStatus {
     /**
      * 章节进度更新
      */
-    Update = "WebBook.UpdateChapter.Process",
+    Update = "WebBook.UpdateChapter.Progress",
 }
 
 /**

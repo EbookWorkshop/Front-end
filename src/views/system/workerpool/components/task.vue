@@ -1,10 +1,13 @@
 <template>
-    <a-popover v-once title="Title">
+    <a-popover v-once title="任务详情" content-class="content-main">
         <div :class="showClass" @click="showTaskInfo"></div>
         <template #content>
             <p v-if="data?.taskType">分类：{{ data?.taskType }}</p>
-            <p>程序：{{ data?.taskfile }}</p>
+            <p v-if="data?.workerId">执行者：{{ data?.workerId }}</p>
             <p>参数：{{ data?.param }}</p>
+            <p>结果：{{ data?.data }}</p>
+            <p>耗时：{{ data?.useMS }}</p>
+            <p>错误：{{ data?.error }}</p>
         </template>
     </a-popover>
 </template>
@@ -29,9 +32,10 @@ const props = defineProps({
 });
 
 const showClass = computed(() => {
-    if (props.data?.status === "fail") return "gem gem-ruby";
-    else if (props.data?.status === "running") return "gem gem-citrine";
-    else if (props.data?.status === "success") return "gem gem-emerald";
+    if (props.data?.status === "rejected") return "gem gem-ruby";
+    else if (props.data?.status === "executing") return "gem gem-citrine";
+    else if (props.data?.status === "fulfilled") return "gem gem-emerald";
+    else if (props.data?.status === "retry") return "gem gem-amethyst";
     return "gem gem-sapphire";
 });
 
@@ -42,6 +46,16 @@ function showTaskInfo() {
 </script>
 
 
+<style lang="less">
+.content-main {
+    max-width: 40vw;
+    p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+</style>
 <style lang="less" scoped>
 .waiting {
     opacity: 0.65;
