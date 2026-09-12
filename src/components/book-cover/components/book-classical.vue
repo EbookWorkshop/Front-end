@@ -1,31 +1,28 @@
 <template>
   <div class="book-wrap bookstyle-classical">
     <a-card v-if="loading" :bordered="false" hoverable>
-      <slot name="skeleton"></slot>
+      <slot name="skeleton" />
     </a-card>
-    <a-card v-else :bordered="false" hoverable :body-style="{
-      backgroundColor: converColor,
-    }">
+    <a-card v-else :bordered="false" hoverable :body-style="{ backgroundColor: coverColor }">
       <a-space align="start">
         <a-card-meta>
-          <template v-if="isHasSubTitle" #title>
-            <a-typography-text class="book-title sub-title sub-title-s">
-              {{ sTitle }}
-            </a-typography-text>
-            <div></div>
-            <a-typography-text class="book-title sub-title sub-title-f">
-              {{ fTitle }}
-            </a-typography-text>
-          </template>
-          <template v-else #title>
-            <a-typography-text :class="`book-title ${titleShow.length >= 8 ? 'large-text' : ''} title-word-count-${titleShow.length}`">
+          <template #title>
+            <template v-if="titleParts">
+              <a-typography-text class="book-title sub-title sub-title-s">
+                {{ titleParts.second }}
+              </a-typography-text>
+              <div></div>
+              <a-typography-text class="book-title sub-title sub-title-f">
+                {{ titleParts.first }}
+              </a-typography-text>
+            </template>
+            <a-typography-text v-else :class="titleClasses">
               {{ titleShow }}
             </a-typography-text>
           </template>
 
-          <!-- 装订线 -->
           <template #description>
-            <div :class="'binding-line' + (converColor?.toLocaleLowerCase() === '#f2e3a4' ? ' binding-line-red' : '')">
+            <div :class="bindingLineClasses">
               <div class="binding-line-cross"></div>
               <div class="binding-line-cross"></div>
             </div>
@@ -39,68 +36,55 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 
-// import { ref } from 'vue';
+/** 白锦底色需要配红色装订线 */
+const WHITE_BROCADE = '#f2e3a4';
+/** 书名分割符号 */
+const TITLE_SPLIT_PATTERN = /[:—：、，-]+/;
+
 const props = defineProps({
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  title: {
-    type: String,
-    default: '',
-  },
-  titleShow: {
-    type: String,
-    default: '',
-  },
-  hasSubTitle: {
-    type: Boolean,
-    default: true,
-  },
-  /**
-   * 封面颜色：
-   * + [藏青：#0b3154]
-   * + [红绸：#cb1f2f]
-   * + [白锦：#f2e3a4]
-   * + [青灰：#212f30]
-   */
-  converColor: {
-    type: String, // as PropType<'#0b3154'|'#cb1f2f'|'#f2e3a4'|'#212f30'>,
-    default: '#0b3154',
-  },
+  loading: { type: Boolean, default: false },
+  /** 用于展示的书名（已去除括号后缀） */
+  titleShow: { type: String, default: '' },
+  /** 封面底色，如 #0b3154 / #cb1f2f / #f2e3a4 / #212f30 */
+  coverColor: { type: String, default: '#0b3154' },
 });
-let fTitle = '';
-let sTitle = '';
-const isHasSubTitle = computed<boolean>(() => {
-  if (props.titleShow.length < 11) return false;
-  const titleSplitReg = /[:—：、，-]+/;   //书名分割符号
-  if (props.titleShow.match(titleSplitReg) !== null) {
-    const rsl = props.titleShow.split(titleSplitReg);
-    [fTitle, sTitle] = rsl;
-    return true;
-  } else if (props.titleShow.length > 11) {
-    fTitle = props.titleShow.slice(0, 6);
-    sTitle = props.titleShow.slice(6);
-    return true;
+
+/** 主标题过长时拆成上下两行竖排 */
+const titleParts = computed(() => {
+  const title = props.titleShow;
+  if (title.length < 11) return null;
+  if (TITLE_SPLIT_PATTERN.test(title)) {
+    const [first, second] = title.split(TITLE_SPLIT_PATTERN);
+    return { first, second };
   }
-  return false;
+  return { first: title.slice(0, 6), second: title.slice(6) };
 });
+
+const titleClasses = computed(() => [
+  'book-title',
+  props.titleShow.length >= 8 ? 'large-text' : '',
+  `title-word-count-${props.titleShow.length}`,
+]);
+
+const bindingLineClasses = computed(() => [
+  'binding-line',
+  props.coverColor.toLowerCase() === WHITE_BROCADE ? 'binding-line-red' : '',
+]);
 </script>
 
 <style scoped lang="less">
+/* 样式与原文件一致，仅将 .book-title 的 class 拼接改由 titleClasses 输出 */
 .book-wrap {
   width: 264px;
   height: 360px;
   margin: 20px 20px;
   border: 1px solid var(--color-neutral-5);
-  /* https://arco.design/react/docs/token */
   border-radius: 4px;
   transition: all 0.3s;
 
   &:hover {
     transform: translateY(-4px);
     cursor: pointer;
-    // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
   }
 
   :deep(.arco-card) {
@@ -134,8 +118,6 @@ const isHasSubTitle = computed<boolean>(() => {
   :deep(.arco-card-meta-title) {
     display: flex;
     align-items: center;
-
-    // To prevent the shaking
     line-height: 28px;
   }
 
@@ -149,10 +131,6 @@ const isHasSubTitle = computed<boolean>(() => {
 }
 
 .bookstyle-classical {
-
-  // :deep(.arco-card-body) {
-  //   background-color: #0b3154;
-  // }
   :deep(.arco-card-meta-title) {
     position: absolute;
     top: 50px;
@@ -183,33 +161,51 @@ const isHasSubTitle = computed<boolean>(() => {
       text-align: center;
     }
 
-    .title-word-count-2{line-height: 5rem;  }
-    .title-word-count-3{line-height: 3rem;  }
-    .title-word-count-4{line-height: 2.5rem;  }
-    .title-word-count-5{line-height: 2rem;  }
-    .title-word-count-6{line-height: 1.6rem;  }
+    .title-word-count-2 {
+      line-height: 5rem;
+    }
+
+    .title-word-count-3 {
+      line-height: 3rem;
+    }
+
+    .title-word-count-4 {
+      line-height: 2.5rem;
+    }
+
+    .title-word-count-5 {
+      line-height: 2rem;
+    }
+
+    .title-word-count-6 {
+      line-height: 1.6rem;
+    }
 
     .large-text {
       top: 20px;
-      margin-left: 0px;
+      left: 1rem;
+      width: 1rem;
+      margin-left: 0;
       font-size: 1rem;
       line-height: 1rem;
-      width: 1rem;
-      left: 1rem;
     }
 
-    .title-word-count-8{line-height: 1.1rem !important;  }
-    .title-word-count-11{top:13px; }
+    .title-word-count-8 {
+      line-height: 1.1rem !important;
+    }
+
+    .title-word-count-11 {
+      top: 13px;
+    }
 
     .sub-title {
+      width: 0.7rem;
       font-size: 0.7rem;
       line-height: 0.8rem;
-      width: 0.7rem;
     }
 
     .sub-title-f {
       position: absolute;
-      top: 20px;
       top: 1rem;
       right: 0.7rem;
     }
@@ -245,11 +241,11 @@ const isHasSubTitle = computed<boolean>(() => {
   }
 
   .binding-line-red {
-    border-right: 3px solid #A1151E;
+    border-right: 3px solid #a1151e;
 
     .binding-line-cross {
-      border-top: 2px solid #A1151E;
-      border-bottom: 2px solid #A1151E;
+      border-top: 2px solid #a1151e;
+      border-bottom: 2px solid #a1151e;
     }
   }
 }

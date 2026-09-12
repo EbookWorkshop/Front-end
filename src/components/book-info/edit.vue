@@ -90,12 +90,13 @@ async function LoadData() {
         form.author = bookInfo.Author ?? '佚名';
         form.introduction = bookInfo.Introduction;
         form.bookCover = bookInfo.CoverImg;
-        if(!bookInfo.CoverImg || bookInfo.CoverImg==="") form.coverType = "默认";
-        else if(bookInfo.CoverImg.startsWith("#")) form.coverType = "线装本";
+        if (!bookInfo.CoverImg || bookInfo.CoverImg === "") form.coverType = "默认";
+        else if (bookInfo.CoverImg.startsWith("#")) form.coverType = "线装本";
         else form.coverType = "图片";
 
         oldBookMeta = { ...form };
         form.embelBookName = bookInfo.CoverImg?.includes(SHOW_BOOKNAME);
+        console.log(form.embelBookName)
     }
 };
 
@@ -109,15 +110,10 @@ async function handleBeforeOk(callback: any) {
     if (form.bookCover?.startsWith("blob:")) {          //新上传的封面图片情况
         metaForm.append('coverFile', tempConverFile.value ?? "");
         form.bookCover = oldBookMeta.bookCover;//还原，跳过设置，直接用文件
-        if (form.embelBookName) form.bookCover = SHOW_BOOKNAME;
+        metaForm.append("showBookName", form.name);
+        metaForm.append("embelBookName", form.embelBookName);
     }
-    if(form.coverType == "默认") form.bookCover = "";
-
-    //在文件末尾加入标签用于识别是否嵌入标题
-    if (!form.bookCover?.startsWith("#")) {//线装本模式
-        if (form.embelBookName && !form.bookCover?.includes(SHOW_BOOKNAME)) form.bookCover += SHOW_BOOKNAME;
-        else if (!form.embelBookName && form.bookCover?.includes(SHOW_BOOKNAME)) form.bookCover = form.bookCover.replace(SHOW_BOOKNAME, '');
-    }
+    if (form.coverType == "默认") form.bookCover = "";
 
     for (let key in form) {
         if (form[key] !== oldBookMeta[key]) {

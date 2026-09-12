@@ -9,19 +9,19 @@
               <BookClassical :title-show="'网页抓取'" @click="toImport"></BookClassical>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
-              <BookClassical :title-show="'ＴＸＴ 导入'" conver-color="#f2e3a4" @click="handleImportText">
+              <BookClassical :title-show="'ＴＸＴ 导入'" cover-color="#f2e3a4" @click="handleImportText">
               </BookClassical>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
               <a-upload :action="`${ASSETS_HOST}/import/add`" :show-file-list="false"
                 @success="() => { Message.success('导入成功。'); }">
                 <template #upload-button>
-                  <BookClassical :title-show="'不可编辑格式导入：PDF‘EPUB’ZIP等'" conver-color="#cb1f2f" />
+                  <BookClassical :title-show="'不可编辑格式导入：PDF‘EPUB’ZIP等'" cover-color="#cb1f2f" />
                 </template>
               </a-upload>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
-              <BookClassical :title-show="'直接录入'" :conver-color="'#212f30'" @click="showAdd = true" />
+              <BookClassical :title-show="'直接录入'" cover-color="'#212f30'" @click="showAdd = true" />
             </a-col>
           </a-row>
         </a-spin>

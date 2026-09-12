@@ -1,88 +1,46 @@
 <template>
-  <BookWrap v-if="curCover && !curCover?.startsWith('#')" :loading="loading" :title="curBookName" :cover-img="curCover"
-    :show-embed-book-name="showEmbedBookName" @error="CoverImgError"
-    @update:show-embed-book-name="(val) => emit('update:showEmbedBookName', val)">
-    <a-descriptions style="margin-top: 16px" layout="inline-horizontal" :column="2" />
-  </BookWrap>
-  <BookClassical v-else :loading="loading" :title="curBookName" :title-show="curBookName.replace(/[\(（)].*$/, '')"
-    :conver-color="curCover?.startsWith('#') ? curCover : undefined">
-  </BookClassical>
+  <BookClassical v-if="source.kind === 'classical'" :loading="loading" :title-show="classicalTitle"
+    :cover-color="source.color" />
+  <BookWrap v-else :loading="loading" :title="bookName" :cover-url="source.url" :show-book-name="source.showBookName"
+    @error="markImageFailed" />
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
-import BookWrap from './components/book-wrap.vue'; // 带封面图书
-import BookClassical from './components/book-classical.vue'; // 古典线装书风格封面
-
+import { computed, ref, watch } from 'vue';
+import BookWrap from './components/book-wrap.vue';
+import BookClassical from './components/book-classical.vue';
 import { queryBookInfo } from '@/api/book';
-const SHOW_BOOKNAME = "#showname";
-const DEFAULT_COLOR = "#00b400";
+import { useCoverSource } from './use-cover-source';
 
-// 定义组件入参
 const props = defineProps({
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  bookId: {
-    type: Number,
-    default: 0
-  },
-  bookName: {
-    type: String,
-    default: '',
-  },
-  coverImg: {
-    type: String,
-    default: '',
-  },
-  showEmbedBookName: {
-    type: Boolean,
-    default: false,
-  },
+  loading: { type: Boolean, default: false },
+  bookId: { type: Number, default: 0 },
+  bookName: { type: String, default: '' },
+  coverImg: { type: String, default: '' },
+  showEmbedBookName: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(['complete', "update:showEmbedBookName"]);
+const emit = defineEmits(['complete']);
 
-const curCover = ref(img2cover(props.coverImg));
-const curBookName = ref(props.bookName);
+/** 封面原始值：可能来自 props，也可能来自 bookId 查询 */
+const rawCover = ref(props.coverImg);
+const bookName = ref(props.bookName);
+const showEmbedBookName = computed(() => props.showEmbedBookName);
 
-function LoadFromBookId(newId: number) {
-  queryBookInfo(newId).then(result => {
-    // console.log(result.data);
-    curCover.value = result.data.CoverImg;
-    curBookName.value = result.data.BookName;
+const { source, markImageFailed } = useCoverSource(rawCover, showEmbedBookName);
 
-    emit("complete");
-  });
+/** 线装书标题去掉括号后缀，如图封面仍显示完整书名 */
+const classicalTitle = computed(() => bookName.value.replace(/[\(（)].*$/, ''));
+
+async function loadFromBookId(id: number) {
+  if (!id || id <= 0) return;
+  const { data } = await queryBookInfo(id);
+  rawCover.value = data.CoverImg;
+  bookName.value = data.BookName;
+  emit('complete');
 }
 
-if (props.bookId > 0) LoadFromBookId(props.bookId);
-
-/**
- * 当图片出错时，切换为线装本样式显示
- * @param event 
- */
-function CoverImgError(event: Event) {
-  // 添加判断，仅当当前封面不是颜色值时才进行切换
-  if (!curCover.value?.startsWith('#')) {
-    curCover.value = DEFAULT_COLOR;
-  }
-}
-function img2cover(img: string) { return img === SHOW_BOOKNAME ? DEFAULT_COLOR : img; }
-
-// 新增监听coverImg变化的逻辑
-watch(() => props.coverImg, (newVal) => {
-  curCover.value = img2cover(newVal)
-});
-watch(() => props.bookName, (newVal) => {
-  curBookName.value = newVal;
-});
-
-watch(() => props.bookId, (newVal) => {
-  // console.log(newVal);
-  if (newVal <= 0 || newVal === undefined) return;
-  LoadFromBookId(newVal);
-})
-
+watch(() => props.bookId, loadFromBookId, { immediate: true });
+watch(() => props.coverImg, (value) => { rawCover.value = value; });
+watch(() => props.bookName, (value) => { bookName.value = value; });
 </script>
