@@ -50,11 +50,11 @@
                   <div v-if="form.chapterScope == 'range'">
                     <a-form-item field="cBegin" label="开始章节:"
                       :rules="[{ required: true, message: '按范围导出时，需要设置导出范围开始章节' }]">
-                      <SelectChapter v-model="form.cBegin" :volume="Volumes" :chapters="Chapters" />
+                      <SelectChapter v-model="form.cBegin" :volume="Volumes" :chapters="Chapters" :bookmark="Bookmark"/>
                     </a-form-item>
                     <a-form-item field="cEnd" label="结束章节:"
                       :rules="[{ required: true, message: '按范围导出时，需要设置导出范围结束章节' }]">
-                      <SelectChapter v-model="form.cEnd" :volume="Volumes" :chapters="Chapters" :is-reverse="true" />
+                      <SelectChapter v-model="form.cEnd" :volume="Volumes" :chapters="Chapters" :bookmark="Bookmark" :is-reverse="true" />
                     </a-form-item>
                   </div>
                 </div>
@@ -227,6 +227,7 @@ const form = ref({
   isExportToInventory: false,
 });
 const current = ref(1);
+const Bookmark = ref<Array<any>>([]);
 const Chapters = ref<Array<any>>([]);
 const Volumes = ref<Array<any>>([]);
 let chapterBookId = -1;   // 记录当前获取的章节索引的书籍ID
@@ -243,6 +244,7 @@ function getBookIndex() {
       chapterBookId = form.value.bookId ?? -1;
       Chapters.value = res.data.Index;
       Volumes.value = res.data.Volumes;
+      Bookmark.value = res.data.Bookmark;
     }
   })
 }

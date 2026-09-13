@@ -54,7 +54,7 @@
     <a-modal v-model:visible="isShow" title="区段选择" @ok="onSetChapter" draggable unmount-on-close>
         <a-form :model="data" layout="vertical">
             <a-form-item field="cBegin" label="开始章节:" required>
-                <SelectChapter v-model="data.cBegin" :volume="Volumes" :chapters="Chapters" />
+                <SelectChapter v-model="data.cBegin" :volume="Volumes" :chapters="Chapters" :bookmark="Bookmark"/>
             </a-form-item>
             <a-form-item field="cLength" label="按数量选：">
                 <a-select placeholder="需要先选择【开始章节】" allow-create @change="onSetChapterLength">
@@ -62,7 +62,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item field="cEnd" label="结束章节:" required>
-                <SelectChapter v-model="data.cEnd" :volume="Volumes" :chapters="Chapters" :is-reverse="true" />
+                <SelectChapter v-model="data.cEnd" :volume="Volumes" :chapters="Chapters" :bookmark="Bookmark" :is-reverse="true" />
             </a-form-item>
         </a-form>
     </a-modal>
@@ -104,6 +104,10 @@ const props = defineProps({
     bookid: { type: Number },
     bookName: { type: String },
     loading: { type: Boolean },
+    Bookmark: {
+        type: Array as () => any[],
+        default: []
+    },
     Chapters: {
         type: Array as () => Chapter[],
         default: []

@@ -21,7 +21,7 @@
               </a-upload>
             </a-col>
             <a-col :span="8" flex="auto" class="col-align-center">
-              <BookClassical :title-show="'直接录入'" cover-color="'#212f30'" @click="showAdd = true" />
+              <BookClassical :title-show="'直接录入'" cover-color="#212f30" @click="showAdd = true" />
             </a-col>
           </a-row>
         </a-spin>

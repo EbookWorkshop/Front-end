@@ -1,9 +1,6 @@
 <template>
   <div class="book-wrap">
-    <a-card v-if="loading" :bordered="false" hoverable>
-      <slot name="skeleton" />
-    </a-card>
-    <a-card v-else :bordered="false" hoverable>
+    <a-card :bordered="false" hoverable>
       <template #cover>
         <div class="cover">
           <img :src="coverUrl" :alt="title" @load="emit('load')" @error="emit('error', $event)" />
@@ -25,7 +22,6 @@
 import { computed } from 'vue';
 
 const props = defineProps({
-  loading: { type: Boolean, default: false },
   title: { type: String, default: '' },
   /** 已解析为可直接使用的绝对地址 */
   coverUrl: { type: String, default: '' },

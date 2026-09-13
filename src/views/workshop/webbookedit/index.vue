@@ -2,16 +2,12 @@
   <div class="container">
     <Breadcrumb :items="['menu.library', 'menu.workshop.webbook', bookData.BookName]" />
     <div class="wrapper">
-      <a-affix :offset-top="80" v-if="isShowProcess">
-        <ProcessBar :status="processStatus"/>
-        <!-- <a-progress v-if="isShowProcess" status="success" :percent="barPercent" size="large" :animation="true" /> -->
-      </a-affix>
       <a-spin :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%">
         <BookInfo :loading="loading" :bookId="bookId" :BookName="bookData.BookName" :convertImg="bookData.CoverImg"
           :Author="bookData.Author" :Introduction="bookData.Introduction">
           <template #toolbar>
             <Toolbar :bookid="bookData.BookId" :book-name="bookData.BookName" :ChapterStatus="hasCheckChapter"
-              :Volumes="bookData.Volumes" :loading="loading || autoSyncSetting" :Chapters="bookData.Index"
+              :Volumes="bookData.Volumes" :loading="loading || autoSyncSetting" :Chapters="bookData.Index" :-bookmark="bookData.Bookmark"
               v-model:AutoSyncEnabled="autoSyncEnabled" @toggle-check="onToggleToolbar"
               @update:AutoSyncEnabled="handleAutoSyncChange"
               @start-update-chapter="(rsl: any) => { isShowProcess = true; subscribeBook(bookId) }" />
@@ -25,8 +21,12 @@
               @hide="onHideChapter" />
           </template>
         </ChapterList>
+        <div style="display: flex;justify-content: center;">
+          <a-spin dot v-if="rendering" />
+        </div>
       </a-spin>
     </div>
+    <a-affix :offsetBottom="28" v-if="isShowProcess"><ProcessBar :status="processStatus"/></a-affix>
   </div>
 </template>
 
@@ -48,7 +48,6 @@ import BookInfo from '@/components/book-info/index.vue';
 import Toolbar from './components/toolbar.vue';
 import ChapterList from '@/components/chapter-list/index.vue';
 import ChapterOpt from './components/chapter-opt.vue';
-import { Notification } from '@arco-design/web-vue';
 import ProcessBar from './components/processbar.vue';
 
 import { queryWebBookById, setAutoSyncEnabled } from '@/api/book';
@@ -60,12 +59,13 @@ const processStatus = ref({ total: 0, done: 0, success: 0, fail: 0, percent: 0 }
 const hasCheckChapter = ref(new Map<number, boolean>()); // 仅存储选中状态
 const chapterList = ref<WebChapter[]>([]);//展示用的章节数据
 const autoSyncEnabled = ref<boolean>(false);//自动更新相关
-const autoSyncSetting = ref<boolean>(true);//自动更新相关
+const autoSyncSetting = ref<boolean>(true);//自动更新状态
+const rendering = ref(true);
 
 //数据请求
 const queryBook = () => {
-  return queryWebBookById(bookId).then((result) => {
-    chapterList.value = result.data.Index;
+  return queryWebBookById(bookId).then((result: any) => {
+    // chapterList.value = result.data.Index;
     let { data: webbook } = result;
     webBookId.value = webbook.WebBookId;
     autoSyncEnabled.value = webbook.AutoSyncEnabled;
@@ -75,8 +75,18 @@ const queryBook = () => {
       (c as any).status = (c as any).status || (c.IsHasContent ? 'normal' : 'empty');
       return c;
     });
-    chapterList.value = indexedChapters;
     autoSyncSetting.value = false;
+
+    const batnum = 60;
+    let cur = 0;
+    const batchInit = () => {
+      const curBat = indexedChapters.slice(cur, cur + batnum);
+      chapterList.value.push(...curBat);
+      cur += batnum;
+      if (indexedChapters.length >= cur) setTimeout(batchInit, 300);
+      else rendering.value = false;
+    }
+    batchInit();
 
     return result;
   });

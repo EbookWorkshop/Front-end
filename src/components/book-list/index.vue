@@ -1,14 +1,13 @@
 <template>
-  <a-empty v-if="renderData != null && renderData.length == 0 && !loading" />
-  <a-spin v-else :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%; min-height: 200px;">
+  <a-spin :loading="loading" tip="加载中..." :size="64" style="width: 100%; height: 100%; min-height: 200px;">
     <!-- 筛选/标签工具栏 -->
     <a-row :gutter="20" align="stretch" :wrap="false" style="overflow-x: hidden;">
-      <a-col flex="34px" v-if="renderData.length > 0">
+      <a-col flex="34px">
         <a-button @click="toggleFilter" shape="circle">
           <template #icon><icon-filter title="筛选" /></template>
         </a-button>
       </a-col>
-      <a-col flex="auto" v-if="renderData.length > 0">
+      <a-col flex="auto">
         <TagList :tagid="tagid" :Api="Api" @change="handleTagChange" />
       </a-col>
     </a-row>
@@ -20,6 +19,8 @@
         </a-input>
       </a-col>
       <a-divider />
+
+      <a-empty v-if="renderData != null && renderData.length == 0 && !loading" />
       <a-col :span="24">
         <!-- 虚拟滚动容器 -->
         <div ref="scrollContainer" class="book-list-wrap virtual-scroll-container"
@@ -27,21 +28,20 @@
           <!-- 总占位 -->
           <div :style="{ height: virtualizer.getTotalSize() + 'px', position: 'relative' }">
             <!-- 只渲染可见行 -->
-            <div v-for="virtualRow in virtualizer.getVirtualItems()" :key="String(virtualRow.key)" 
-              :style="{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                transform: `translateY(${virtualRow.start}px)`,
-                height: ROW_HEIGHT + 'px',
-                display: 'flex',
-                flexWrap: 'nowrap',
-                justifyContent: 'center',
-                alignItems: 'center',
-                boxSizing: 'border-box',
-                gap: GAP + 'px',
-              }">
+            <div v-for="virtualRow in virtualizer.getVirtualItems()" :key="String(virtualRow.key)" :style="{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              transform: `translateY(${virtualRow.start}px)`,
+              height: ROW_HEIGHT + 'px',
+              display: 'flex',
+              flexWrap: 'nowrap',
+              justifyContent: 'center',
+              alignItems: 'center',
+              boxSizing: 'border-box',
+              gap: GAP + 'px',
+            }">
               <!-- 迭代当前行的书籍 -->
               <div v-for="book in rowData[virtualRow.index]" :key="book.BookId" class="list-col"
                 :style="{ flex: `0 0 ${CARD_WIDTH}px`, width: CARD_WIDTH + 'px' }" @click="goto(book.BookId)">

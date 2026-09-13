@@ -1,7 +1,5 @@
 <template>
-  <a-affix :offset-top="80" style="text-align: center;">
-    <a-progress :percent="status.percent" :style="{ width: '95%' }" :color="pbarStatu" size="large" :animation="true" />
-  </a-affix>
+  <a-progress :percent="status.percent"  :color="pbarStatu" size="large" :animation="true" :show-text="false"/>
 </template>
 
 <script lang="ts" setup>

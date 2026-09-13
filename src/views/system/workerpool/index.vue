@@ -9,7 +9,7 @@
       <a-layout style="min-height: 66dvh;">
         <a-layout-content>
           <a-typography-title :heading="6" :style="{ textAlign: 'center' }">线程池</a-typography-title>
-          <a-card :bordered="false" :style="{ width: '98%', marginLeft: '1%' }">
+          <a-card v-if="WorkerPool.length" :bordered="false" :style="{ width: '98%', marginLeft: '1%' }">
             <a-card-grid v-for="(worker, index) in WorkerPool" :key="index" :hoverable="index % 2 === 0"
               :style="{ width: '25%' }">
               <a-card :title="`ID：&nbsp;${worker.workerId}`" :bordered="false">
@@ -54,6 +54,7 @@
               </a-card>
             </a-card-grid>
           </a-card>
+          <a-empty v-else/>
         </a-layout-content>
         <a-layout-footer resize-directions="bottom">
           <TaskBoard :data="WaitingTask" />

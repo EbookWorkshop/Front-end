@@ -55,7 +55,7 @@
             {{ testForm.bookName }}
           </a-form-item>
           <a-form-item field="chapter" label="章节">
-            <SelectChapter v-model="testForm.chapterId" :volume="Volumes" :chapters="Chapters" />
+            <SelectChapter v-model="testForm.chapterId" :volume="Volumes" :chapters="Chapters" :bookmark="Bookmark" />
           </a-form-item>
           <a-form-item field="name" label="校正规则">
             {{ testForm.ruleName }}
@@ -145,6 +145,7 @@ const { loading: ruleLoading, response: ruleListData } = useRequest<RuleListType
 const visible = ref(false);
 const isTest = ref(false);
 const testResult = ref(false);
+const Bookmark = ref([]);
 const Chapters = ref([]);
 const Volumes = ref([]);
 const form = reactive({
@@ -233,6 +234,7 @@ const testRule = (data: any) => {
   queryBookById(data.bookId).then((rsl: any) => {
     Chapters.value = rsl.data.Index.filter((i: any) => i.IsHasContent);
     Volumes.value = rsl.data.Volumes;
+    Bookmark.value = rsl.data.Bookmark;
   });
 };
 

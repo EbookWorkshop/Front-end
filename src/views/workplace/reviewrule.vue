@@ -72,10 +72,10 @@
         <a-form :model="testForm">
           <a-form-item field="book" label="书">
             <SelectBook v-model="testForm.bookId"
-              @change="queryBookById(testForm.bookId).then((result: any) => { Chapters = result.data.Index.filter((i: any) => i.IsHasContent); Volumes = result.data.Volumes; })" />
+              @change="queryBookById(testForm.bookId).then((result: any) => { Chapters = result.data.Index.filter((i: any) => i.IsHasContent); Volumes = result.data.Volumes; Bookmark = result.data.Bookmark; })" />
           </a-form-item>
           <a-form-item field="chapter" label="章节">
-            <SelectChapter v-model="testForm.chapterId" :volume="Volumes" :chapters="Chapters" />
+            <SelectChapter v-model="testForm.chapterId" :volume="Volumes" :chapters="Chapters" :bookmark="Bookmark" />
           </a-form-item>
           <a-form-item field="name" label="校正规则">
             {{ testForm.ruleName }}
@@ -171,6 +171,7 @@ const columns = [
 const { loading: tableLoading, response: renderData } =
   useRequest<Rule[]>(queryReviewRuleList);
 
+const Bookmark = ref([]);
 const Chapters = ref([]);
 const Volumes = ref([]);
 const visible = ref(false);
