@@ -22,7 +22,7 @@
                 <a-button-group type="primary">
                     <a-button shape="round" @click="showHiddenChapters(bookid ?? 0)"> 已隐藏章节 </a-button>
                     <a-button @click="checkDescriptions = true">查重</a-button>
-                    <a-button shape="round" status="warning">来源管理</a-button>
+                    <a-button shape="round" @click="isBookSourceOpen=true">来源管理</a-button>
                 </a-button-group>
             </a-space>
             <a-space>
@@ -54,7 +54,7 @@
     <a-modal v-model:visible="isShow" title="区段选择" @ok="onSetChapter" draggable unmount-on-close>
         <a-form :model="data" layout="vertical">
             <a-form-item field="cBegin" label="开始章节:" required>
-                <SelectChapter v-model="data.cBegin" :volume="Volumes" :chapters="Chapters" :bookmark="Bookmark"/>
+                <SelectChapter v-model="data.cBegin" :volume="Volumes" :chapters="Chapters" :bookmark="Bookmark" />
             </a-form-item>
             <a-form-item field="cLength" label="按数量选：">
                 <a-select placeholder="需要先选择【开始章节】" allow-create @change="onSetChapterLength">
@@ -62,13 +62,15 @@
                 </a-select>
             </a-form-item>
             <a-form-item field="cEnd" label="结束章节:" required>
-                <SelectChapter v-model="data.cEnd" :volume="Volumes" :chapters="Chapters" :bookmark="Bookmark" :is-reverse="true" />
+                <SelectChapter v-model="data.cEnd" :volume="Volumes" :chapters="Chapters" :bookmark="Bookmark"
+                    :is-reverse="true" />
             </a-form-item>
         </a-form>
     </a-modal>
 
     <EditBookInfo :visible="isEditBookInfo" :bookId="bookid ?? 0" @cancel="isEditBookInfo = false" />
     <Descriptions :bookId="bookid ?? 0" :show="checkDescriptions" @close="checkDescriptions = false" />
+    <BookSourceManager v-model:visible="isBookSourceOpen" :book-id="bookid ?? 0" :book-name="bookName ?? ''" />
 </template>
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
@@ -83,10 +85,12 @@ import { useRouter } from 'vue-router';
 import EditBookInfo from '@/components/book-info/edit.vue';
 import Descriptions from '@/components/book-tool/duplicates.vue';
 import SelectChapter from '@/components/chapter/select.vue';
+import BookSourceManager from './book-source-manager.vue';
 
 const isMerging = ref(false);       //合并章节状态
 const isShow = ref(false);
 const isMustUpdate = ref(false);    //强制更新-覆盖更新
+const isBookSourceOpen = ref(false);
 const isEditBookInfo = ref(false);
 const btStatusGettingData = ref(false);
 const checkDescriptions = ref(false);

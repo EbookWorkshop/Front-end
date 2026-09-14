@@ -46,6 +46,17 @@ export function queryBookSourcesById(id: number) {
 export function queryBookDefaultSourcesById(id: number) {
   return axios.get(`/library/webbook/defsources?bookid=${id}`);
 }
+// TODO: 检查相关章节api
+export function createWebBookSource(setting: { id: number; url: string }) {
+  return axios.post(`/library/webbook/sources`, setting);
+}
+export function updateWebBookSourcesById(setting: { id: number; url: string }) {
+  return axios.put(`/library/webbook/sources`, setting);
+}
+export function deleteWebBookSourceById(id: number) {
+  return axios.delete(`/library/webbook/sources`, { params: { id } });
+}
+
 
 /**
  * 拿到章节的来源地址
